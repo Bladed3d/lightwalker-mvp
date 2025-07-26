@@ -5,6 +5,14 @@ import { PrismaClient } from '@prisma/client'
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
+  return handleMigration()
+}
+
+export async function GET(request: NextRequest) {
+  return handleMigration()
+}
+
+async function handleMigration() {
   try {
     // Create a fresh Prisma client for migration
     const prisma = new PrismaClient({

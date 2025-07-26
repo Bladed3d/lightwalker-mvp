@@ -5,6 +5,14 @@ import { prisma } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
+  return handleSetup()
+}
+
+export async function GET(request: NextRequest) {
+  return handleSetup()
+}
+
+async function handleSetup() {
   try {
     // Check if setup already done
     const existingTemplates = await prisma.lightwalkerTemplate.count()
