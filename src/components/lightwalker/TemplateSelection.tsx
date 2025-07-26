@@ -27,7 +27,7 @@ export default function TemplateSelection({ onTemplateSelected }: TemplateSelect
   const [templates, setTemplates] = useState<Template[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'situational' | 'general'>('situational')
+  const [activeTab, setActiveTab] = useState<'situational' | 'general' | 'business'>('situational')
 
   useEffect(() => {
     fetchTemplates()
@@ -60,7 +60,10 @@ export default function TemplateSelection({ onTemplateSelected }: TemplateSelect
 
   const situationalTemplates = templates.filter(t => t.category === 'situational')
   const generalTemplates = templates.filter(t => t.category === 'general')
-  const currentTemplates = activeTab === 'situational' ? situationalTemplates : generalTemplates
+  const businessTemplates = templates.filter(t => t.category === 'business')
+  
+  const currentTemplates = activeTab === 'situational' ? situationalTemplates : 
+                          activeTab === 'general' ? generalTemplates : businessTemplates
 
   if (loading) {
     return (
@@ -109,6 +112,16 @@ export default function TemplateSelection({ onTemplateSelected }: TemplateSelect
           >
             Personal Growth
           </button>
+          <button
+            className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+              activeTab === 'business'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+            onClick={() => setActiveTab('business')}
+          >
+            Business
+          </button>
         </div>
       </div>
 
@@ -123,13 +136,22 @@ export default function TemplateSelection({ onTemplateSelected }: TemplateSelect
               Get targeted guidance from your future self who already overcame this situation
             </p>
           </div>
-        ) : (
+        ) : activeTab === 'general' ? (
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
               🌱 Ready for ongoing personal development?
             </h2>
             <p className="text-gray-600">
               Build long-term habits and traits with your ideal future self
+            </p>
+          </div>
+        ) : (
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              🏢 Growing your business or launching a startup?
+            </h2>
+            <p className="text-gray-600">
+              Learn from your future entrepreneurial self who built a successful company
             </p>
           </div>
         )}

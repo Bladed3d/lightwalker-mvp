@@ -20,7 +20,7 @@ async function handleAddCorporate() {
       displayName: 'Corporate Development™ (Coming Soon)',
       tagline: 'Transform performance reviews into growth partnerships',
       description: 'Revolutionize employee development by co-creating their ideal professional future self. Align personal growth with company goals and clear advancement pathways.',
-      category: 'general',
+      category: 'business',
       monthlyPrice: 99.00,
       personalityPrompt: 'You facilitate the process where managers and employees co-create the employee\'s ideal professional future self. You connect personal growth to company objectives and help establish clear pathways for advancement. You transform criticism into collaborative development.',
       communicationStyle: JSON.stringify({ tone: 'professional', energyLevel: 'motivated', sharingStyle: 'strategic' }),
