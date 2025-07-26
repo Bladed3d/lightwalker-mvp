@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import WaitlistForm from './WaitlistForm'
 
 interface Template {
   id: string
@@ -28,6 +29,7 @@ export default function TemplateSelection({ onTemplateSelected }: TemplateSelect
   const [loading, setLoading] = useState(true)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'situational' | 'general' | 'business'>('situational')
+  const [showWaitlist, setShowWaitlist] = useState<Template | null>(null)
 
   useEffect(() => {
     fetchTemplates()
@@ -54,7 +56,12 @@ export default function TemplateSelection({ onTemplateSelected }: TemplateSelect
     setSelectedTemplate(template.id)
     // Small delay for visual feedback
     setTimeout(() => {
-      onTemplateSelected(template)
+      // Check if this is a "Coming Soon" template
+      if (template.displayName.includes('Coming Soon')) {
+        setShowWaitlist(template)
+      } else {
+        onTemplateSelected(template)
+      }
     }, 150)
   }
 
@@ -255,6 +262,17 @@ export default function TemplateSelection({ onTemplateSelected }: TemplateSelect
           </div>
         )}
       </div>
+
+      {/* Waitlist Modal */}
+      {showWaitlist && (
+        <WaitlistForm
+          templateName={showWaitlist.displayName}
+          onClose={() => {
+            setShowWaitlist(null)
+            setSelectedTemplate(null)
+          }}
+        />
+      )}
     </div>
   )
 }

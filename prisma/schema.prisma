@@ -275,3 +275,15 @@ model NotificationSchedule {
   @@index([scheduledTime, isActive])
   @@index([userId, isActive])
 }
+
+model WaitlistEntry {
+  id           String   @id @default(cuid())
+  email        String   @map("email")
+  firstName    String   @map("first_name")
+  templateName String   @map("template_name")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("waitlist_entries")
+  @@index([email, templateName])
+  @@index([templateName])
+}
