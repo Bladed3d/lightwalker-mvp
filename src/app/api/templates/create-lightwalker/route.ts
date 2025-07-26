@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { z } from 'zod'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 const createLightwalkerSchema = z.object({
   templateId: z.string().min(1, 'Template ID is required'),
   userId: z.string().min(1, 'User ID is required'),

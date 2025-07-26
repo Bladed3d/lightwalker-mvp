@@ -3,6 +3,9 @@ import { prisma } from '@/lib/db'
 import { z } from 'zod'
 import OpenAI from 'openai'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 const chatSchema = z.object({
   userId: z.string().min(1, 'User ID is required'),
   userLightwalkerId: z.string().min(1, 'Lightwalker ID is required'),
