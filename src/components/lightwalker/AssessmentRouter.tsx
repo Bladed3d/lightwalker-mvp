@@ -207,7 +207,7 @@ export default function AssessmentRouter({ onPathwaySelected }: AssessmentRouter
           <p className="text-gray-600 mb-2"><strong>Best for:</strong> {primaryPathway.bestFor}</p>
           <p className="text-gray-600 mb-4"><strong>Duration:</strong> {primaryPathway.duration}</p>
           <button
-            onClick={() => startPathway(recommendedPathway)}
+            onClick={() => recommendedPathway && startPathway(recommendedPathway)}
             className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center"
           >
             Start {primaryPathway.name}
@@ -228,7 +228,7 @@ export default function AssessmentRouter({ onPathwaySelected }: AssessmentRouter
             <p className="text-gray-600 mb-2"><strong>Best for:</strong> {secondaryPathway.bestFor}</p>
             <p className="text-gray-600 mb-4"><strong>Duration:</strong> {secondaryPathway.duration}</p>
             <button
-              onClick={() => startPathway(alternativePathway)}
+              onClick={() => alternativePathway && startPathway(alternativePathway)}
               className="w-full bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors flex items-center justify-center"
             >
               Try {secondaryPathway.name} Instead
