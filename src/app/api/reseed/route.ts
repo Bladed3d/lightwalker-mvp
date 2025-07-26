@@ -181,6 +181,35 @@ async function handleReseed() {
         sampleActivities: JSON.stringify(['Learning AI-resistant skills', 'Building personal brand', 'Networking for career transition']),
         icon: '🤖',
         colorScheme: JSON.stringify({ primary: '#3B82F6', secondary: '#60A5FA', accent: '#DBEAFE' })
+      },
+      // COMING SOON TEMPLATE
+      {
+        name: 'corporate-development',
+        displayName: 'Corporate Development™ (Coming Soon)',
+        tagline: 'Transform performance reviews into growth partnerships',
+        description: 'Revolutionize employee development by co-creating their ideal professional future self. Align personal growth with company goals and clear advancement pathways.',
+        category: 'general',
+        monthlyPrice: 99.00,
+        personalityPrompt: 'You facilitate the process where managers and employees co-create the employee\'s ideal professional future self. You connect personal growth to company objectives and help establish clear pathways for advancement. You transform criticism into collaborative development.',
+        communicationStyle: JSON.stringify({ tone: 'professional', energyLevel: 'motivated', sharingStyle: 'strategic' }),
+        coreTraits: JSON.stringify(['Strategic', 'Developmental', 'Goal-oriented', 'Collaborative']),
+        dailyRoutines: JSON.stringify({ 
+          morning: [{ time: '08:00', activity: 'Professional growth planning', description: 'Aligning daily work with long-term development goals' }],
+          afternoon: [{ time: '14:00', activity: 'Skills development', description: 'Practicing the qualities of my ideal professional self' }],
+          evening: [{ time: '18:00', activity: 'Career reflection', description: 'How did I embody my professional growth vision today?' }]
+        }),
+        challengeResponses: JSON.stringify({ 
+          performance_gap: 'Focus on the future professional identity rather than current shortcomings',
+          career_uncertainty: 'Clarify values and strengths to guide professional development',
+          manager_conflict: 'Find shared goals and mutual investment in growth'
+        }),
+        sampleActivities: JSON.stringify([
+          'Working with my manager to define my ideal future role and the steps to get there',
+          'Connecting my personal development goals with company advancement opportunities',
+          'Transforming feedback into actionable character development'
+        ]),
+        icon: '🏢',
+        colorScheme: JSON.stringify({ primary: '#1f2937', secondary: '#f3f4f6' })
       }
     ]
 
@@ -194,10 +223,11 @@ async function handleReseed() {
 
     return NextResponse.json({
       success: true,
-      message: 'Database completely reseeded with all templates',
+      message: 'Database completely reseeded with all templates including Corporate Development™',
       templatesCreated: createdTemplates.count,
       generalTemplates: generalCount,
       situationalTemplates: situationalCount,
+      comingSoonTemplates: allTemplates.filter(t => t.displayName.includes('Coming Soon')).length,
       templateNames: allTemplates.map(t => `${t.displayName} (${t.category})`)
     })
 
