@@ -3,9 +3,8 @@ import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-    const days = parseInt(searchParams.get('days') || '30')
+    const userId = request.nextUrl.searchParams.get('userId')
+    const days = parseInt(request.nextUrl.searchParams.get('days') || '30')
 
     if (!userId) {
       return NextResponse.json(
