@@ -13,7 +13,7 @@ AI personality companion system where users create ideal versions of themselves 
 1. Connect GitHub repo to Vercel
 2. Set environment variables in Vercel dashboard:
    - `DATABASE_URL` (from Neon)
-   - `OPENAI_API_KEY` (your OpenAI key)
+   - `OPENROUTER_API_KEY` (your OpenRouter key - supports Claude, GPT, Llama)
    - `NEXTAUTH_SECRET` (generate: `openssl rand -base64 32`)
 
 ### 3. Run Database Migration

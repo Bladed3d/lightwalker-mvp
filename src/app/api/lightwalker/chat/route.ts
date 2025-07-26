@@ -11,7 +11,8 @@ const chatSchema = z.object({
 })
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1',
 })
 
 export async function POST(request: NextRequest) {
@@ -147,19 +148,19 @@ FORBIDDEN:
 function selectModelForTemplate(templateName: string, message: string, messageType: string): string {
   const complexity = analyzeComplexity(message)
   
-  // High complexity or creative/leadership templates use GPT-4
+  // High complexity or creative/leadership templates use Claude or GPT-4
   if (complexity > 0.7 || 
       templateName === 'creative-inspired' || 
       templateName === 'confident-leader') {
-    return 'gpt-4'
+    return 'anthropic/claude-3-haiku'
   }
   
   // Routine sharing uses cheaper model
   if (messageType === 'daily_routine' || complexity < 0.3) {
-    return 'gpt-3.5-turbo'
+    return 'openai/gpt-3.5-turbo'
   }
   
-  return 'gpt-3.5-turbo' // Default to cost-effective option
+  return 'openai/gpt-3.5-turbo' // Default to cost-effective option
 }
 
 function analyzeComplexity(message: string): number {
@@ -195,11 +196,14 @@ function getTemplateMaxTokens(messageType: string): number {
 
 function calculateCost(model: string, inputTokens: number, outputTokens: number): number {
   const pricing: Record<string, { input: number, output: number }> = {
-    'gpt-4': { input: 0.03, output: 0.06 }, // per 1K tokens
-    'gpt-3.5-turbo': { input: 0.0015, output: 0.002 }
+    'openai/gpt-4': { input: 0.03, output: 0.06 }, // per 1K tokens
+    'openai/gpt-3.5-turbo': { input: 0.0015, output: 0.002 },
+    'anthropic/claude-3-haiku': { input: 0.00025, output: 0.00125 }, // Much cheaper!
+    'anthropic/claude-3-sonnet': { input: 0.003, output: 0.015 },
+    'meta-llama/llama-3-8b-instruct': { input: 0.0001, output: 0.0001 } // Very cheap
   }
   
-  const modelPricing = pricing[model] || pricing['gpt-3.5-turbo']
+  const modelPricing = pricing[model] || pricing['openai/gpt-3.5-turbo']
   
   return ((inputTokens / 1000) * modelPricing.input) + ((outputTokens / 1000) * modelPricing.output)
 }
