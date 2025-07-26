@@ -1,0 +1,157 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Cosmic tunnel gradient -->
+    <radialGradient id="tunnelGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1"/>
+      <stop offset="30%" style="stop-color:#ff8c00;stop-opacity:0.8"/>
+      <stop offset="60%" style="stop-color:#8b4513;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.9"/>
+    </radialGradient>
+    
+    <!-- Figure silhouette gradient -->
+    <linearGradient id="figureGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.9"/>
+      <stop offset="80%" style="stop-color:#1a1a1a;stop-opacity:0.7"/>
+      <stop offset="100%" style="stop-color:#333333;stop-opacity:0.5"/>
+    </linearGradient>
+    
+    <!-- Energy emanation gradient -->
+    <radialGradient id="energyGlow" cx="50%" cy="50%" r="40%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9"/>
+      <stop offset="20%" style="stop-color:#ffd700;stop-opacity:0.7"/>
+      <stop offset="50%" style="stop-color:#ff8c00;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#ff4500;stop-opacity:0.1"/>
+    </radialGradient>
+    
+    <!-- Sacred geometry pattern -->
+    <pattern id="geometryPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="1" fill="#ffd700" opacity="0.3"/>
+      <polygon points="10,2 18,18 2,18" fill="none" stroke="#ff8c00" stroke-width="0.5" opacity="0.2"/>
+    </pattern>
+    
+    <!-- Glow filter -->
+    <filter id="cosmicGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background cosmic tunnel -->
+  <circle cx="100" cy="100" r="95" fill="url(#tunnelGradient)" opacity="0.8">
+    <animateTransform attributeName="transform" type="rotate" 
+                      values="0 100 100;360 100 100" dur="60s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Geometric patterns layer -->
+  <g opacity="0.4">
+    <!-- Outer ring -->
+    <circle cx="100" cy="100" r="80" fill="none" stroke="#ffd700" stroke-width="1" opacity="0.6">
+      <animateTransform attributeName="transform" type="rotate" 
+                        values="0 100 100;-360 100 100" dur="40s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Middle rings -->
+    <circle cx="100" cy="100" r="60" fill="none" stroke="#ff8c00" stroke-width="1" opacity="0.5">
+      <animateTransform attributeName="transform" type="rotate" 
+                        values="0 100 100;360 100 100" dur="30s" repeatCount="indefinite"/>
+    </circle>
+    
+    <circle cx="100" cy="100" r="40" fill="none" stroke="#ffd700" stroke-width="1" opacity="0.4">
+      <animateTransform attributeName="transform" type="rotate" 
+                        values="0 100 100;-360 100 100" dur="20s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Sacred geometry lines -->
+    <g stroke="#ff8c00" stroke-width="0.5" opacity="0.3">
+      <line x1="100" y1="20" x2="100" y2="180">
+        <animateTransform attributeName="transform" type="rotate" 
+                          values="0 100 100;360 100 100" dur="25s" repeatCount="indefinite"/>
+      </line>
+      <line x1="20" y1="100" x2="180" y2="100">
+        <animateTransform attributeName="transform" type="rotate" 
+                          values="0 100 100;360 100 100" dur="25s" repeatCount="indefinite"/>
+      </line>
+      <line x1="41.5" y1="41.5" x2="158.5" y2="158.5">
+        <animateTransform attributeName="transform" type="rotate" 
+                          values="0 100 100;360 100 100" dur="25s" repeatCount="indefinite"/>
+      </line>
+      <line x1="158.5" y1="41.5" x2="41.5" y2="158.5">
+        <animateTransform attributeName="transform" type="rotate" 
+                          values="0 100 100;360 100 100" dur="25s" repeatCount="indefinite"/>
+      </line>
+    </g>
+  </g>
+  
+  <!-- Central energy emanation -->
+  <circle cx="100" cy="100" r="30" fill="url(#energyGlow)" filter="url(#cosmicGlow)">
+    <animate attributeName="r" values="25;35;25" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Human figure silhouette -->
+  <g filter="url(#cosmicGlow)">
+    <!-- Head -->
+    <ellipse cx="100" cy="85" rx="8" ry="10" fill="url(#figureGradient)"/>
+    
+    <!-- Body -->
+    <rect x="92" y="95" width="16" height="35" rx="3" fill="url(#figureGradient)"/>
+    
+    <!-- Arms in meditation pose -->
+    <ellipse cx="85" cy="105" rx="6" ry="12" fill="url(#figureGradient)" transform="rotate(-15 85 105)"/>
+    <ellipse cx="115" cy="105" rx="6" ry="12" fill="url(#figureGradient)" transform="rotate(15 115 105)"/>
+    
+    <!-- Legs in seated position -->
+    <ellipse cx="95" cy="140" rx="5" ry="15" fill="url(#figureGradient)" transform="rotate(-10 95 140)"/>
+    <ellipse cx="105" cy="140" rx="5" ry="15" fill="url(#figureGradient)" transform="rotate(10 105 140)"/>
+  </g>
+  
+  <!-- Energy particles -->
+  <g opacity="0.6">
+    <circle cx="70" cy="70" r="1.5" fill="#ffd700">
+      <animateTransform attributeName="transform" type="translate" 
+                        values="0,0;5,-5;0,0" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <circle cx="130" cy="70" r="1" fill="#ff8c00">
+      <animateTransform attributeName="transform" type="translate" 
+                        values="0,0;-5,-5;0,0" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    
+    <circle cx="70" cy="130" r="1.2" fill="#ffffff">
+      <animateTransform attributeName="transform" type="translate" 
+                        values="0,0;5,5;0,0" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    
+    <circle cx="130" cy="130" r="0.8" fill="#ffd700">
+      <animateTransform attributeName="transform" type="translate" 
+                        values="0,0;-5,5;0,0" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Pulsing core light -->
+  <circle cx="100" cy="100" r="8" fill="#ffffff" opacity="0.8">
+    <animate attributeName="r" values="6;12;6" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Subtle outer energy rings -->
+  <g opacity="0.3" stroke="#ffd700" stroke-width="0.5" fill="none">
+    <circle cx="100" cy="100" r="90">
+      <animate attributeName="stroke-opacity" values="0.1;0.4;0.1" dur="8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="100" cy="100" r="70">
+      <animate attributeName="stroke-opacity" values="0.1;0.4;0.1" dur="6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="100" cy="100" r="50">
+      <animate attributeName="stroke-opacity" values="0.1;0.4;0.1" dur="4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+</svg>

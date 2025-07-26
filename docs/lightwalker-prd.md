@@ -1,0 +1,226 @@
+# Lightwalker MVP - Product Requirements Document
+
+## CORE PRINCIPLES: MODELING SYSTEM + IMMEDIATE VALUE
+
+### **PRINCIPLE #1: MODELING SYSTEM, NOT INSTRUCTIONAL SYSTEM**
+
+**CRITICAL DIFFERENTIATOR**: Lightwalker is a "show don't tell" approach that makes it fundamentally different from coaching apps. It's a **modeling system** rather than an **instructional system**.
+
+#### The Lightwalker Never Tells Users What To Do
+- ✅ CORRECT: "I pause and think about what I can appreciate about this person's situation"
+- ✅ CORRECT: "When someone cuts me off in traffic, I take a deep breath and wonder what stress they might be under"
+- ❌ WRONG: "You should pause and think..." 
+- ❌ WRONG: "What can you appreciate about..."
+- ❌ WRONG: Any directive or instructional language
+
+#### Users Learn Through Observation and Copying
+This is fundamental to the learning-through-copying model. Users observe and copy behaviors, they are never instructed or told what to do. This approach leverages natural human learning patterns where demonstration is more powerful than instruction.
+
+### **PRINCIPLE #2: DAY ONE VALUE DELIVERY**
+
+**CRITICAL REQUIREMENT**: Users must have meaningful results on their first visit. No artificial delays or multi-session requirements.
+
+#### Immediate Value Rules
+- ✅ CORRECT: "5 minutes to build your Lightwalker → Get help with [specific problem] today"
+- ✅ CORRECT: "Let's create your future self right now - just a few focused questions"
+- ✅ CORRECT: "Complete this discovery → Start your transformation immediately"
+- ❌ WRONG: "This takes 4-6 sessions over 2-3 weeks"
+- ❌ WRONG: "Come back tomorrow/next week for next session"
+- ❌ WRONG: Any timeline references that delay value
+
+#### User Momentum Preservation
+1. **Excited users complete everything now** - No forced delays
+2. **Value before effort** - Always explain benefit before asking for work
+3. **Day one interaction** - User meets and talks with their Lightwalker immediately
+4. **No session barriers** - If motivated, users can complete full discovery process
+
+---
+
+## Executive Summary
+
+Lightwalker is an AI personality companion system where users create ideal versions of themselves to copy behaviors from. Users interact with their personalized Lightwalker to learn new habits, perspectives, and responses through observational modeling rather than direct instruction.
+
+## Product Vision
+
+Create a revolutionary personal development platform that solves the 90/10 problem: 90% of users don't know what their ideal self looks like. Through guided discovery and daily modeling interactions, users develop new patterns for both concrete behaviors (exercise, nutrition) and abstract transformations (judgment → gratitude, anxiety → confidence).
+
+## Current Status
+
+**Sprint 1 Completed** (1 hour implementation time):
+- Smart categorization system (Situational vs General templates)
+- Database schema with category and monthlyPrice fields
+- Tabbed UI interface
+- 4 situational templates (Divorce Navigator, Relationship Rescue, Conflict Resolution, AI Job Survival)
+- Template creation functionality with demo user integration
+
+## Technical Architecture
+
+```
+Frontend: Next.js 14 with TypeScript
+Database: SQLite with Prisma ORM
+Styling: Tailwind CSS
+Authentication: Demo user system (expandable to WordPress integration)
+AI Integration: Claude/OpenAI for character creation and interactions
+```
+
+## MVP Feature Development
+
+### Phase 1: Enhanced Character Creation (1 hour)
+**Dynamic Discovery Triage System** to solve the 90/10 problem:
+
+1. **3-Question Assessment** routes users to optimal pathway:
+   - Role Model Method (20-30% of users)
+   - Problem-First Method (40-50% of users) 
+   - Day-in-Life Visioning (30-40% of users)
+   - Values-First Discovery (15-25% of users)
+
+2. **Enhanced "Create Your Own"** with guided discovery rather than single-question form
+
+### Phase 2: Dynamic Discovery Triage System (2 hours)
+**Core Character Creation Enhancement** - solving the 90/10 problem:
+
+#### 3-Question Assessment Router
+- **Quick diagnostic** to route users to optimal discovery pathway
+- **Smart routing algorithm** based on psychological type indicators
+- **Fallback options** for users who struggle with primary method
+
+#### Discovery Pathway Implementation
+- **Role Model Method** (20-30% of users): "Who inspires you?" → Extract traits
+- **Problem-First Method** (40-50% of users): Transform struggles into solution-focused character
+- **Day-in-Life Visioning** (30-40% of users): Extract character from ideal daily routine  
+- **Values-First Discovery** (15-25% of users): Build character around core principles
+
+#### Enhanced Character Creation Flow
+- **Multi-session process** (3-6 sessions over user-preferred timeframe)
+- **AI-guided discovery** with intelligent questioning and redirection
+- **Character validation interface** for user review and refinement
+- **Starter template integration** for users who need inspiration
+
+#### User Feedback Integration During Creation
+- **Real-time feedback collection** on discovery process effectiveness
+- **Session rating system** to optimize pathway recommendations  
+- **User comments system** for ongoing discovery refinement
+- **Progress saving** with ability to return and modify answers
+- **A/B testing framework** for discovery method optimization
+
+### Phase 3: Post-Creation Interaction System (1 hour)
+**Basic Daily Modeling System** for both concrete and abstract transformations:
+
+#### For Concrete Behaviors (Exercise, Nutrition):
+- **Morning Modeling**: "I start my day with 20 minutes of movement because it sets my energy for everything else"
+- **Habit Context**: "When I feel like skipping the gym, I remember that I committed to being someone who honors their body"
+- **Progress Sharing**: "I track my workouts not to judge myself, but to celebrate consistency"
+
+#### For Abstract Transformations (Judgment → Gratitude):
+- **Situational Modeling**: "When someone frustrates me, I pause and remind myself that everyone is fighting battles I can't see"
+- **Thought Pattern Demonstration**: "When I catch myself being judgmental, I ask what this person might be struggling with today"
+- **Evening Reflection**: "I end each day by acknowledging one moment where I successfully chose gratitude over judgment"
+
+#### Basic Interaction Features
+- **Simple scheduling system** for daily check-ins
+- **User-initiated conversations** with character consistency
+- **Basic preference controls** (frequency, timing)
+
+### Phase 4: User Flow Documentation & Testing (1 hour)
+**Comprehensive Flow Documentation** and validation:
+- Every user interaction mapped and validated
+- Screen-by-screen walkthroughs created
+- Error states and edge cases documented
+- Navigation paths clearly defined
+- User testing of discovery pathways with feedback integration
+
+## Database Schema Extensions
+
+```sql
+-- Current LightwalkerTemplate model enhanced with:
+model LightwalkerTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  category    String   // "situational" or "general"
+  monthlyPrice Int     // in cents
+  isActive    Boolean  @default(true)
+  personality Json     // Comprehensive personality data
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([category, isActive])
+}
+```
+
+## Success Metrics
+
+### Character Creation Success
+- 80%+ of users successfully create a Lightwalker they're excited to interact with
+- 90%+ complete the discovery process in their chosen pathway
+- Users can articulate their Lightwalker's key characteristics
+
+### Daily Interaction Success  
+- 90%+ of successful creators begin daily copying behaviors within first week
+- Users report "aha moments" from observational learning
+- 70%+ report their Lightwalker "feels authentic and inspiring" after 30 days
+
+### Abstract Transformation Success
+- Users successfully apply Lightwalker modeling to mental/emotional patterns
+- Measurable progress in transforming judgment habits to gratitude habits
+- Users develop automatic new responses to trigger situations
+
+## Implementation Timeline (Realistic: 1 week = 1 hour)
+
+**Sprint 1 (Completed)**:
+- Smart categorization system with situational vs general templates
+- Database schema with category and pricing fields
+- 4 new situational templates
+- Template creation functionality
+
+**Sprint 2 - Core Discovery System**:
+- **Phase 2**: Dynamic Discovery Triage System - 2 hours
+- **Phase 3**: Post-Creation Interaction System - 1 hour
+- **Phase 4**: User Flow Documentation & Testing - 1 hour
+- **Sprint 2 Total**: 4 hours
+
+**Sprint 3 - Enhanced Experience**:
+- **Phase 5**: Always-Alive Lightwalker System (Gamified) - 2 hours
+  - User-controlled interaction preferences
+  - Living companion states and activities
+  - Gamification and viral sharing mechanics
+  - Complete user customization controls
+
+**Total Product Development**: 6 hours (plus Sprint 1 completed)
+
+## What's NOT in MVP
+
+- ❌ Multiple Lightwalker personalities per user
+- ❌ Social sharing or community features
+- ❌ Advanced AI conversation capabilities
+- ❌ Payment processing integration
+- ❌ Mobile app (web-only initially)
+- ❌ Detailed analytics dashboard
+
+## Risk Mitigation
+
+### User Experience Risks
+- **Discovery Failure**: Multiple pathway options with fallback templates
+- **Abstract Confusion**: Clear examples and progressive complexity
+- **Abandonment**: Engaging onboarding with immediate value
+
+### Technical Risks
+- **Database Constraints**: Proper foreign key relationships with demo user
+- **Server Dependencies**: Complete standalone configuration documented
+- **Development Environment**: Reproducible setup process
+
+## Key Differentiators
+
+1. **Modeling vs. Instruction**: Users copy what they observe rather than follow directions
+2. **Personality Companions**: Not generic advice but personalized ideal-self interaction
+3. **Abstract Transformation**: Handles mental/emotional pattern changes, not just habits
+4. **Discovery-Driven**: Solves the "I don't know what I want" problem with guided pathways
+5. **Crisis-Specific**: Situational Lightwalkers for urgent life challenges ($40-99/month premium)
+
+---
+
+## Document Version
+- Version: 1.0
+- Last Updated: 2025-01-25
+- Status: Active Development
+- Next Review: After Phase 1 completion

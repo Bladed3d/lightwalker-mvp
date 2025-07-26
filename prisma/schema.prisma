@@ -1,0 +1,277 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Extended Sprint 1 schema with Lightwalker models
+model User {
+  id                String   @id @default(cuid())
+  wordpressUserId   Int      @unique @map("wordpress_user_id")
+  email             String   @unique
+  name              String?
+  preferences       String?  @default("{}")
+  timezone          String   @default("UTC")
+  status            String   @default("active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  lastActive        DateTime @updatedAt @map("last_active")
+
+  conversations     Conversation[]
+  userStats         UserStats?
+  costTracking      CostTracking[]
+  userSessions      UserSession[]
+  userLightwalkers  UserLightwalker[]
+  copyingActivities CopyingActivity[]
+  progressMetrics   ProgressMetric[]
+  notificationSchedules NotificationSchedule[]
+
+  @@map("users")
+}
+
+// Sprint 1 models remain unchanged
+model Conversation {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  title             String?
+  startedAt         DateTime @default(now()) @map("started_at")
+  endedAt           DateTime? @map("ended_at")
+  messageCount      Int      @default(0) @map("message_count")
+  totalTokensUsed   Int      @default(0) @map("total_tokens_used")
+  totalCost         Float    @default(0) @map("total_cost")
+  contextSummary    String?  @map("context_summary")
+  lastMessageAt     DateTime @updatedAt @map("last_message_at")
+
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages          Message[]
+
+  @@map("conversations")
+  @@index([userId, lastMessageAt])
+  @@index([userId, startedAt])
+}
+
+model Message {
+  id                String   @id @default(cuid())
+  conversationId    String   @map("conversation_id")
+  role              String   // 'user', 'assistant', 'system'
+  content           String
+  modelUsed         String?  @map("model_used")
+  tokensUsed        Int?     @map("tokens_used")
+  cost              Float?
+  complexityScore   Int?     @map("complexity_score")
+  processingTime    Int?     @map("processing_time") // milliseconds
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  conversation      Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+  @@index([conversationId, createdAt])
+  @@index([role, createdAt])
+}
+
+model UserStats {
+  userId                String   @id @map("user_id")
+  totalMessages         Int      @default(0) @map("total_messages")
+  totalConversations    Int      @default(0) @map("total_conversations")
+  messagesThisWeek      Int      @default(0) @map("messages_this_week")
+  messagesThisMonth     Int      @default(0) @map("messages_this_month")
+  totalCost             Float    @default(0) @map("total_cost")
+  averageComplexity     Float?   @map("average_complexity")
+  favoriteTimeOfDay     String?  @map("favorite_time_of_day")
+  lastMessageDate       DateTime? @map("last_message_date")
+  dailyMessageCount     Int      @default(0) @map("daily_message_count")
+  dailyResetDate        DateTime @default(now()) @map("daily_reset_date")
+  feedbackProvided      Boolean  @default(false) @map("feedback_provided")
+  
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_stats")
+  @@index([dailyResetDate])
+  @@index([lastMessageDate])
+}
+
+model CostTracking {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  messageId         String?  @map("message_id")
+  modelUsed         String   @map("model_used")
+  tokensUsed        Int      @map("tokens_used")
+  cost              Float
+  requestType       String   @map("request_type") // 'chat', 'completion', 'embedding'
+  processingTime    Int?     @map("processing_time") // milliseconds
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("cost_tracking")
+  @@index([userId, createdAt])
+  @@index([modelUsed, createdAt])
+  @@index([createdAt])
+}
+
+model ModelPricing {
+  id                String   @id @default(cuid())
+  modelName         String   @unique @map("model_name")
+  provider          String
+  inputPricePer1k   Float    @map("input_price_per_1k")
+  outputPricePer1k  Float    @map("output_price_per_1k")
+  tier              String   // 'fast', 'complex', 'cheap'
+  contextWindow     Int      @map("context_window")
+  isActive          Boolean  @default(true) @map("is_active")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("model_pricing")
+  @@index([tier, isActive])
+  @@index([provider])
+}
+
+model BetaInvite {
+  id                String   @id @default(cuid())
+  code              String   @unique
+  email             String?
+  usedBy            String?  @map("used_by")
+  usedAt            DateTime? @map("used_at")
+  expiresAt         DateTime @map("expires_at")
+  maxUses           Int      @default(1) @map("max_uses")
+  currentUses       Int      @default(0) @map("current_uses")
+  createdBy         String   @map("created_by")
+  notes             String?
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  @@map("beta_invites")
+  @@index([code])
+  @@index([expiresAt])
+}
+
+model UserSession {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  sessionToken      String   @unique @map("session_token")
+  ipAddress         String?  @map("ip_address")
+  userAgent         String?  @map("user_agent")
+  deviceFingerprint String?  @map("device_fingerprint")
+  isActive          Boolean  @default(true) @map("is_active")
+  lastActivity      DateTime @updatedAt @map("last_activity")
+  expiresAt         DateTime @map("expires_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+  @@index([userId, isActive])
+  @@index([sessionToken])
+  @@index([expiresAt])
+}
+
+// NEW LIGHTWALKER MODELS
+
+model LightwalkerTemplate {
+  id                String   @id @default(cuid())
+  name              String   @unique
+  displayName       String   @map("display_name")
+  tagline           String?
+  description       String
+  category          String   @default("general") // "general" or "situational"
+  monthlyPrice      Float    @default(29.00) @map("monthly_price")
+  personalityPrompt String   @map("personality_prompt")
+  communicationStyle String  @map("communication_style") // JSON string
+  coreTraits        String   @map("core_traits") // JSON array string
+  dailyRoutines     String   @map("daily_routines") // JSON string
+  challengeResponses String  @map("challenge_responses") // JSON string
+  sampleActivities  String   @map("sample_activities") // JSON array string
+  icon              String   @default("✨")
+  colorScheme       String   @map("color_scheme") // JSON string
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  userLightwalkers  UserLightwalker[]
+
+  @@map("lightwalker_templates")
+  @@index([category, isActive])
+}
+
+model UserLightwalker {
+  id                    String   @id @default(cuid())
+  userId                String   @map("user_id")
+  templateId            String   @map("template_id")
+  customName            String?  @map("custom_name")
+  customizations        String?  // JSON string
+  problemFocus          String?  @map("problem_focus")
+  creationCompletedAt   DateTime? @map("creation_completed_at")
+  lastInteractionAt     DateTime? @map("last_interaction_at")
+  isActive              Boolean  @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template              LightwalkerTemplate @relation(fields: [templateId], references: [id])
+  copyingActivities     CopyingActivity[]
+  notificationSchedules NotificationSchedule[]
+
+  @@map("user_lightwalkers")
+  @@index([userId, isActive])
+  @@unique([userId, isActive], name: "unique_active_lightwalker")
+}
+
+model CopyingActivity {
+  id                  String   @id @default(cuid())
+  userId              String   @map("user_id")
+  userLightwalkerId   String   @map("user_lightwalker_id")
+  activityDescription String   @map("activity_description")
+  activityType        String?  @map("activity_type")
+  templateSource      String?  @map("template_source")
+  difficultyRating    Int?     @map("difficulty_rating")
+  satisfactionRating  Int?     @map("satisfaction_rating")
+  dateCopied          DateTime @default(now()) @map("date_copied")
+  timeLogged          DateTime @default(now()) @map("time_logged")
+  notes               String?
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userLightwalker     UserLightwalker @relation(fields: [userLightwalkerId], references: [id])
+
+  @@map("copying_activities")
+  @@index([userId, dateCopied])
+  @@index([userLightwalkerId, dateCopied])
+}
+
+model ProgressMetric {
+  id                  String   @id @default(cuid())
+  userId              String   @map("user_id")
+  date                DateTime @unique
+  dailyActivityCount  Int      @default(0) @map("daily_activity_count")
+  consistencyScore    Float    @default(0) @map("consistency_score")
+  weeklyAverage       Float    @default(0) @map("weekly_average")
+  streakDays          Int      @default(0) @map("streak_days")
+  activityDiversity   Int      @default(0) @map("activity_diversity")
+  calculatedAt        DateTime @default(now()) @map("calculated_at")
+
+  user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("progress_metrics")
+  @@index([userId, date])
+  @@unique([userId, date])
+}
+
+model NotificationSchedule {
+  id                  String   @id @default(cuid())
+  userId              String   @map("user_id")
+  userLightwalkerId   String   @map("user_lightwalker_id")
+  notificationType    String   @map("notification_type")
+  scheduledTime       String   @map("scheduled_time") // TIME as string "HH:MM"
+  timezone            String   @default("UTC")
+  messageTemplate     String?  @map("message_template")
+  isActive            Boolean  @default(true) @map("is_active")
+  lastSentAt          DateTime? @map("last_sent_at")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userLightwalker     UserLightwalker @relation(fields: [userLightwalkerId], references: [id])
+
+  @@map("notification_schedules")
+  @@index([scheduledTime, isActive])
+  @@index([userId, isActive])
+}
