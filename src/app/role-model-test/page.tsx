@@ -51,9 +51,7 @@ export default function RoleModelTestPage() {
   }, [selectedRoleModel])
 
   const getInitialGreeting = () => {
-    if (!selectedRoleModel) return ''
-    
-    return `Hello! I'm ${selectedRoleModel.commonName}. I'm here to share how I approach challenges and decisions, drawing from my experience in ${selectedRoleModel.primaryDomain.toLowerCase()}. What situation would you like my perspective on?`
+    return `Hello! I'm your Lightwalker™ - your ideal future self. I've integrated Steve Jobs' strategic focus and decision-making methods that you've selected. I can help you apply his proven approaches to your current challenges. What situation would you like me to help you navigate using these methods?`
   }
 
   const addRoleModelMessage = (content: string) => {
@@ -84,18 +82,18 @@ export default function RoleModelTestPage() {
   const generateTestResponse = (question: string) => {
     // Simple test responses based on Steve Jobs' profile
     if (question.toLowerCase().includes('decision') || question.toLowerCase().includes('choose')) {
-      return `When facing decisions, I start with my annual retreat process: "What are the 10 things we should be doing next?" Then I ruthlessly eliminate 7 items to focus on only 3 priorities. Deciding what not to do is as important as deciding what to do. I ask myself: What would create the best user experience? How can this be simplified? Does this advance our core mission?`
+      return `I use Steve Jobs' Strategic Focus method that you selected for your Lightwalker. When facing decisions, I apply his annual retreat process: "What are the 10 things we should be doing next?" Then I ruthlessly eliminate 7 items to focus on only 3 priorities. Steve believed that deciding what NOT to do is as important as deciding what to do. I ask myself his three key questions: Does this delight users? Can we control the entire experience? How can this be simpler? This method helps me cut through overwhelm and focus on what truly matters.`
     }
     
     if (question.toLowerCase().includes('product') || question.toLowerCase().includes('design')) {
-      return `My approach to product development centers on user experience above all else. I believe that design is not just what it looks like - design is how it works. I obsess over details others miss, constantly asking: How can we make this simpler and more intuitive? I prefer rapid prototyping and iterative perfection, staying hands-on in every detail.`
+      return `I apply Steve Jobs' Attention to Detail method that you chose. I approach this by obsessing over details others miss, asking "How could this be simpler?" at every step. Steve taught that design is not just what it looks like - design is how it works. I use his rapid prototyping approach: test ideas quickly rather than endless planning, then iterate until it feels magical. The goal is making solutions so intuitive that people think "Of course it works this way."`
     }
     
     if (question.toLowerCase().includes('team') || question.toLowerCase().includes('people')) {
-      return `I lead through vision-sharing and demanding excellence. I create a reality distortion field by inspiring people to achieve beyond their perceived limits. My approach is direct and passionate - I give immediate feedback and challenge people to grow. I believe in having high expectations while developing people's potential.`
+      return `I use Steve Jobs' Vision-Driven Leadership approach that you selected, but I've adapted it to be more compassionate. I share a clear vision and maintain high standards while focusing on what's best for everyone involved. Steve created what people called a "reality distortion field" by inspiring teams to achieve beyond their perceived limits. I apply this by giving direct but supportive feedback and believing in people's potential.`
     }
     
-    return `In my experience, when facing "${question}", I approach this by first taking time for strategic thinking - usually during my morning reflection or walking meetings. I remind myself that simplicity is the ultimate sophistication, and I focus on what would create the most elegant solution. As I always say: "Stay hungry, stay foolish" - continuous learning and calculated risk-taking are essential.`
+    return `I approach "${question}" using Steve Jobs' strategic thinking methods that you chose for your Lightwalker. I start with reflection and ask myself: How can this be simpler? What would create the most elegant solution? I might take a walking meeting with myself to stimulate creative thinking. Steve taught that perfection is achieved not when there's nothing more to add, but when there's nothing left to take away. Stay hungry, stay foolish.`
   }
 
   const handleSendMessage = async () => {
@@ -122,11 +120,11 @@ export default function RoleModelTestPage() {
   }
 
   const suggestedQuestions = [
-    "How do you make tough decisions?",
-    "What's your approach to product design?",
-    "How do you lead a team?",
-    "How do you handle setbacks?",
-    "What drives your innovation process?"
+    "How should I approach this tough decision using Steve's methods?",
+    "Can you help me apply Steve's design thinking to my project?",
+    "How can I lead my team using Steve's approach but more compassionately?",
+    "What would Steve's stress management techniques look like in my situation?",
+    "How can I apply Steve's innovation mindset to my creative challenges?"
   ]
 
   return (
@@ -135,14 +133,14 @@ export default function RoleModelTestPage() {
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6">
         <div className="flex items-center">
           <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
-            <UserIcon className="w-6 h-6" />
+            <SparklesIcon className="w-6 h-6" />
           </div>
           <div>
             <h1 className="text-xl font-bold">
-              {selectedRoleModel ? `Consulting with ${selectedRoleModel.commonName}` : 'Role Model Consultation'}
+              Your Lightwalker™ - Wisdom Synthesis Test
             </h1>
             <p className="text-purple-100">
-              {selectedRoleModel ? selectedRoleModel.primaryDomain : 'Choose a role model to consult with'}
+              Testing how your future self applies Steve Jobs' methods that you've selected
             </p>
           </div>
         </div>
@@ -185,9 +183,9 @@ export default function RoleModelTestPage() {
         )}
 
         {/* Suggested questions */}
-        {messages.length <= 1 && !isTyping && selectedRoleModel && (
+        {messages.length <= 1 && !isTyping && (
           <div className="bg-purple-50 p-4 rounded-lg">
-            <p className="text-purple-800 text-sm font-medium mb-3">Ask {selectedRoleModel.commonName}:</p>
+            <p className="text-purple-800 text-sm font-medium mb-3">Ask your Lightwalker™ about applying Steve Jobs' methods:</p>
             <div className="space-y-2">
               {suggestedQuestions.map((question, index) => (
                 <button
@@ -213,7 +211,7 @@ export default function RoleModelTestPage() {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={`Ask ${selectedRoleModel?.commonName || 'a role model'} for their perspective...`}
+            placeholder="Ask your Lightwalker™ how to apply Steve Jobs' methods..."
             className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             disabled={!selectedRoleModel}
           />
@@ -230,7 +228,7 @@ export default function RoleModelTestPage() {
           </button>
         </div>
         <p className="text-xs text-gray-500 mt-2 text-center">
-          Role models share their approach and perspective - they show you how they think, not what you should do
+          Your Lightwalker™ shows you how to apply proven methods from role models - they demonstrate wisdom, not give orders
         </p>
       </div>
     </div>
