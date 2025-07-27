@@ -10,6 +10,12 @@ interface RoleModel {
   imageUrl: string
   attributeCount: number
   selectedAttributes: number
+  // Additional rich data from database
+  fullName?: string
+  lifeSpan?: string
+  lifeMission?: string
+  coreValues?: string[]
+  famousQuotes?: string[]
 }
 
 interface Attribute {
@@ -45,41 +51,74 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
   }, [])
 
   const loadRoleModels = async () => {
-    // Mock data for now - replace with API call
-    setRoleModels([
-      {
-        id: 'steve-jobs',
-        commonName: 'Steve Jobs',
-        primaryDomain: 'Innovation & Strategic Focus',
-        imageUrl: '/role-models/steve-jobs.jpg',
-        attributeCount: 6,
-        selectedAttributes: 0
-      },
-      {
-        id: 'oprah-winfrey',
-        commonName: 'Oprah Winfrey',
-        primaryDomain: 'Empathy & Communication',
-        imageUrl: '/role-models/oprah.jpg',
-        attributeCount: 5,
-        selectedAttributes: 0
-      },
-      {
-        id: 'marcus-aurelius',
-        commonName: 'Marcus Aurelius',
-        primaryDomain: 'Wisdom & Self-Discipline',
-        imageUrl: '/role-models/marcus-aurelius.jpg',
-        attributeCount: 4,
-        selectedAttributes: 0
-      },
-      {
-        id: 'maya-angelou',
-        commonName: 'Maya Angelou',
-        primaryDomain: 'Resilience & Grace',
-        imageUrl: '/role-models/maya-angelou.jpg',
-        attributeCount: 5,
-        selectedAttributes: 0
+    try {
+      // Fetch real data from database API
+      const response = await fetch('/api/role-models')
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
-    ])
+      
+      const { roleModels: dbRoleModels } = await response.json()
+      
+      // Transform database format to UI format
+      const formattedRoleModels = dbRoleModels.map((roleModel: any) => ({
+        id: roleModel.id,
+        commonName: roleModel.commonName,
+        primaryDomain: roleModel.primaryDomain,
+        imageUrl: `/role-models/${roleModel.id || roleModel.commonName.toLowerCase().replace(' ', '-')}.jpg`,
+        attributeCount: Array.isArray(roleModel.coreValues) ? roleModel.coreValues.length : 0,
+        selectedAttributes: 0,
+        // Additional rich data from database
+        fullName: roleModel.fullName,
+        lifeSpan: roleModel.lifeSpan,
+        lifeMission: roleModel.lifeMission,
+        coreValues: roleModel.coreValues || [],
+        famousQuotes: roleModel.famousQuotes || []
+      }))
+      
+      setRoleModels(formattedRoleModels)
+      console.log('✅ Loaded role models from database:', formattedRoleModels.length)
+      
+    } catch (error) {
+      console.error('Failed to load role models from database:', error)
+      
+      // Fallback to mock data if API fails
+      setRoleModels([
+        {
+          id: 'steve-jobs',
+          commonName: 'Steve Jobs',
+          primaryDomain: 'Innovation & Strategic Focus',
+          imageUrl: '/role-models/steve-jobs.jpg',
+          attributeCount: 6,
+          selectedAttributes: 0
+        },
+        {
+          id: 'oprah-winfrey',
+          commonName: 'Oprah Winfrey',
+          primaryDomain: 'Empathy & Communication',
+          imageUrl: '/role-models/oprah.jpg',
+          attributeCount: 5,
+          selectedAttributes: 0
+        },
+        {
+          id: 'marcus-aurelius',
+          commonName: 'Marcus Aurelius',
+          primaryDomain: 'Wisdom & Self-Discipline',
+          imageUrl: '/role-models/marcus-aurelius.jpg',
+          attributeCount: 4,
+          selectedAttributes: 0
+        },
+        {
+          id: 'maya-angelou',
+          commonName: 'Maya Angelou',
+          primaryDomain: 'Resilience & Grace',
+          imageUrl: '/role-models/maya-angelou.jpg',
+          attributeCount: 5,
+          selectedAttributes: 0
+        }
+      ])
+      console.log('⚠️ Using fallback mock data')
+    }
   }
 
   const loadAttributes = async () => {
@@ -245,14 +284,48 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
               {activePathway === 'role-model' && selectedRoleModelData && (
                 <div>
                   <h4 className="font-medium text-gray-900 mb-2">About {selectedRoleModelData.commonName}</h4>
-                  <p className="text-gray-600 text-sm mb-4">
-                    Learn about their approach to {selectedRoleModelData.primaryDomain.toLowerCase()}...
-                  </p>
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <p className="text-sm text-blue-800 italic">
-                      "When facing decisions, I start with my annual retreat process: 'What are the 10 things we should be doing next?' Then I ruthlessly eliminate 7 items to focus on only 3 priorities."
+                  
+                  {selectedRoleModelData.fullName && selectedRoleModelData.lifeSpan && (
+                    <p className="text-sm text-gray-500 mb-2">
+                      {selectedRoleModelData.fullName} ({selectedRoleModelData.lifeSpan})
                     </p>
-                  </div>
+                  )}
+                  
+                  {selectedRoleModelData.lifeMission && (
+                    <p className="text-gray-600 text-sm mb-4">
+                      <strong>Mission:</strong> {selectedRoleModelData.lifeMission}
+                    </p>
+                  )}
+                  
+                  {selectedRoleModelData.coreValues && selectedRoleModelData.coreValues.length > 0 && (
+                    <div className="mb-4">
+                      <h5 className="text-sm font-medium text-gray-900 mb-2">Core Values:</h5>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedRoleModelData.coreValues.slice(0, 3).map((value, index) => (
+                          <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                            {value}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selectedRoleModelData.famousQuotes && selectedRoleModelData.famousQuotes.length > 0 && (
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <p className="text-sm text-blue-800 italic">
+                        "{selectedRoleModelData.famousQuotes[0]}"
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Fallback for Steve Jobs if no database data */}
+                  {selectedRoleModelData.id === 'steve-jobs' && !selectedRoleModelData.famousQuotes && (
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <p className="text-sm text-blue-800 italic">
+                        "When facing decisions, I start with my annual retreat process: 'What are the 10 things we should be doing next?' Then I ruthlessly eliminate 7 items to focus on only 3 priorities."
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 
