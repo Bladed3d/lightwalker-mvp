@@ -54,6 +54,18 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen">
+      {/* Test Navigation */}
+      <div className="bg-yellow-100 border-b border-yellow-200 p-2">
+        <div className="max-w-4xl mx-auto">
+          <a 
+            href="/role-model-test" 
+            className="text-sm text-yellow-800 hover:text-yellow-900 underline"
+          >
+            🧪 Test Role Model Consultation (Steve Jobs)
+          </a>
+        </div>
+      </div>
+
       {/* Progress Indicator */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-6 py-4">

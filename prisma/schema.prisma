@@ -27,6 +27,7 @@ model User {
   copyingActivities CopyingActivity[]
   progressMetrics   ProgressMetric[]
   notificationSchedules NotificationSchedule[]
+  userRoleModelConsultations UserRoleModelConsultation[]
 
   @@map("users")
 }
@@ -210,6 +211,7 @@ model UserLightwalker {
   template              LightwalkerTemplate @relation(fields: [templateId], references: [id])
   copyingActivities     CopyingActivity[]
   notificationSchedules NotificationSchedule[]
+  lightwalkerRoleModels LightwalkerRoleModel[]
 
   @@map("user_lightwalkers")
   @@index([userId, isActive])
@@ -286,4 +288,141 @@ model WaitlistEntry {
   @@map("waitlist_entries")
   @@index([email, templateName])
   @@index([templateName])
+}
+
+// ROLE MODEL SYSTEM
+
+model RoleModel {
+  id                    String   @id @default(cuid())
+  fullName              String   @map("full_name")
+  commonName            String   @map("common_name")
+  lifeSpan              String   @map("life_span")
+  culturalContext       String   @map("cultural_context")
+  historicalPeriod      String   @map("historical_period")
+  primaryDomain         String   @map("primary_domain")
+  
+  // Core Identity
+  lifeMission           String   @map("life_mission")
+  coreValues            String   @map("core_values") // JSON array
+  valueHierarchy        String   @map("value_hierarchy") // JSON array
+  worldview             String
+  personalPhilosophy    String   @map("personal_philosophy")
+  
+  // Personality & Traits
+  dominantTraits        String   @map("dominant_traits") // JSON array
+  communicationStyle    String   @map("communication_style")
+  emotionalPatterns     String   @map("emotional_patterns")
+  socialInteractionStyle String @map("social_interaction_style")
+  learningApproach      String   @map("learning_approach")
+  
+  // Decision Making
+  decisionProcess       String   @map("decision_process") // JSON object
+  informationGathering  String   @map("information_gathering")
+  evaluationCriteria    String   @map("evaluation_criteria")
+  riskAssessment        String   @map("risk_assessment")
+  implementationStyle   String   @map("implementation_style")
+  
+  // Daily Habits & Routines
+  morningPractices      String   @map("morning_practices")
+  workPatterns          String   @map("work_patterns")
+  physicalPractices     String   @map("physical_practices")
+  mentalSpiritualPractices String @map("mental_spiritual_practices")
+  eveningRoutines       String   @map("evening_routines")
+  weeklyMonthlyRhythms  String   @map("weekly_monthly_rhythms")
+  
+  // Challenge Response
+  stressManagement      String   @map("stress_management")
+  conflictResolution    String   @map("conflict_resolution")
+  failureResponse       String   @map("failure_response")
+  crisisLeadership      String   @map("crisis_leadership")
+  adaptationStrategies  String   @map("adaptation_strategies")
+  
+  // Wisdom & Teachings
+  coreTeachings         String   @map("core_teachings")
+  famousQuotes          String   @map("famous_quotes") // JSON array
+  teachingMethods       String   @map("teaching_methods")
+  keyPrinciples         String   @map("key_principles")
+  practicalApplications String   @map("practical_applications")
+  
+  // Relationships
+  familyRelationships   String   @map("family_relationships")
+  friendshipPatterns    String   @map("friendship_patterns")
+  mentorshipStyle       String   @map("mentorship_style")
+  leadershipApproach    String   @map("leadership_approach")
+  conflictHandling      String   @map("conflict_handling")
+  
+  // Modern Integration
+  contemporaryRelevance String   @map("contemporary_relevance")
+  dailyLifeApplications String   @map("daily_life_applications")
+  decisionTemplates     String   @map("decision_templates") // JSON array
+  characterDevelopment  String   @map("character_development")
+  commonMisinterpretations String @map("common_misinterpretations")
+  
+  // Lightwalker Integration
+  personalitySynthesis  String   @map("personality_synthesis")
+  decisionConsultation  String   @map("decision_consultation")
+  situationalApplications String @map("situational_applications")
+  potentialConflicts    String   @map("potential_conflicts")
+  userImplementation    String   @map("user_implementation")
+  
+  // Source & Quality
+  primarySources        String   @map("primary_sources")
+  historicalSources     String   @map("historical_sources")
+  academicSources       String   @map("academic_sources")
+  culturalSources       String   @map("cultural_sources")
+  sourceQualityAssessment String @map("source_quality_assessment")
+  
+  // Authenticity
+  historicalAccuracy    String   @map("historical_accuracy")
+  quoteAuthentication   String   @map("quote_authentication")
+  culturalSensitivity   String   @map("cultural_sensitivity")
+  balancedPerspective   String   @map("balanced_perspective")
+  scholarlyConsensus    String   @map("scholarly_consensus")
+  
+  isActive              Boolean  @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  userRoleModelConsultations UserRoleModelConsultation[]
+  lightwalkerRoleModels      LightwalkerRoleModel[]
+
+  @@map("role_models")
+  @@index([commonName, isActive])
+  @@index([primaryDomain])
+}
+
+// User consultations with role models
+model UserRoleModelConsultation {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  roleModelId     String   @map("role_model_id")
+  question        String
+  context         String?  // Situation context
+  response        String   // Generated response from role model
+  responseRating  Int?     @map("response_rating") // 1-5 rating from user
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleModel       RoleModel @relation(fields: [roleModelId], references: [id])
+
+  @@map("user_role_model_consultations")
+  @@index([userId, createdAt])
+  @@index([roleModelId, createdAt])
+}
+
+// Many-to-many relation for Lightwalkers having multiple role model advisors
+model LightwalkerRoleModel {
+  id                    String   @id @default(cuid())
+  userLightwalkerId     String   @map("user_lightwalker_id")
+  roleModelId           String   @map("role_model_id")
+  influenceWeight       Float    @default(1.0) @map("influence_weight") // How much this role model influences the Lightwalker
+  addedAt               DateTime @default(now()) @map("added_at")
+
+  userLightwalker       UserLightwalker @relation(fields: [userLightwalkerId], references: [id], onDelete: Cascade)
+  roleModel             RoleModel @relation(fields: [roleModelId], references: [id])
+
+  @@map("lightwalker_role_models")
+  @@unique([userLightwalkerId, roleModelId])
+  @@index([userLightwalkerId])
 }
