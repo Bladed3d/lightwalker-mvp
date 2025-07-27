@@ -56,12 +56,18 @@ export default function HomePage() {
     <main className="min-h-screen">
       {/* Test Navigation */}
       <div className="bg-yellow-100 border-b border-yellow-200 p-2">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <a 
             href="/role-model-test" 
             className="text-sm text-yellow-800 hover:text-yellow-900 underline"
           >
             🧪 Test Role Model Consultation (Steve Jobs)
+          </a>
+          <a 
+            href="/discovery-dashboard" 
+            className="text-sm text-yellow-800 hover:text-yellow-900 underline font-medium"
+          >
+            🚀 NEW: Test Bidirectional Discovery Dashboard
           </a>
         </div>
       </div>

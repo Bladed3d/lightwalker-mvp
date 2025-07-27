@@ -36,4 +36,46 @@
   .lightwalker-progress-fill {
     @apply bg-blue-600 h-2 rounded-full transition-all duration-300;
   }
+  
+  /* Discovery Dashboard Pathway Highlighting */
+  .highlight-top {
+    @apply ring-2 ring-green-400 ring-opacity-60 rounded-lg;
+    animation: pulse-green 2s infinite;
+  }
+  
+  .highlight-right {
+    @apply ring-2 ring-green-400 ring-opacity-60 rounded-lg;
+    animation: pulse-green 2s infinite;
+  }
+  
+  .highlight-left {
+    @apply ring-2 ring-green-400 ring-opacity-60 rounded-lg;
+    animation: pulse-green 2s infinite;
+  }
+  
+  @keyframes pulse-green {
+    0%, 100% {
+      @apply ring-opacity-60;
+    }
+    50% {
+      @apply ring-opacity-30;
+    }
+  }
+  
+  /* Role Model Gallery Scrollbar */
+  .role-model-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .role-model-scroll::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
+  
+  .role-model-scroll::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+  
+  .role-model-scroll::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
 }
