@@ -77,31 +77,8 @@ export default function RoleModelTestPage() {
   }
 
   const consultRoleModel = async (question: string) => {
-    if (!selectedRoleModel) return
-
-    try {
-      const response = await fetch('/api/role-models/consult', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: 'demo-user-id', // Using demo user for testing
-          roleModelId: selectedRoleModel.id,
-          question: question,
-          context: 'Test consultation'
-        })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        return data.response
-      } else {
-        // Fallback response for testing
-        return generateTestResponse(question)
-      }
-    } catch (error) {
-      console.error('Error consulting role model:', error)
-      return generateTestResponse(question)
-    }
+    // For testing, just use the test responses directly
+    return generateTestResponse(question)
   }
 
   const generateTestResponse = (question: string) => {
