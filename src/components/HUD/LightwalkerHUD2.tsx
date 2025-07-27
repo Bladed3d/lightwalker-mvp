@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { User, Brain, Heart, Zap, Target, Trophy, Lock, Sparkles, Activity, Calendar, TrendingUp, Users } from 'lucide-react';
 
+interface Behavior {
+  id: number;
+  name: string;
+  icon: string;
+  streak: number;
+  lastCopied: string;
+  status: string;
+  category: string;
+}
+
 const LightwalkerDashboard = () => {
   const [isLightwalkerSpeaking, setIsLightwalkerSpeaking] = useState(false);
-  const [selectedBehavior, setSelectedBehavior] = useState(null);
+  const [selectedBehavior, setSelectedBehavior] = useState<Behavior | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [compassAngle, setCompassAngle] = useState(0);
   const [targetAngle, setTargetAngle] = useState(0);
