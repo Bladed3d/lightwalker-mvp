@@ -242,7 +242,7 @@ async function seedRoleModels() {
   } catch (error) {
     console.error('Seeding error:', error)
     return NextResponse.json({ 
-      error: `Seeding failed: ${error.message}` 
+      error: `Seeding failed: ${error instanceof Error ? error.message : 'Unknown error'}` 
     }, { status: 500 })
   }
 }
