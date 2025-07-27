@@ -1,12 +1,12 @@
-# Lightwalker MVP - Product Requirements Document
+# Lightwalker™ MVP - Product Requirements Document
 
 ## CORE PRINCIPLES: MODELING SYSTEM + IMMEDIATE VALUE
 
 ### **PRINCIPLE #1: MODELING SYSTEM, NOT INSTRUCTIONAL SYSTEM**
 
-**CRITICAL DIFFERENTIATOR**: Lightwalker is a "show don't tell" approach that makes it fundamentally different from coaching apps. It's a **modeling system** rather than an **instructional system**.
+**CRITICAL DIFFERENTIATOR**: Lightwalker™ is a "show don't tell" approach that makes it fundamentally different from coaching apps. It's a **modeling system** rather than an **instructional system**.
 
-#### The Lightwalker Never Tells Users What To Do
+#### The Lightwalker™ Never Tells Users What To Do
 - ✅ CORRECT: "I pause and think about what I can appreciate about this person's situation"
 - ✅ CORRECT: "When someone cuts me off in traffic, I take a deep breath and wonder what stress they might be under"
 - ❌ WRONG: "You should pause and think..." 
@@ -38,7 +38,7 @@ This is fundamental to the learning-through-copying model. Users observe and cop
 
 ## Executive Summary
 
-Lightwalker is an AI personality companion system where users create ideal versions of themselves to copy behaviors from. Users interact with their personalized Lightwalker to learn new habits, perspectives, and responses through observational modeling rather than direct instruction.
+Lightwalker™ is an AI personality companion system where users create ideal versions of themselves to copy behaviors from. Users interact with their personalized Lightwalker™ to learn new habits, perspectives, and responses through observational modeling rather than direct instruction.
 
 ## Product Vision
 
@@ -169,6 +169,36 @@ AI Integration: Claude/OpenAI for character creation and interactions
 - **Situational Modeling**: "When someone frustrates me, I use the Dalai Lama's compassion practice that you chose - I pause and remind myself that everyone is fighting battles I can't see"
 - **Thought Pattern Demonstration**: "When I catch myself being judgmental, I apply Marcus Aurelius' stoic reflection that you selected - I ask what this person might be struggling with today and how I can respond with wisdom rather than reaction"
 - **Evening Reflection**: "I end each day using Oprah's gratitude practice that you loved - acknowledging one moment where I successfully chose gratitude over judgment"
+
+#### Self-Talk Integration System (Immediate Implementation)
+**Core Identity Affirmation Framework:**
+The Lightwalker™ system includes comprehensive self-talk prompts that help users internalize their selected attributes and "step into" their ideal future self identity. Rather than generic affirmations, these are specifically tailored to the role model methods and attributes each user has chosen.
+
+**Attribute-Based Affirmation Categories:**
+- **Identity Anchoring**: "I am strategically focused like Steve Jobs, making decisions with clarity and purpose"
+- **Behavioral Integration**: "I am becoming the person who meditates daily because I am someone who prioritizes inner clarity"
+- **Present-Tense Ownership**: "I copy my Lightwalker™'s morning routine because I am someone who values personal growth"
+- **Performance Enhancement**: "I exceed my Lightwalker™'s exercise time because I am committed to my transformation"
+- **Resistance Override**: "I choose compassion over judgment because I am developing Maya Angelou's grace that I selected"
+
+**Daily Implementation Schedule:**
+- **Morning Activation**: Lightwalker™ shares their specific affirmations before key activities ("Before I start my focused work session, I remind myself: 'I am strategically focused like Steve Jobs, eliminating distractions to create something meaningful'")
+- **Transition Moments**: Self-talk prompts before copying challenging behaviors ("As I prepare for this difficult conversation, I tell myself: 'I communicate with Jesus's compassion and truth that I chose for my Lightwalker™'")
+- **Evening Integration**: Reflect on identity shifts through positive self-statements ("I review my day thinking: 'I showed Marcus Aurelius's stoic wisdom that I'm developing when I stayed calm during that stressful meeting'")
+- **Challenge Preparation**: Specific mantras for overcoming resistance to new habits ("When I don't feel like exercising, I remind myself: 'I have David Goggins's discipline that I selected - I do what needs to be done regardless of how I feel'")
+
+**Technical Integration:**
+- **Contextual Delivery**: AI-triggered self-talk prompts based on user's selected attributes and current activities
+- **Personalization Engine**: Customize affirmations based on user's specific Lightwalker™ configuration and role model choices
+- **Voice Integration**: Text-to-speech capability for morning affirmations and transition moments
+- **Resistance Pattern Recognition**: System learns when user struggles with certain behaviors and provides targeted self-talk support
+
+**Why Self-Talk Accelerates Transformation:**
+- **Identity-Based Change**: Helps users internalize "I am the type of person who..." rather than "I should do..."
+- **Cognitive Bridge**: Links abstract role model wisdom to personal identity and daily actions
+- **Resistance Reduction**: Positive self-talk overrides negative internal dialogue that prevents behavior copying
+- **Compound Effect**: Daily identity affirmations create psychological momentum for sustained change
+- **Authenticity Integration**: Connects role model methods to user's personal identity rather than external mimicry
 
 #### Advanced Interaction Features
 - **Role model method referencing** in every response with user's discovery context

@@ -48,9 +48,25 @@
 2. **Post-Creation Experience**: Daily behavior copying for both concrete (exercise) and abstract (judgment→gratitude) transformations
 3. **User Flow Documentation**: Every feature needs comprehensive flow mapping before implementation
 
+## CRITICAL BRANDING REQUIREMENT
+
+**ALWAYS USE LIGHTWALKER™ WITH TRADEMARK SYMBOL**
+
+Every reference to "Lightwalker" in the app MUST include the trademark symbol (™):
+- ✅ CORRECT: "Lightwalker™", "Your Lightwalker™", "Lightwalker™ Status"
+- ❌ WRONG: "Lightwalker", "Your Lightwalker", "Lightwalker Status"
+
+This applies to:
+- All UI text and headers
+- Placeholder text in inputs
+- Button labels
+- Error messages
+- Documentation
+- API responses
+
 ## CRITICAL INTERACTION RULE
 
-**NEVER TELL USERS WHAT TO DO - ONLY SHOW WHAT LIGHTWALKER DOES**
+**NEVER TELL USERS WHAT TO DO - ONLY SHOW WHAT LIGHTWALKER™ DOES**
 
 The Lightwalker MUST only speak in first person about their own actions/thoughts:
 - ✅ CORRECT: "I pause and think about what I can appreciate about this person's situation"

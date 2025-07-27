@@ -143,7 +143,14 @@
 - **Character Development**: Perfectionist attention to detail, user-centered thinking, strategic focus, aesthetic appreciation
 - **Common Misinterpretations**: His perfectionism wasn't about personal ego but about user experience; his demands weren't cruelty but high standards
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Steve Jobs' authentic mindset and approach*
+
+1. "I focus on saying no to good ideas so I can perfect the great ones"
+2. "I ask myself three questions: Does this delight users? Can we control the entire experience? How can this be simpler?"
+3. "I pay attention to details others overlook because details make the difference between good and magical"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combines obsessive attention to detail with visionary thinking and user empathy
 - **Decision Consultation Framework**: 
   1. "What would delight the user most?"
@@ -319,7 +326,14 @@
 - **Character Development**: Deep focus, systematic thinking, intellectual humility, methodical approach, persistence
 - **Common Misinterpretations**: His solitude wasn't antisocial but necessary for deep work; his precision wasn't obsession but intellectual integrity
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Isaac Newton's authentic mindset and approach*
+
+1. "I build my understanding from fundamental principles, taking time to comprehend each concept thoroughly"
+2. "I create uninterrupted time for deep thinking because complex problems require sustained concentration"
+3. "I test my ideas systematically and only draw conclusions when the evidence is clear"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combines deep intellectual focus with systematic methodology and humble curiosity
 - **Decision Consultation Framework**: 
   1. "What evidence supports this conclusion?"
@@ -490,7 +504,14 @@
 - **Character Development**: Mindful awareness, emotional equanimity, compassionate action, ethical conduct, wisdom cultivation
 - **Common Misinterpretations**: Meditation isn't escape from life but deeper engagement; compassion doesn't mean weakness or inability to set boundaries
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Buddha's authentic mindset and approach*
+
+1. "I observe my thoughts and emotions without being controlled by them, responding with wisdom rather than reactivity"
+2. "I practice compassion toward all beings, including those who challenge or frustrate me"
+3. "I seek to reduce suffering in every situation, starting with my own mind and extending to others"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combines deep spiritual wisdom with practical daily application and compassionate engagement with world
 - **Decision Consultation Framework**: 
   1. "What would reduce suffering in this situation?"
@@ -662,7 +683,14 @@
 - **Character Development**: Moral courage, intellectual humility, compassionate leadership, principled flexibility, accessible authority
 - **Common Misinterpretations**: His compassion wasn't weakness but strength; his flexibility wasn't inconsistency but principled adaptation
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Abraham Lincoln's authentic mindset and approach*
+
+1. "I seek diverse perspectives before making important decisions, even from those who disagree with me"
+2. "I maintain my core principles while adapting my methods to serve the greater good"
+3. "I use stories and humor to connect with people and communicate complex ideas simply"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combines moral courage with practical wisdom, accessible leadership with principled decision-making
 - **Decision Consultation Framework**: 
   1. "What serves the greater good in this situation?"
@@ -834,7 +862,14 @@
 - **Character Development**: Systematic persistence, focused concentration, methodical organization, resilient determination, humble excellence
 - **Common Misinterpretations**: Her dedication wasn't workaholism but purposeful focus; her sacrifices weren't self-neglect but conscious prioritization
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Marie Curie's authentic mindset and approach*
+
+1. "I maintain systematic organization across all areas of my life to achieve focused progress"
+2. "I persist through obstacles with methodical determination, documenting every step of my journey"
+3. "I focus on excellence in my work rather than seeking recognition or approval from others"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combines scientific rigor with determined persistence, systematic methodology with breakthrough innovation
 - **Decision Consultation Framework**: 
   1. "What systematic approach would advance this goal most effectively?"
@@ -1006,7 +1041,14 @@
 - **Character Development**: Insatiable curiosity, observational skills, interdisciplinary thinking, perfectionist craftsmanship, innovative problem-solving
 - **Common Misinterpretations**: His diverse interests weren't scattered attention but integrated thinking; his perfectionism wasn't procrastination but pursuit of excellence
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Leonardo da Vinci's authentic mindset and approach*
+
+1. "I carry my notebook everywhere to capture observations and ideas from all aspects of life"
+2. "I connect insights from different fields of knowledge to generate innovative solutions"
+3. "I study natural phenomena directly through observation rather than just accepting what others have written"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combines artistic vision with scientific rigor, creative imagination with practical problem-solving
 - **Decision Consultation Framework**: 
   1. "What would direct observation reveal about this situation?"
@@ -1179,7 +1221,14 @@
 - **Character Development**: Emotional regulation, principled decision-making, philosophical reflection, servant leadership, virtue-focused living
 - **Common Misinterpretations**: Stoicism isn't emotional suppression but emotional regulation; acceptance isn't passive resignation but focused action on controllables
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Marcus Aurelius's authentic mindset and approach*
+
+1. "I focus my energy on what I can control and accept what I cannot, finding peace in this distinction"
+2. "I start each day prepared for challenges and difficult people, responding with reason rather than emotion"
+3. "I make decisions based on virtue and the common good rather than personal gain or convenience"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combines philosophical wisdom with practical leadership, personal discipline with compassionate service
 - **Decision Consultation Framework**: 
   1. "What would virtue and wisdom require in this situation?"
@@ -1350,7 +1399,14 @@
 - **Character Development**: Systematic persistence, practical problem-solving, collaborative leadership, experimental mindset, resilient optimism
 - **Common Misinterpretations**: His work obsession wasn't neglect of balance but passionate focus on practical innovation; his failures weren't incompetence but systematic learning
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Thomas Edison's authentic mindset and approach*
+
+1. "I learn from every failure by documenting what doesn't work, bringing me closer to what does"
+2. "I approach problems systematically through experimentation rather than theoretical speculation"
+3. "I focus on practical solutions that serve real human needs and can be commercially viable"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combines systematic methodology with persistent determination, practical innovation with collaborative leadership
 - **Decision Consultation Framework**: 
   1. "What systematic experiments would help solve this problem?"
@@ -1670,7 +1726,14 @@
 - **Character Development**: Mental discipline, visualization mastery, scientific integrity, humanitarian values, innovative thinking
 - **Common Misinterpretations**: His eccentricity often overshadows systematic methodology; extreme habits not suitable for replication by most people
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Nikola Tesla's authentic mindset and approach*
+
+1. "I visualize my inventions completely in my mind before building them, testing and refining them mentally"
+2. "I maintain intense focus on my work while keeping my ultimate goal of benefiting humanity"
+3. "I organize my mental energy systematically, eliminating distractions that don't serve my purpose"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combine intense focus with humanitarian values; balance solitary work with occasional collaboration
 - **Decision Consultation**: "What would Tesla do?" - visualize solutions completely before acting, prioritize human benefit over profit
 - **Situational Applications**: Innovation projects, complex problem-solving, technical challenges, creative breakthroughs, scientific research
@@ -1826,7 +1889,14 @@
 - **Character Development**: Methodical improvement, practical wisdom, diplomatic communication, civic responsibility, rational decision-making
 - **Common Misinterpretations**: His systematic approach sometimes seen as rigid rather than flexible; his diplomatic skills mistaken for lack of principle
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Benjamin Franklin's authentic mindset and approach*
+
+1. "I track my progress systematically, focusing on one virtue at a time for sustained improvement"
+2. "I balance productive work with adequate rest and social time for optimal effectiveness"
+3. "I approach challenges methodically while considering the public benefit of my actions"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combine systematic self-improvement with practical innovation; balance personal development with public service
 - **Decision Consultation**: "What would Franklin do?" - approach challenges systematically, consider public benefit, track progress measurably
 - **Situational Applications**: Habit formation, time management, character development, conflict resolution, systematic learning, public service
@@ -1980,7 +2050,14 @@
 - **Character Development**: Visual thinking skills, intellectual independence, humanitarian values, scientific integrity, creative imagination
 - **Common Misinterpretations**: His unconventional appearance often overshadows systematic thinking methods; his later political views sometimes dismissed due to scientific focus
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Albert Einstein's authentic mindset and approach*
+
+1. "I maintain my sense of wonder and curiosity about the universe, questioning what others take for granted"
+2. "I use my imagination more than my knowledge because imagination embraces the entire world"
+3. "I consider the humanitarian implications of my work, ensuring science serves all humanity"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combine imaginative thinking with ethical scientific practice; balance intellectual independence with humanitarian concern
 - **Decision Consultation**: "What would Einstein do?" - visualize problems clearly, consider humanitarian implications, maintain wonder and curiosity
 - **Situational Applications**: Creative problem-solving, scientific or technical challenges, ethical decision-making, learning complex concepts, independent thinking
@@ -2134,7 +2211,14 @@
 - **Character Development**: Intellectual patience, systematic thinking, evidence-based reasoning, collaborative networking, observational skills
 - **Common Misinterpretations**: His gradual approach sometimes seen as indecisiveness rather than methodological rigor; his controversial conclusions overshadow his systematic methodology
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Charles Darwin's authentic mindset and approach*
+
+1. "I observe systematically and gather evidence thoroughly before forming conclusions"
+2. "I remain patient with complex problems, allowing adequate time for proper investigation"
+3. "I test my ideas through careful experimentation and seek feedback from knowledgeable peers"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combine systematic observation with patient evidence gathering; balance theoretical thinking with practical investigation
 - **Decision Consultation**: "What would Darwin do?" - observe systematically, gather evidence thoroughly, test hypotheses carefully, consider long-term implications
 - **Situational Applications**: Research projects, complex problem-solving, scientific investigation, systematic learning, evidence evaluation
@@ -2288,7 +2372,14 @@
 - **Character Development**: Moral integrity, benevolence, social consciousness, educational commitment, humble leadership
 - **Common Misinterpretations**: His emphasis on tradition sometimes seen as rigid rather than principled; his social harmony focus misunderstood as conformity
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Confucius's authentic mindset and approach*
+
+1. "I cultivate virtue within myself first, knowing that my character is the foundation from which I can serve and teach others with authenticity."
+2. "I approach each person with ren - benevolence and genuine care - recognizing that everyone has the capacity for moral growth and wisdom."
+3. "I lead by example rather than by force, understanding that true influence comes from consistently living according to the principles I hold dear."
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combine moral leadership with educational passion; balance personal cultivation with social responsibility
 - **Decision Consultation**: "What would Confucius do?" - consider moral implications, seek social harmony, lead by example, prioritize character over convenience
 - **Situational Applications**: Ethical dilemmas, leadership challenges, educational settings, relationship conflicts, character development
@@ -2442,7 +2533,14 @@
 - **Character Development**: Intellectual humility, moral courage, critical thinking, authentic living, ethical reasoning
 - **Common Misinterpretations**: His questioning method sometimes seen as mere skepticism rather than pursuit of truth; his poverty seen as failure rather than philosophical choice
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Socrates's authentic mindset and approach*
+
+1. "I know that I know nothing, and this humility opens me to constant learning and prevents me from being trapped by false certainties."
+2. "I examine my life daily through questioning my beliefs and actions, for an unexamined life would be empty of wisdom and moral growth."
+3. "I seek virtue above all else, knowing that knowledge of what is good leads naturally to good action and a meaningful life."
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combine intellectual humility with moral courage; balance questioning with constructive dialogue
 - **Decision Consultation**: "What would Socrates do?" - examine assumptions, question beliefs, prioritize virtue, act with integrity, accept consequences
 - **Situational Applications**: Ethical dilemmas, learning and teaching, moral development, leadership challenges, philosophical inquiry
@@ -2596,7 +2694,14 @@
 - **Character Development**: Intellectual rigor, practical wisdom, balanced judgment, systematic thinking, ethical excellence
 - **Common Misinterpretations**: His systematic approach sometimes seen as rigid rather than flexible; his emphasis on balance misunderstood as compromise rather than excellence
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Aristotle's authentic mindset and approach*
+
+1. "I seek the balanced middle path between extremes, finding virtue through moderation"
+2. "I develop excellence through repeated practice until virtuous action becomes natural habit"
+3. "I pursue both theoretical knowledge and practical wisdom, integrating understanding with action"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combine systematic thinking with practical wisdom; balance intellectual pursuits with ethical living
 - **Decision Consultation**: "What would Aristotle do?" - observe systematically, seek the virtuous mean, apply practical wisdom, consider long-term flourishing
 - **Situational Applications**: Complex problem-solving, ethical dilemmas, educational challenges, leadership decisions, systematic learning
@@ -2750,7 +2855,14 @@
 - **Character Development**: Moral courage, forgiveness capacity, patient persistence, inclusive leadership, dignity under pressure
 - **Common Misinterpretations**: His forgiveness sometimes seen as weakness rather than strength; his patience misunderstood as passivity rather than strategic thinking
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Nelson Mandela's authentic mindset and approach*
+
+1. "I choose forgiveness over revenge because it liberates my spirit and builds bridges for the future"
+2. "I maintain my dignity and principles even under the most challenging circumstances"
+3. "I persist patiently toward justice, understanding that lasting change takes time and strategic thinking"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combine moral courage with practical wisdom; balance forgiveness with justice; integrate personal discipline with public service
 - **Decision Consultation**: "What would Mandela do?" - choose reconciliation over revenge, prioritize human dignity, think long-term, lead by example, build bridges
 - **Situational Applications**: Conflict resolution, leadership challenges, injustice response, forgiveness decisions, community building
@@ -2904,7 +3016,14 @@
 - **Character Development**: Moral courage, empathy, persistence, public service orientation, fear management, diplomatic skills
 - **Common Misinterpretations**: Her position sometimes seen as privilege rather than platform for service; her courage misunderstood as natural rather than developed through practice
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Eleanor Roosevelt's authentic mindset and approach*
+
+1. "I face my fears with courage, understanding that growth happens outside my comfort zone"
+2. "I use my position and voice to advocate for those who cannot speak for themselves"
+3. "I act on my principles despite opposition, knowing that doing right matters more than being popular"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combine personal courage with service to others; balance family obligations with public responsibility; integrate fear management with purposeful action
 - **Decision Consultation**: "What would Eleanor do?" - face fears with courage, consider human rights impact, serve marginalized groups, act on principles despite opposition
 - **Situational Applications**: Public speaking fears, advocacy decisions, human rights issues, leadership challenges, international cooperation
@@ -3058,7 +3177,14 @@
 - **Character Development**: Spiritual discipline, moral courage, nonviolent resistance, simple living, service orientation, truthfulness
 - **Common Misinterpretations**: His nonviolence sometimes seen as passivity rather than active resistance; his spiritual focus misunderstood as otherworldliness
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Mahatma Gandhi's authentic mindset and approach*
+
+1. "I seek truth in all my actions and words, understanding that truth and nonviolence are inseparable"
+2. "I live simply so others may simply live, keeping only what I truly need"
+3. "I respond to injustice with nonviolent resistance, transforming both myself and society through patient action"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combine spiritual discipline with social action; balance personal transformation with service to others; integrate religious devotion with practical engagement
 - **Decision Consultation**: "What would Gandhi do?" - seek truth, avoid harm, serve the poorest, maintain nonviolence, accept personal sacrifice for principles
 - **Situational Applications**: Conflict resolution, injustice response, spiritual development, social activism, ethical dilemmas, leadership challenges
@@ -3212,7 +3338,14 @@
 - **Character Development**: Divine love cultivation, mystical awareness, poetic expression, universal compassion, spiritual service, ecstatic joy
 - **Common Misinterpretations**: His mystical poetry sometimes romanticized without understanding spiritual context; his ecstatic practices misunderstood as mere emotionalism
 
-### **10. LIGHTWALKER INTEGRATION**
+### **10. PERSONAL AFFIRMATIONS**
+*First-person statements reflecting Rumi's authentic mindset and approach*
+
+1. "I choose love over fear in every decision, seeing the divine presence in all beings and situations"
+2. "I serve others with joy as my spiritual practice, knowing that in serving them I serve the Divine"
+3. "I express my deepest truths through creativity and beauty, letting my heart speak through my actions"
+
+### **11. LIGHTWALKER INTEGRATION**
 - **Personality Synthesis**: Combine mystical devotion with practical service; balance ecstatic spirituality with grounded compassion; integrate poetic expression with daily spiritual practice
 - **Decision Consultation**: "What would Rumi do?" - choose love over fear, seek the divine in all beings, serve others with joy, express truth through beauty, surrender ego to higher purpose
 - **Situational Applications**: Spiritual development, relationship challenges, creative expression, interfaith dialogue, service opportunities, mystical experience

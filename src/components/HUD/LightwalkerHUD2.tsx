@@ -167,7 +167,7 @@ const LightwalkerDashboard = () => {
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-cyan-300">Lightwalker Command Center</h1>
+            <h1 className="text-3xl font-bold text-cyan-300">Lightwalker™ Command Center</h1>
             <p className="text-cyan-600 mt-1">Copying Activity Dashboard</p>
           </div>
           <div className="text-right">
@@ -181,7 +181,7 @@ const LightwalkerDashboard = () => {
           <div className="bg-gray-900/50 rounded-lg border border-cyan-800/30 p-4">
             <div className="h-[600px] flex flex-col">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-cyan-300">Lightwalker Chat</h2>
+                <h2 className="text-xl font-semibold text-cyan-300">Lightwalker™ Chat</h2>
                 <div className={`w-3 h-3 rounded-full ${isLightwalkerSpeaking ? 'bg-green-400 animate-pulse' : 'bg-gray-600'}`} />
               </div>
               
@@ -193,7 +193,7 @@ const LightwalkerDashboard = () => {
                       <Sparkles className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-cyan-300 font-medium">Lightwalker</p>
+                      <p className="text-cyan-300 font-medium">Lightwalker™</p>
                       <p className="text-cyan-100 mt-1">Good morning! I just finished my meditation session. Starting the day with clarity always helps me approach challenges with a calm mind. 🧘</p>
                     </div>
                   </div>
@@ -213,7 +213,7 @@ const LightwalkerDashboard = () => {
                       <Sparkles className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-cyan-300 font-medium">Lightwalker</p>
+                      <p className="text-cyan-300 font-medium">Lightwalker™</p>
                       <p className="text-cyan-100 mt-1">I understand that feeling! When I started, even 2 minutes felt long. Now I'm heading out for my morning run - movement helps channel that restless energy. 🏃</p>
                     </div>
                   </div>
@@ -224,7 +224,7 @@ const LightwalkerDashboard = () => {
               <div className="flex gap-2">
                 <input 
                   type="text" 
-                  placeholder="Ask your Lightwalker anything..."
+                  placeholder="Ask your Lightwalker™ anything..."
                   className="flex-1 bg-gray-800/50 border border-cyan-700/30 rounded-lg px-4 py-2 text-cyan-100 placeholder-cyan-700 focus:outline-none focus:border-cyan-500/50"
                 />
                 <button className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors">
@@ -236,7 +236,7 @@ const LightwalkerDashboard = () => {
 
           {/* Right Half - HUD Display */}
           <div className="flex flex-col items-center justify-center bg-gray-900/50 rounded-lg border border-cyan-800/30 p-6">
-            <h2 className="text-2xl font-semibold text-cyan-300 mb-6">Lightwalker Status</h2>
+            <h2 className="text-2xl font-semibold text-cyan-300 mb-6">Lightwalker™ Status</h2>
             
             {/* Circular HUD - Now prominently displayed */}
             <div className="relative w-64 h-64">
@@ -455,7 +455,7 @@ const LightwalkerDashboard = () => {
                 </div>
                 
                 <div className="pt-3 border-t border-gray-700">
-                  <p className="text-cyan-600 mb-2">Lightwalker's Approach:</p>
+                  <p className="text-cyan-600 mb-2">Lightwalker™'s Approach:</p>
                   <p className="text-gray-300 text-sm">
                     "I find that {selectedBehavior.name.toLowerCase()} helps me maintain balance and clarity throughout my day. 
                     It's become a natural part of who I am, not something I force myself to do."
