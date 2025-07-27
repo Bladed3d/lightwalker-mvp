@@ -109,7 +109,7 @@ const LightwalkerDashboard = () => {
     { day: "Sun", accuracy: 90 },
   ];
 
-  const getBehaviorStyle = (status) => {
+  const getBehaviorStyle = (status: string) => {
     switch(status) {
       case 'active': return 'bg-cyan-900/40 border-cyan-500/50 hover:bg-cyan-900/60';
       case 'inactive': return 'bg-gray-800/40 border-gray-600/50 hover:bg-gray-800/60';
