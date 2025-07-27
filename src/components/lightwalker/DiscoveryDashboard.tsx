@@ -122,8 +122,11 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
   }
 
   const loadAttributes = async () => {
-    // Mock data for now - replace with API call
-    setAttributes([
+    // For now, we'll generate attributes from the selected role model's core values
+    // TODO: Create proper attributes API endpoint later
+    
+    // Use fallback mock data if no role model selected
+    const fallbackAttributes = [
       {
         id: 'strategic-focus',
         name: 'Strategic Focus',
@@ -150,12 +153,59 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
           }
         ]
       }
-    ])
+    ]
+    
+    setAttributes(fallbackAttributes)
+    console.log('📝 Loaded attributes (using fallback data for now)')
   }
 
   const handleRoleModelSelect = (roleModelId: string) => {
     setSelectedRoleModel(roleModelId)
-    // Load attributes for this role model
+    loadAttributesForRoleModel(roleModelId)
+  }
+
+  const loadAttributesForRoleModel = (roleModelId: string) => {
+    const roleModel = roleModels.find(rm => rm.id === roleModelId)
+    
+    if (roleModel && roleModel.coreValues && roleModel.coreValues.length > 0) {
+      // Transform core values into selectable attributes
+      const attributesFromValues = roleModel.coreValues.map((value, index) => ({
+        id: `${roleModelId}-value-${index}`,
+        name: value,
+        category: 'Core Values',
+        description: `${roleModel.commonName}'s approach to ${value.toLowerCase()}`,
+        roleModelImplementations: [
+          {
+            roleModelId: roleModel.id,
+            method: `${roleModel.commonName}'s Method`,
+            description: `Embody ${value.toLowerCase()} in daily decisions and actions, following ${roleModel.commonName}'s example.`
+          }
+        ]
+      }))
+      
+      // Add some enhanced attributes based on Steve Jobs specifically
+      if (roleModelId === 'steve-jobs') {
+        attributesFromValues.push({
+          id: 'strategic-focus',
+          name: 'Strategic Focus',
+          category: 'Decision-Making',
+          description: 'The ability to identify what matters most and say no to everything else',
+          roleModelImplementations: [
+            {
+              roleModelId: 'steve-jobs',
+              method: 'Annual Retreat Process',
+              description: 'List 10 priorities, slash to 3. Deciding what NOT to do is as important as deciding what to do.'
+            }
+          ]
+        })
+      }
+      
+      setAttributes(attributesFromValues)
+      console.log(`✅ Generated ${attributesFromValues.length} attributes for ${roleModel.commonName}`)
+    } else {
+      // Fallback to default attributes
+      loadAttributes()
+    }
   }
 
   const handleAttributeToggle = (attributeId: string) => {
