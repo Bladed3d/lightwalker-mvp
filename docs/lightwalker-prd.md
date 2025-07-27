@@ -141,15 +141,24 @@ AI Integration: Claude/OpenAI for character creation and interactions
 - **Progress saving** with ability to return and modify answers
 - **A/B testing framework** for discovery method optimization
 
-### Phase 3: Enhanced Role Model-Sourced Interaction System (1 hour)
-**Advanced Daily Modeling System** leveraging specific role model methods for both concrete and abstract transformations:
+### Phase 3: Lightwalker Wisdom Synthesis System (1 hour)
+**MAJOR PIVOT**: Transform from role model impersonation to Lightwalker wisdom synthesis for authentic, respectful interaction:
 
-#### Role Model-Attributed Responses
+#### Lightwalker as Wisdom Synthesizer (Not Impersonator)
+**Critical Design Change**: Users never talk "to" dead role models - they consult with their Lightwalker™ ABOUT applying role model methods
+
 **Example Lightwalker Profile**: "Focused Innovator" with attributes from Steve Jobs + Jesus + Patanjali
 
 **User Question**: "How should I prioritize my overwhelming project list?"
 
-**Enhanced Response**: "I use Steve Jobs' annual retreat method that you chose when we worked on your focus issues. I start by listing everything, then ruthlessly eliminate until only the most essential remain. Steve would ask: 'What are the 10 things we should be doing next?' Then slash 7 items to focus on 3. For each remaining item, I ask: Does this delight users? Can we control the entire experience? How can this be simpler? I combine this with the compassionate communication you chose from Jesus - I'm firm about priorities but gentle with myself about the process."
+**Lightwalker Response**: "I use Steve Jobs' Strategic Focus method that you selected for your Lightwalker. When facing decisions, I apply his annual retreat process: 'What are the 10 things we should be doing next?' Then I ruthlessly eliminate 7 items to focus on only 3 priorities. Steve believed that deciding what NOT to do is as important as deciding what to do. I ask myself his three key questions: Does this delight users? Can we control the entire experience? How can this be simpler? I combine this with the compassionate communication approach you chose from Jesus - I'm firm about priorities but gentle with myself about the process."
+
+#### Why This Approach Works Better
+- **Authentic**: No pretending deceased people are speaking
+- **Respectful**: Honors role models without impersonation
+- **Practical**: Focuses on applying specific methods to user's actual situation
+- **Scalable**: Can reference multiple role models in single response
+- **Personal**: User's ideal future self synthesizes wisdom for their unique context
 
 #### For Concrete Behaviors (Exercise, Nutrition):
 - **Morning Modeling**: "I start my day with 20 minutes of movement using David Goggins' approach that you selected - I remind myself that discipline is doing what needs to be done even when I don't feel like it"
@@ -402,17 +411,42 @@ model UserLightwalkerConsultation {
 ## Key Differentiators
 
 1. **Modeling vs. Instruction**: Users copy what they observe rather than follow directions
-2. **Personality Companions**: Not generic advice but personalized ideal-self interaction
-3. **Abstract Transformation**: Handles mental/emotional pattern changes, not just habits
-4. **Discovery-Driven**: Solves the "I don't know what I want" problem with guided pathways
-5. **Historical Wisdom Integration**: Deep role model research provides ongoing practical tools and methods
-6. **Bidirectional Attribute System**: Users can discover via people OR attributes, all leading to same rich outcome
-7. **Crisis-Specific**: Situational Lightwalkers for urgent life challenges ($40-99/month premium)
+2. **Wisdom Synthesis vs. Impersonation**: Lightwalker references role model methods authentically, never pretends to be deceased people
+3. **Personality Companions**: Not generic advice but personalized ideal-self interaction
+4. **Abstract Transformation**: Handles mental/emotional pattern changes, not just habits
+5. **Discovery-Driven**: Solves the "I don't know what I want" problem with guided pathways
+6. **Historical Wisdom Integration**: Deep role model research provides ongoing practical tools and methods
+7. **Bidirectional Attribute System**: Users can discover via people OR attributes, all leading to same rich outcome
+8. **Respectful Role Model Usage**: Honors historical figures without inappropriate impersonation
+9. **Crisis-Specific**: Situational Lightwalkers for urgent life challenges ($40-99/month premium)
+
+---
+
+## Major Architectural Decisions
+
+### Decision: Lightwalker Wisdom Synthesis vs. Role Model Impersonation
+**Date**: 2025-07-27
+**Decision**: Pivot from having users "talk to Steve Jobs" to having users consult with their Lightwalker ABOUT applying Steve Jobs' methods
+
+**Rationale**:
+- **Authenticity**: Pretending deceased people are speaking feels inauthentic and potentially offensive
+- **User Experience**: Users won't believe they're actually talking to Steve Jobs since he's dead
+- **Respectful**: Honors role models' wisdom without inappropriate impersonation
+- **Scalable**: Lightwalker can reference multiple role models in single response
+- **Personal**: Creates genuine connection with user's ideal future self
+
+**Impact**:
+- **UI Changes**: Headers changed from "Consulting with Steve Jobs" to "Your Lightwalker™ - Wisdom Synthesis"
+- **Response Format**: Changed from "I'm Steve Jobs..." to "I use Steve Jobs' method that you selected..."
+- **Question Types**: Focus on "How do I apply Steve's approach?" rather than "What would Steve do?"
+- **User Mental Model**: Lightwalker as wisdom synthesizer, not impersonator
+
+**Status**: Implemented and deployed
 
 ---
 
 ## Document Version
-- Version: 1.0
-- Last Updated: 2025-01-25
-- Status: Active Development
-- Next Review: After Phase 1 completion
+- Version: 2.0 (Major Pivot)
+- Last Updated: 2025-07-27
+- Status: Active Development - Post Pivot
+- Next Review: After testing new wisdom synthesis approach
