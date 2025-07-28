@@ -496,7 +496,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
       <div className="max-w-7xl mx-auto px-6 py-4 relative z-10">
         <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4 mb-6 animate-slideUp relative">
           {/* Vertical Title on Left Edge */}
-          <div className="absolute top-1/2 left-0 z-10 vertical-title">
+          <div className="z-10 vertical-title">
             <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap">
               ARCHETYPE SELECTION
             </h3>
@@ -556,7 +556,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
           {/* Left Panel - Character Hub (2/5 width) */}
           <div className="lg:col-span-2 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft relative">
             {/* Vertical Title on Left Edge */}
-            <div className="absolute top-1/2 left-0 z-10 vertical-title">
+            <div className="z-10 vertical-title">
               <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap">
                 CONSCIOUSNESS CORE
               </h3>
@@ -624,7 +624,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
           {/* Right Panel - Trait Constellation (3/5 width = 60%) */}
           <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight relative">
             {/* Vertical Title on Left Edge */}
-            <div className="absolute top-1/2 left-0 z-10 vertical-title">
+            <div className="z-10 vertical-title">
               <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap">
                 TRAIT CONSTELLATION
               </h3>
@@ -817,7 +817,11 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
         .vertical-title {
           writing-mode: vertical-rl;
           text-orientation: mixed;
+          position: absolute;
+          top: 50%;
+          left: 8px;
           transform: translateY(-50%);
+          height: fit-content;
         }
       `}</style>
     </div>
