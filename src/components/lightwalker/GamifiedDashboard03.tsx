@@ -116,6 +116,16 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
         console.log(`  - ${rm.commonName} → ${rm.imageUrl}`)
       )
       
+      // Debug Buddha specifically
+      const buddha = gamifiedRoleModels.find(rm => rm.commonName === 'Buddha')
+      if (buddha) {
+        console.log('🧘 Buddha debug:', {
+          commonName: buddha.commonName,
+          imageUrl: buddha.imageUrl,
+          id: buddha.id
+        })
+      }
+      
     } catch (error) {
       console.error('Failed to load role models:', error)
       
@@ -549,10 +559,11 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
                       className="w-full h-full object-cover rounded-full"
                       onLoad={() => console.log(`✅ Image loaded: ${roleModel.imageUrl}`)}
                       onError={(e) => {
-                        console.log(`❌ JPG failed, trying PNG: ${roleModel.imageUrl.replace('.jpg', '.png')}`);
+                        console.log(`❌ ${roleModel.commonName} JPG failed, trying PNG: ${roleModel.imageUrl.replace('.jpg', '.png')}`);
                         e.currentTarget.src = roleModel.imageUrl.replace('.jpg', '.png');
                         e.currentTarget.onerror = () => {
-                          console.log(`❌ PNG also failed: ${roleModel.imageUrl.replace('.jpg', '.png')}`);
+                          console.log(`❌ ${roleModel.commonName} PNG also failed: ${roleModel.imageUrl.replace('.jpg', '.png')}`);
+                          console.log(`🔍 ${roleModel.commonName} hiding image and showing fallback`);
                           e.currentTarget.style.display = 'none';
                           const fallback = e.currentTarget.nextElementSibling as HTMLElement;
                           if (fallback) fallback.style.display = 'block';
