@@ -494,12 +494,15 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
 
       {/* Archetype Selection - Horizontal Scroll */}
       <div className="max-w-7xl mx-auto px-6 py-4 relative z-10">
-        <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 mb-6 animate-slideUp">
-          <h3 className="text-lg font-semibold text-cyan-400 mb-4 font-mono">
-            ARCHETYPE SELECTION
-          </h3>
+        <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4 mb-6 animate-slideUp relative">
+          {/* Vertical Title on Left Edge */}
+          <div className="absolute left-2 top-1/2 transform -translate-y-1/2 -rotate-90 origin-center">
+            <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap">
+              ARCHETYPE SELECTION
+            </h3>
+          </div>
           
-          <div className="flex space-x-4 overflow-x-auto pb-4 custom-scrollbar">
+          <div className="flex space-x-4 overflow-x-auto pb-2 custom-scrollbar ml-8">
             {roleModels.map((roleModel, index) => (
               <div
                 key={roleModel.id}
@@ -551,13 +554,16 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           
           {/* Left Panel - Character Hub (2/5 width) */}
-          <div className="lg:col-span-2 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft">
-            <h3 className="text-lg font-semibold text-cyan-400 mb-4 font-mono">
-              CONSCIOUSNESS CORE
-            </h3>
+          <div className="lg:col-span-2 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft relative">
+            {/* Vertical Title on Left Edge */}
+            <div className="absolute left-2 top-1/2 transform -translate-y-1/2 -rotate-90 origin-center">
+              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap">
+                CONSCIOUSNESS CORE
+              </h3>
+            </div>
             
             {/* Holographic Character Preview */}
-            <div className="relative h-64 mb-6 border border-cyan-500/50 rounded-lg bg-gradient-to-b from-cyan-900/20 to-purple-900/20 overflow-hidden">
+            <div className="relative h-64 mb-6 border border-cyan-500/50 rounded-lg bg-gradient-to-b from-cyan-900/20 to-purple-900/20 overflow-hidden ml-8">
               <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
               
               {selectedRoleModelData ? (
@@ -598,7 +604,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
 
             {/* Character Stats */}
             {selectedRoleModelData && (
-              <div className="space-y-3 animate-fadeIn">
+              <div className="space-y-3 animate-fadeIn ml-8">
                 <div className="bg-gray-800/50 rounded p-3 border border-cyan-500/30">
                   <div className="text-sm text-gray-400 mb-1">ARCHETYPE</div>
                   <div className="text-cyan-400 font-semibold capitalize">{selectedRoleModelData.archetype}</div>
@@ -616,12 +622,15 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
           </div>
 
           {/* Right Panel - Trait Constellation (3/5 width = 60%) */}
-          <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight">
-            <h3 className="text-lg font-semibold text-cyan-400 mb-4 font-mono">
-              TRAIT CONSTELLATION
-            </h3>
+          <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight relative">
+            {/* Vertical Title on Left Edge */}
+            <div className="absolute left-2 top-1/2 transform -translate-y-1/2 -rotate-90 origin-center">
+              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap">
+                TRAIT CONSTELLATION
+              </h3>
+            </div>
             
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 max-h-96 overflow-y-auto custom-scrollbar">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 max-h-96 overflow-y-auto custom-scrollbar ml-8">
               {attributes.map((attribute, index) => (
                 <label 
                   key={attribute.id}
@@ -673,7 +682,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
 
             {/* Activation Button */}
             {selectedAttributes.length >= 3 && (
-              <div className="mt-6 pt-4 border-t border-cyan-500/30 animate-fadeIn">
+              <div className="mt-6 pt-4 border-t border-cyan-500/30 animate-fadeIn ml-8">
                 <button 
                   className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 animate-pulse"
                   onClick={() => onLightwalkerCreated({ 
