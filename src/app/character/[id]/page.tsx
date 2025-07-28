@@ -36,15 +36,28 @@ export default function CharacterPage() {
       setIsLoading(true)
       
       // Try the dynamic route first
+      console.log('Trying dynamic route:', `/api/characters/${characterId}`)
       let response = await fetch(`/api/characters/${characterId}`)
       
       // If dynamic route fails, try query parameter approach
       if (!response.ok) {
-        console.log('Dynamic route failed, trying query parameter approach')
+        console.log('Dynamic route failed with status:', response.status)
+        console.log('Trying query parameter approach:', `/api/characters?id=${characterId}`)
         response = await fetch(`/api/characters?id=${characterId}`)
+        
+        if (response.ok) {
+          console.log('Query parameter approach succeeded!')
+        } else {
+          console.log('Query parameter approach also failed with status:', response.status)
+        }
+      } else {
+        console.log('Dynamic route succeeded!')
       }
       
       if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Final response error:', response.status, errorText)
+        
         if (response.status === 404) {
           setError('Character not found')
         } else {
@@ -54,6 +67,7 @@ export default function CharacterPage() {
       }
 
       const data = await response.json()
+      console.log('Character data loaded:', data)
       setCharacter(data.character)
     } catch (error) {
       console.error('Failed to load character:', error)
