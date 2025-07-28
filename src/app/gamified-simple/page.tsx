@@ -3,8 +3,15 @@
 import { useState } from 'react'
 import GamifiedDiscoveryDashboardSimple from '@/components/lightwalker/GamifiedDiscoveryDashboardSimple'
 
+interface LightwalkerData {
+  archetype: string
+  attributes: string[]
+  discoveryPoints: number
+  level: number
+}
+
 export default function GamifiedSimplePage() {
-  const [lightwalker, setLightwalker] = useState(null)
+  const [lightwalker, setLightwalker] = useState<LightwalkerData | null>(null)
 
   const handleLightwalkerCreated = (createdLightwalker: any) => {
     setLightwalker(createdLightwalker)
