@@ -365,6 +365,9 @@ model RoleModel {
   potentialConflicts    String   @map("potential_conflicts")
   userImplementation    String   @map("user_implementation")
   
+  // Enhanced Attributes for Discovery Dashboard
+  enhancedAttributes    String?  @map("enhanced_attributes") // JSON array of attribute objects with name, description, benefit, oppositeOf, method
+  
   // Source & Quality
   primarySources        String   @map("primary_sources")
   historicalSources     String   @map("historical_sources")

@@ -94,7 +94,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
         id: roleModel.id,
         commonName: roleModel.commonName,
         primaryDomain: roleModel.primaryDomain,
-        imageUrl: `/role-models/${roleModel.commonName.toLowerCase().replace(' ', '-')}.jpg`,
+        imageUrl: `/role-models/${roleModel.commonName.toLowerCase().replace(' ', '-')}`,
         attributeCount: Array.isArray(roleModel.coreValues) ? roleModel.coreValues.length : 0,
         selectedAttributes: 0,
         fullName: roleModel.fullName,
@@ -544,15 +544,19 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
                     }}
                   >
                     <img 
-                      src={roleModel.imageUrl} 
+                      src={`${roleModel.imageUrl}.jpg`}
                       alt={roleModel.commonName}
                       className="w-full h-full object-cover rounded-full"
-                      onLoad={() => console.log(`✅ Image loaded: ${roleModel.imageUrl}`)}
+                      onLoad={() => console.log(`✅ Image loaded: ${roleModel.imageUrl}.jpg`)}
                       onError={(e) => {
-                        console.log(`❌ Image failed to load: ${roleModel.imageUrl}`);
-                        e.currentTarget.style.display = 'none';
-                        const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                        if (fallback) fallback.style.display = 'block';
+                        console.log(`❌ JPG failed, trying PNG: ${roleModel.imageUrl}.png`);
+                        e.currentTarget.src = `${roleModel.imageUrl}.png`;
+                        e.currentTarget.onError = (e2) => {
+                          console.log(`❌ PNG also failed: ${roleModel.imageUrl}.png`);
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = 'block';
+                        };
                       }}
                     />
                     <div className="text-2xl" style={{ display: 'none' }}>👤</div>
