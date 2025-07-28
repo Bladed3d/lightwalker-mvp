@@ -103,6 +103,7 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
         lifeMission: roleModel.lifeMission,
         coreValues: roleModel.coreValues || [],
         famousQuotes: roleModel.famousQuotes || [],
+        enhancedAttributes: roleModel.enhancedAttributes || [], // ✅ CRITICAL: Include enhanced attributes
         // Gamified enhancements
         archetype: ['innovator', 'leader', 'wisdom', 'creator', 'guardian', 'mystic'][index % 6] as any,
         primaryColor: ['#00D4FF', '#FF00FF', '#FFD700', '#00FF88', '#FF6B35', '#8A2BE2'][index % 6],
@@ -112,6 +113,12 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
       
       setRoleModels(gamifiedRoleModels)
       console.log('✅ Loaded enhanced gamified role models:', gamifiedRoleModels.length)
+      console.log('🔍 Sample role model structure:', gamifiedRoleModels[0])
+      console.log('🔍 Enhanced attributes check:', gamifiedRoleModels.map((rm: any) => ({
+        name: rm.commonName,
+        hasEnhanced: !!(rm as any).enhancedAttributes,
+        enhancedCount: (rm as any).enhancedAttributes?.length || 0
+      })))
       
     } catch (error) {
       console.error('Failed to load role models:', error)
