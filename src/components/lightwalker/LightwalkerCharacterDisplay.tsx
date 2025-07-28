@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Brain, Star, Zap, Clock, Target, Quote } from 'lucide-react'
+import { Brain, Star, Zap, Clock, Target, Quote, Settings } from 'lucide-react'
 
 interface RoleModel {
   id: string
@@ -48,17 +48,20 @@ interface LightwalkerCharacterDisplayProps {
   roleModelId: string
   selectedAttributeIds: string[]
   onBeginDailyPractice: () => void
+  characterId?: string
 }
 
 export default function LightwalkerCharacterDisplay({ 
   roleModelId, 
   selectedAttributeIds, 
-  onBeginDailyPractice 
+  onBeginDailyPractice,
+  characterId 
 }: LightwalkerCharacterDisplayProps) {
   const [character, setCharacter] = useState<LightwalkerCharacter | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0)
   const [showSynthesis, setShowSynthesis] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
     synthesizeCharacter()
@@ -89,43 +92,44 @@ export default function LightwalkerCharacterDisplay({
         throw new Error('Role model not found')
       }
 
-      // Get attribute details - for now using static data, would fetch from API
-      const attributeDetails = selectedAttributeIds.map(id => ({
-        id,
-        name: formatAttributeName(id),
-        description: getAttributeDescription(id),
-        category: getAttributeCategory(id),
+      // Get the actual selected enhanced attributes from the role model
+      const selectedEnhancedAttributes = roleModel.enhancedAttributes?.filter((attr: any) => 
+        selectedAttributeIds.includes(attr.id)
+      ) || []
+
+      // Map to our expected format
+      const attributeDetails = selectedEnhancedAttributes.map((attr: any) => ({
+        id: attr.id,
+        name: attr.name,
+        description: attr.description,
+        category: attr.category || 'Personal Development',
+        benefit: attr.benefit,
         roleModelImplementations: [{
           roleModelId: roleModel.id,
-          method: getAttributeMethod(id, roleModel.commonName),
-          description: getAttributeMethodDescription(id, roleModel.commonName)
+          method: attr.method || `${roleModel.commonName}'s Approach`,
+          description: attr.description
         }]
       }))
 
       // Synthesize the unified character
-      const synthesizedPersonality = `I embody the essence of ${roleModel.commonName}, channeling their approach to ${roleModel.primaryDomain.toLowerCase()}. Through their wisdom, I've developed ${attributeDetails.map(attr => attr.name.toLowerCase()).join(', ')}, creating a unique blend of their legendary traits with practical methods for daily life.`
+      const synthesizedPersonality = `I embody the essence of ${roleModel.commonName}, channeling their approach to ${roleModel.primaryDomain.toLowerCase()}. Through their wisdom, I've developed ${attributeDetails.map((attr: Attribute) => attr.name.toLowerCase()).join(', ')}, creating a unique blend of their legendary traits with practical methods for daily life.`
 
-      const dailyBehaviors = attributeDetails.map(attr => 
-        `I practice ${attr.name.toLowerCase()} by ${attr.roleModelImplementations[0].description.toLowerCase()}`
+      const dailyBehaviors = attributeDetails.map((attr: Attribute) => 
+        `I practice ${attr.name.toLowerCase()} by ${attr.roleModelImplementations[0].method || attr.description}`
       )
 
-      const situationalResponses = [
-        {
-          situation: "Facing a difficult decision",
-          response: `I pause and consider what ${roleModel.commonName} would do in this moment.`,
-          method: attributeDetails[0]?.roleModelImplementations[0]?.method || "Thoughtful Analysis"
-        },
-        {
-          situation: "Dealing with setbacks",
-          response: `I remember ${roleModel.commonName}'s approach to challenges and apply their resilience.`,
-          method: "Historical Perspective"
-        },
-        {
-          situation: "Planning important work",
-          response: `I channel ${roleModel.commonName}'s strategic mindset to focus on what truly matters.`,
-          method: attributeDetails.find(a => a.category === 'Decision-Making')?.roleModelImplementations[0]?.method || "Strategic Planning"
+      const situationalResponses = attributeDetails.slice(0, 3).map((attr: Attribute, index: number) => {
+        const situations = [
+          "Facing a difficult decision",
+          "Dealing with setbacks", 
+          "Planning important work"
+        ]
+        return {
+          situation: situations[index] || "Challenging moment",
+          response: `I apply ${attr.name.toLowerCase()} by ${attr.roleModelImplementations[0].method || attr.description}`,
+          method: attr.roleModelImplementations[0].method || attr.name
         }
-      ]
+      })
 
       const synthesizedCharacter: LightwalkerCharacter = {
         roleModel: {
@@ -154,59 +158,6 @@ export default function LightwalkerCharacterDisplay({
   }
 
   // Helper functions for character synthesis
-  const formatAttributeName = (id: string): string => {
-    return id.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ')
-  }
-
-  const getAttributeDescription = (id: string): string => {
-    const descriptions: Record<string, string> = {
-      'strategic-focus': 'You finish what matters most instead of being busy with everything',
-      'design-perfectionism': 'You make things beautiful and simple, not just functional',
-      'visionary-innovation': 'You see what people need before they know they need it',
-      'inspiring-leadership': 'You get people excited to do their best work and achieve the impossible',
-      'intuitive-decision-making': 'You trust your gut feeling when data isn\'t enough',
-      'elegant-simplicity': 'You remove the unnecessary to make the necessary clear'
-    }
-    return descriptions[id] || 'A powerful trait for personal development'
-  }
-
-  const getAttributeCategory = (id: string): string => {
-    const categories: Record<string, string> = {
-      'strategic-focus': 'Decision-Making',
-      'design-perfectionism': 'Quality Standards',
-      'visionary-innovation': 'Creative Thinking',
-      'inspiring-leadership': 'Influence',
-      'intuitive-decision-making': 'Decision-Making',
-      'elegant-simplicity': 'Problem Solving'
-    }
-    return categories[id] || 'Personal Development'
-  }
-
-  const getAttributeMethod = (id: string, roleModelName: string): string => {
-    const methods: Record<string, string> = {
-      'strategic-focus': 'Annual Retreat Process',
-      'design-perfectionism': 'Three-Click Rule',
-      'visionary-innovation': 'Think Different Principle',
-      'inspiring-leadership': 'Reality Distortion Field',
-      'intuitive-decision-making': 'Feel-Based Testing',
-      'elegant-simplicity': 'Subtraction Method'
-    }
-    return methods[id] || `${roleModelName}'s Approach`
-  }
-
-  const getAttributeMethodDescription = (id: string, roleModelName: string): string => {
-    const descriptions: Record<string, string> = {
-      'strategic-focus': 'I list my priorities annually and ruthlessly focus on only the top 3',
-      'design-perfectionism': 'I ensure any process takes 3 steps or less, redesigning until simple',
-      'visionary-innovation': 'I ask "What would delight people?" and focus on experience over features',
-      'inspiring-leadership': 'I paint visions so compelling that people believe they can achieve more',
-      'intuitive-decision-making': 'I gather basic facts, then ask "How does this feel?" and trust my instincts',
-      'elegant-simplicity': 'I look at any solution and ask "What can we remove?" until only the essential remains'
-    }
-    return descriptions[id] || `I apply ${roleModelName}'s proven methods to this area`
-  }
 
   const getArchetype = (name: string): any => {
     const archetypes: Record<string, string> = {
@@ -276,7 +227,59 @@ export default function LightwalkerCharacterDisplay({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black text-white relative">
+      {/* Global Settings Button */}
+      {characterId && (
+        <button
+          onClick={() => setShowSettings(true)}
+          className="fixed top-6 right-6 z-50 p-3 bg-black/50 backdrop-blur-sm border border-cyan-500/30 rounded-full text-cyan-400 hover:text-cyan-300 hover:border-cyan-400/50 transition-all"
+          title="Character Settings"
+        >
+          <Settings className="w-6 h-6" />
+        </button>
+      )}
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-cyan-500/30 rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-cyan-400 mb-4">Character Settings</h3>
+            
+            <div className="space-y-4">
+              <button 
+                onClick={() => window.location.href = `/character-creation?editing=${characterId}`}
+                className="w-full p-3 bg-purple-600/20 border border-purple-500/30 rounded-lg text-purple-300 hover:bg-purple-600/30 transition-colors"
+              >
+                Edit Traits & Attributes
+              </button>
+              
+              <button 
+                onClick={() => window.location.href = '/character-creation'}
+                className="w-full p-3 bg-green-600/20 border border-green-500/30 rounded-lg text-green-300 hover:bg-green-600/30 transition-colors"
+              >
+                Create New Character
+              </button>
+              
+              <button 
+                onClick={() => window.location.href = `/character/${characterId}/practice`}
+                className="w-full p-3 bg-blue-600/20 border border-blue-500/30 rounded-lg text-blue-300 hover:bg-blue-600/30 transition-colors"
+              >
+                Daily Practice
+              </button>
+              
+              <div className="border-t border-gray-600 pt-4">
+                <button 
+                  onClick={() => setShowSettings(false)}
+                  className="w-full p-3 bg-gray-600/20 border border-gray-500/30 rounded-lg text-gray-300 hover:bg-gray-600/30 transition-colors"
+                >
+                  Close Settings
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -360,10 +363,10 @@ export default function LightwalkerCharacterDisplay({
             {/* Character Details */}
             <div className="flex-1 text-center lg:text-left">
               <h2 className="text-3xl font-bold mb-2" style={{ color: character.roleModel.primaryColor }}>
-                Lightwalker™ · {character.roleModel.commonName}
+                Your Lightwalker™
               </h2>
-              <p className="text-xl text-gray-300 mb-4 capitalize">
-                {character.roleModel.archetype} Archetype
+              <p className="text-xl text-gray-300 mb-4">
+                Inspired by {character.roleModel.commonName} · {character.selectedAttributes.length} Selected Traits
               </p>
               
               {/* Synthesis Description */}
