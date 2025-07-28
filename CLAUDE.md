@@ -84,6 +84,15 @@ This is fundamental to the learning-through-copying model. Users observe and cop
 - Smart categorization solves template scaling issues
 - Server setup requires complete dependency installation in subdirectory
 
+## CRITICAL: Role Model Selection Guidelines
+
+**NEVER USE LIVING PEOPLE AS ROLE MODELS**
+- Only use historical figures who have passed away
+- We do not have permission to use living individuals' personas
+- This avoids legal/ethical issues with personality rights
+- Stick to well-documented historical figures with extensive public records
+- If someone suggests a living person, replace with appropriate historical alternative
+
 ## CRITICAL: How to Add Role Models (Don't Overcomplicate This!)
 
 **Steve Jobs was added using `scripts/seed-role-models.ts` - just use the same script!**
