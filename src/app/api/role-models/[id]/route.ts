@@ -31,7 +31,8 @@ export async function GET(
       dominantTraits: JSON.parse(roleModel.dominantTraits || '[]'),
       decisionProcess: JSON.parse(roleModel.decisionProcess || '{}'),
       famousQuotes: JSON.parse(roleModel.famousQuotes || '[]'),
-      decisionTemplates: JSON.parse(roleModel.decisionTemplates || '[]')
+      decisionTemplates: JSON.parse(roleModel.decisionTemplates || '[]'),
+      enhancedAttributes: JSON.parse(roleModel.enhancedAttributes || '[]')
     }
 
     return NextResponse.json({ roleModel: formattedRoleModel })

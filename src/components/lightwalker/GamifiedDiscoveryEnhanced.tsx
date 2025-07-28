@@ -204,11 +204,51 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
     }
   }
 
-  const loadAttributesForRoleModel = (roleModelId: string) => {
+  const loadAttributesForRoleModel = async (roleModelId: string) => {
     const roleModel = roleModels.find(rm => rm.id === roleModelId)
     
-    // Enhanced Steve Jobs attributes with 6th-grade explanations and benefits
-    if (roleModel && roleModel.commonName === 'Steve Jobs') {
+    if (!roleModel) {
+      console.warn('Role model not found:', roleModelId)
+      loadGamifiedAttributes()
+      return
+    }
+
+    try {
+      // Try to load enhanced attributes from database
+      const response = await fetch(`/api/role-models/${roleModelId}`)
+      if (response.ok) {
+        const roleModelData = await response.json()
+        
+        if (roleModelData.enhancedAttributes && roleModelData.enhancedAttributes.length > 0) {
+          const dbAttributes = roleModelData.enhancedAttributes.map((attr: any, index: number) => ({
+            id: attr.name.toLowerCase().replace(/\s+/g, '-'),
+            name: attr.name,
+            category: 'Personal Development',
+            description: attr.description,
+            benefit: attr.benefit,
+            oppositeOf: attr.oppositeOf,
+            level: 0,
+            maxLevel: 5,
+            synergies: [],
+            conflicts: [],
+            roleModelImplementations: [{
+              roleModelId: roleModel.id,
+              method: attr.method || `${roleModel.commonName}'s Approach`,
+              description: attr.description
+            }]
+          }))
+          
+          setAttributes(dbAttributes)
+          console.log(`✅ Loaded ${dbAttributes.length} enhanced attributes for ${roleModel.commonName} from database`)
+          return
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load enhanced attributes from database:', error)
+    }
+    
+    // Fallback to hardcoded Steve Jobs attributes if database fails
+    if (roleModel.commonName === 'Steve Jobs') {
       const jobsAttributes = [
         {
           id: 'strategic-focus',

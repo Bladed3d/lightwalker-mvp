@@ -8,6 +8,7 @@ https://lightwalker-mvp.vercel.app/discovery-enhanced
 https://lightwalker-mvp.vercel.app/gamified-simple
 https://lightwalker-mvp.vercel.app/discovery-dashboard
 https://lightwalker-mvp.vercel.app/hud-test
+https://lightwalker-mvp.vercel.app/character-creation (good)
 
 
 create images at gemini.google.com
