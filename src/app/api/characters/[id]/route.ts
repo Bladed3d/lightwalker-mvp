@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+// Use global prisma instance for serverless
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+const prisma = globalForPrisma.prisma ?? new PrismaClient()
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // GET /api/characters/[id] - Get specific character
 export async function GET(
@@ -9,16 +16,26 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    console.log('Looking for character with ID:', params.id)
+    
     const character = await prisma.savedCharacter.findUnique({
       where: { 
-        id: params.id,
-        isActive: true 
+        id: params.id
       }
     })
 
+    console.log('Found character:', character)
+
     if (!character) {
       return NextResponse.json(
-        { error: 'Character not found' },
+        { error: 'Character not found', searchedId: params.id },
+        { status: 404 }
+      )
+    }
+
+    if (!character.isActive) {
+      return NextResponse.json(
+        { error: 'Character is inactive', searchedId: params.id },
         { status: 404 }
       )
     }
