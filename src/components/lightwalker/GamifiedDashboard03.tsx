@@ -112,7 +112,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
       setRoleModels(gamifiedRoleModels)
       console.log('✅ Loaded gamified role models:', gamifiedRoleModels.length)
       console.log('📷 Expected image filenames:')
-      gamifiedRoleModels.forEach(rm => 
+      gamifiedRoleModels.forEach((rm: RoleModel) => 
         console.log(`  - ${rm.commonName} → ${rm.imageUrl}`)
       )
       
