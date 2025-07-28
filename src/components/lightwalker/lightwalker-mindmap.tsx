@@ -247,7 +247,7 @@ const LightwalkerUserFlowchart = () => {
     { from: 'advancedFeatures', to: 'success', label: '' }
   ];
 
-  const getNodeShape = (type) => {
+  const getNodeShape = (type: string) => {
     switch (type) {
       case 'terminator':
         return 'rounded-full';
@@ -264,7 +264,7 @@ const LightwalkerUserFlowchart = () => {
     }
   };
 
-  const getNodeColor = (status) => {
+  const getNodeColor = (status: string) => {
     switch (status) {
       case 'completed':
         return 'bg-green-800 border-green-600';
@@ -277,7 +277,7 @@ const LightwalkerUserFlowchart = () => {
     }
   };
 
-  const getNodeIcon = (id) => {
+  const getNodeIcon = (id: string) => {
     const icons = {
       'start': User,
       'problemCheck': Brain,
@@ -291,7 +291,7 @@ const LightwalkerUserFlowchart = () => {
     return <Icon className="w-4 h-4" />;
   };
 
-  const renderNode = (nodeId) => {
+  const renderNode = (nodeId: string) => {
     const node = userJourney[nodeId];
     if (!node) return null;
 
@@ -328,7 +328,7 @@ const LightwalkerUserFlowchart = () => {
     );
   };
 
-  const renderConnection = (connection) => {
+  const renderConnection = (connection: any) => {
     const fromNode = userJourney[connection.from];
     const toNode = userJourney[connection.to];
     if (!fromNode || !toNode) return null;
