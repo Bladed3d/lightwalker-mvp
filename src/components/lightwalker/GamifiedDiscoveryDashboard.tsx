@@ -69,6 +69,7 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
     currentPhase: 'welcome'
   })
   const [showWelcome, setShowWelcome] = useState(true)
+  const [newAchievements, setNewAchievements] = useState<string[]>([])
 
   useEffect(() => {
     loadGamifiedRoleModels()
@@ -203,8 +204,7 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
             description: 'Full presence with no agenda except understanding completely.'
           }
         ]
-      },
-      // Add more attributes...
+      }
     ]
     
     setAttributes(gamifiedAttributes)
@@ -236,6 +236,12 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
                    selectedAttributes.length > 0 ? 'trait-customization' :
                    selectedRoleModel ? 'archetype-selection' : 'welcome'
     }))
+
+    // Show new achievements
+    if (newAchievements.length > 0) {
+      setNewAchievements(newAchievements)
+      setTimeout(() => setNewAchievements([]), 3000)
+    }
   }
 
   const handleRoleModelSelect = (roleModelId: string) => {
@@ -305,6 +311,57 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
               description: 'Ask "What would delight users?" Focus on experience over features.'
             }
           ]
+        },
+        {
+          id: 'inspiring-leadership',
+          name: 'Inspiring Leadership',
+          category: 'Influence',
+          description: 'You get people excited to do their best work and achieve the impossible',
+          level: 0,
+          maxLevel: 5,
+          synergies: ['visionary-innovation'],
+          conflicts: [],
+          roleModelImplementations: [
+            {
+              roleModelId: roleModel.id,
+              method: 'Reality Distortion Field',
+              description: 'Paint a vision so compelling that people believe they can achieve more than they thought possible.'
+            }
+          ]
+        },
+        {
+          id: 'intuitive-decision-making',
+          name: 'Intuitive Decision Making',
+          category: 'Decision-Making', 
+          description: 'You trust your gut feeling when data isn\'t enough',
+          level: 0,
+          maxLevel: 5,
+          synergies: ['strategic-focus'],
+          conflicts: [],
+          roleModelImplementations: [
+            {
+              roleModelId: roleModel.id,
+              method: 'Feel-Based Testing',
+              description: 'After gathering basic facts, ask "How does this feel?" Trust your instincts.'
+            }
+          ]
+        },
+        {
+          id: 'elegant-simplicity',
+          name: 'Elegant Simplicity',
+          category: 'Problem Solving',
+          description: 'You remove the unnecessary to make the necessary clear',
+          level: 0,
+          maxLevel: 5,
+          synergies: ['design-perfectionism'],
+          conflicts: [],
+          roleModelImplementations: [
+            {
+              roleModelId: roleModel.id,
+              method: 'Subtraction Method',
+              description: 'Look at any solution and ask "What can we remove?" Keep subtracting until only the essential remains.'
+            }
+          ]
         }
       ]
       
@@ -336,92 +393,44 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
   // Welcome Screen Animation
   if (showWelcome) {
     return (
-      <motion.div 
-        className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black flex items-center justify-center overflow-hidden"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black flex items-center justify-center overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
           {[...Array(50)].map((_, i) => (
-            <motion.div
+            <div
               key={i}
-              className="absolute w-1 h-1 bg-cyan-400 rounded-full"
+              className={`absolute w-1 h-1 bg-cyan-400 rounded-full animate-pulse`}
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                opacity: [0, 1, 0],
-                scale: [0, 1, 0],
-              }}
-              transition={{
-                duration: 2,
-                delay: Math.random() * 2,
-                repeat: Infinity,
+                animationDelay: `${Math.random() * 2}s`,
               }}
             />
           ))}
         </div>
 
         {/* Welcome Content */}
-        <motion.div 
-          className="text-center z-10"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 1 }}
-        >
-          <motion.h1 
-            className="text-6xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent"
-            initial={{ y: -50 }}
-            animate={{ y: 0 }}
-            transition={{ delay: 1, duration: 0.8 }}
-          >
+        <div className="text-center z-10 animate-fadeIn">
+          <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent animate-slideDown">
             INITIALIZE
-          </motion.h1>
-          <motion.h2 
-            className="text-4xl font-light mb-8 text-cyan-300"
-            initial={{ y: 50 }}
-            animate={{ y: 0 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
-          >
+          </h1>
+          <h2 className="text-4xl font-light mb-8 text-cyan-300 animate-slideUp">
             Consciousness Design Protocol
-          </motion.h2>
-          <motion.div 
-            className="text-xl text-gray-300 mb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.8, duration: 0.8 }}
-          >
+          </h2>
+          <div className="text-xl text-gray-300 mb-8">
             Preparing neural architecture for Lightwalker™ creation...
-          </motion.div>
+          </div>
           
-          <motion.div 
-            className="w-64 h-2 bg-gray-700 rounded-full mx-auto mb-4 overflow-hidden"
-            initial={{ width: 0 }}
-            animate={{ width: 256 }}
-            transition={{ delay: 2, duration: 1 }}
-          >
-            <motion.div 
-              className="h-full bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ delay: 2.2, duration: 0.8 }}
-            />
-          </motion.div>
+          <div className="w-64 h-2 bg-gray-700 rounded-full mx-auto mb-4 overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full animate-progressBar" />
+          </div>
           
-          <motion.div 
-            className="text-cyan-400 font-mono"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2.8, duration: 0.2 }}
-          >
+          <div className="text-cyan-400 font-mono animate-blink">
             READY
-          </motion.div>
-        </motion.div>
-      </motion.div>
+          </div>
+        </div>
+      </div>
     )
   }
 
@@ -431,33 +440,20 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         {[...Array(30)].map((_, i) => (
-          <motion.div
+          <div
             key={i}
-            className="absolute w-px h-px bg-cyan-400 rounded-full"
+            className="absolute w-px h-px bg-cyan-400 rounded-full animate-pulse"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              opacity: [0.2, 1, 0.2],
-              scale: [1, 1.5, 1],
-            }}
-            transition={{
-              duration: 3,
-              delay: Math.random() * 3,
-              repeat: Infinity,
+              animationDelay: `${Math.random() * 3}s`,
             }}
           />
         ))}
       </div>
 
       {/* HUD Header */}
-      <motion.div 
-        className="relative z-10 bg-black/50 backdrop-blur-sm border-b border-cyan-500/30"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
+      <div className="relative z-10 bg-black/50 backdrop-blur-sm border-b border-cyan-500/30 animate-slideDown">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
@@ -484,11 +480,9 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
               <div className="w-32">
                 <div className="text-sm text-gray-400 mb-1">Progress</div>
                 <div className="w-full bg-gray-700 rounded-full h-2">
-                  <motion.div 
-                    className="h-2 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${gamification.completionPercentage}%` }}
-                    transition={{ duration: 0.5 }}
+                  <div 
+                    className="h-2 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full transition-all duration-500"
+                    style={{ width: `${gamification.completionPercentage}%` }}
                   />
                 </div>
                 <div className="text-xs text-cyan-400 mt-1">{Math.round(gamification.completionPercentage)}%</div>
@@ -496,19 +490,14 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Main Interface */}
       <div className="max-w-7xl mx-auto px-6 py-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Left Panel - Character Hub */}
-          <motion.div 
-            className="lg:col-span-1 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6"
-            initial={{ x: -100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-          >
+          <div className="lg:col-span-1 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft">
             <h3 className="text-lg font-semibold text-cyan-400 mb-4 font-mono">
               CONSCIOUSNESS CORE
             </h3>
@@ -518,14 +507,9 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
               <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
               
               {selectedRoleModelData ? (
-                <motion.div 
-                  className="absolute inset-4 flex items-center justify-center"
-                  initial={{ scale: 0, rotateY: 180 }}
-                  animate={{ scale: 1, rotateY: 0 }}
-                  transition={{ duration: 1 }}
-                >
+                <div className="absolute inset-4 flex items-center justify-center animate-scaleIn">
                   <div 
-                    className="w-32 h-32 rounded-full flex items-center justify-center text-4xl border-2 shadow-lg"
+                    className="w-32 h-32 rounded-full flex items-center justify-center text-4xl border-2 shadow-lg animate-pulse"
                     style={{ 
                       borderColor: selectedRoleModelData.primaryColor,
                       backgroundColor: `${selectedRoleModelData.primaryColor}20`,
@@ -537,28 +521,21 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
                   
                   {/* Particle Effects */}
                   {[...Array(12)].map((_, i) => (
-                    <motion.div
+                    <div
                       key={i}
-                      className="absolute w-2 h-2 rounded-full"
-                      style={{ backgroundColor: selectedRoleModelData.primaryColor }}
-                      animate={{
-                        x: [0, Math.cos(i * 30 * Math.PI / 180) * 60],
-                        y: [0, Math.sin(i * 30 * Math.PI / 180) * 60],
-                        opacity: [1, 0],
-                        scale: [1, 0],
-                      }}
-                      transition={{
-                        duration: 2,
-                        delay: i * 0.1,
-                        repeat: Infinity,
+                      className="absolute w-2 h-2 rounded-full animate-orbit"
+                      style={{ 
+                        backgroundColor: selectedRoleModelData.primaryColor,
+                        transform: `rotate(${i * 30}deg) translateX(60px)`,
+                        animationDelay: `${i * 0.1}s`
                       }}
                     />
                   ))}
-                </motion.div>
+                </div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-gray-500">
                   <div className="text-center">
-                    <div className="text-6xl mb-2">⚡</div>
+                    <div className="text-6xl mb-2 animate-bounce">⚡</div>
                     <div className="text-sm font-mono">Awaiting Archetype Selection</div>
                   </div>
                 </div>
@@ -567,12 +544,7 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
 
             {/* Character Stats */}
             {selectedRoleModelData && (
-              <motion.div 
-                className="space-y-3"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
+              <div className="space-y-3 animate-fadeIn">
                 <div className="bg-gray-800/50 rounded p-3 border border-cyan-500/30">
                   <div className="text-sm text-gray-400 mb-1">ARCHETYPE</div>
                   <div className="text-cyan-400 font-semibold capitalize">{selectedRoleModelData.archetype}</div>
@@ -585,50 +557,34 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
                   <div className="text-sm text-gray-400 mb-1">TRAIT CAPACITY</div>
                   <div className="text-green-400">{selectedAttributes.length}/{selectedRoleModelData.attributeCount}</div>
                 </div>
-              </motion.div>
+              </div>
             )}
-          </motion.div>
+          </div>
 
           {/* Center Panel - Archetype Selection */}
-          <motion.div 
-            className="lg:col-span-1 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6"
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-          >
+          <div className="lg:col-span-1 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideUp">
             <h3 className="text-lg font-semibold text-cyan-400 mb-4 font-mono">
               ARCHETYPE SELECTION
             </h3>
             
             <div className="space-y-4">
               {roleModels.map((roleModel, index) => (
-                <motion.div
+                <div
                   key={roleModel.id}
-                  className={`relative p-4 rounded-lg border cursor-pointer transition-all duration-300 ${
+                  className={`relative p-4 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-102 ${
                     selectedRoleModel === roleModel.id
                       ? 'bg-gradient-to-r from-cyan-900/50 to-purple-900/50 border-cyan-400 shadow-lg'
                       : 'bg-gray-800/30 border-gray-600 hover:border-cyan-500/50'
                   }`}
                   onClick={() => handleRoleModelSelect(roleModel.id)}
-                  initial={{ x: 100, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.6 + index * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  style={{ 
+                    animationDelay: `${index * 0.1}s`,
+                    ...(selectedRoleModel === roleModel.id && {
+                      background: `linear-gradient(45deg, ${roleModel.primaryColor}20, ${roleModel.secondaryColor}20)`,
+                      boxShadow: `0 0 20px ${roleModel.primaryColor}30`
+                    })
+                  }}
                 >
-                  {/* Selection Glow Effect */}
-                  {selectedRoleModel === roleModel.id && (
-                    <motion.div 
-                      className="absolute inset-0 rounded-lg"
-                      style={{ 
-                        background: `linear-gradient(45deg, ${roleModel.primaryColor}20, ${roleModel.secondaryColor}20)`,
-                        boxShadow: `0 0 20px ${roleModel.primaryColor}30`
-                      }}
-                      animate={{ opacity: [0.5, 1, 0.5] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-                  )}
-                  
                   <div className="relative flex items-center space-x-3">
                     <div 
                       className="w-12 h-12 rounded-full flex items-center justify-center text-xl border-2"
@@ -652,35 +608,27 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Right Panel - Trait Constellation */}
-          <motion.div 
-            className="lg:col-span-1 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6"
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-          >
+          <div className="lg:col-span-1 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight">
             <h3 className="text-lg font-semibold text-cyan-400 mb-4 font-mono">
               TRAIT CONSTELLATION
             </h3>
             
             <div className="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
               {attributes.map((attribute, index) => (
-                <motion.label 
+                <label 
                   key={attribute.id}
-                  className={`block p-3 rounded-lg border cursor-pointer transition-all duration-300 ${
+                  className={`block p-3 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-102 ${
                     selectedAttributes.includes(attribute.id)
-                      ? 'bg-gradient-to-r from-green-900/50 to-cyan-900/50 border-green-400 shadow-lg'
+                      ? 'bg-gradient-to-r from-green-900/50 to-cyan-900/50 border-green-400 shadow-lg animate-glow'
                       : 'bg-gray-800/30 border-gray-600 hover:border-cyan-500/50'
                   }`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 + index * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="flex items-start space-x-3">
                     <input
@@ -717,55 +665,46 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
                       ))}
                     </div>
                   </div>
-                </motion.label>
+                </label>
               ))}
             </div>
 
             {/* Activation Button */}
             {selectedAttributes.length >= 3 && (
-              <motion.div 
-                className="mt-6 pt-4 border-t border-cyan-500/30"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1 }}
-              >
-                <motion.button 
-                  className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              <div className="mt-6 pt-4 border-t border-cyan-500/30 animate-fadeIn">
+                <button 
+                  className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 animate-pulse"
                   onClick={() => onLightwalkerCreated({ 
                     archetype: selectedRoleModelData?.archetype,
                     attributes: selectedAttributes,
                     discoveryPoints: gamification.discoveryPoints,
                     level: gamification.level
                   })}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                 >
                   <span className="flex items-center justify-center space-x-2">
                     <span>⚡</span>
                     <span>ACTIVATE LIGHTWALKER™</span>
                     <span>({selectedAttributes.length} traits)</span>
                   </span>
-                </motion.button>
-              </motion.div>
+                </button>
+              </div>
             )}
-          </motion.div>
+          </div>
         </div>
 
         {/* Achievement Notifications */}
-        <AnimatePresence>
-          {gamification.achievements.map((achievement, index) => (
-            <motion.div
-              key={achievement}
-              className="fixed bottom-4 right-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-4 py-2 rounded-lg shadow-lg z-50"
-              initial={{ x: 300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 300, opacity: 0 }}
-              transition={{ delay: index * 0.5 }}
-            >
-              🏆 Achievement Unlocked: {achievement.replace('-', ' ').toUpperCase()}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        {newAchievements.map((achievement, index) => (
+          <div
+            key={achievement}
+            className="fixed bottom-4 right-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-4 py-2 rounded-lg shadow-lg z-50 animate-slideInRight"
+            style={{ 
+              bottom: `${4 + index * 60}px`,
+              animationDelay: `${index * 0.5}s`
+            }}
+          >
+            🏆 Achievement Unlocked: {achievement.replace('-', ' ').toUpperCase()}
+          </div>
+        ))}
       </div>
 
       {/* Custom Styles */}
@@ -794,6 +733,75 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: #0099CC;
         }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+          from { transform: translateY(-100%); }
+          to { transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
+
+        @keyframes slideLeft {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(0); }
+        }
+
+        @keyframes slideRight {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+
+        @keyframes slideInRight {
+          from { transform: translateX(300px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+          from { transform: scale(0.8); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes progressBar {
+          from { width: 0%; }
+          to { width: 100%; }
+        }
+
+        @keyframes orbit {
+          from { transform: rotate(0deg) translateX(60px); }
+          to { transform: rotate(360deg) translateX(60px); }
+        }
+
+        @keyframes glow {
+          0%, 100% { box-shadow: 0 0 5px rgba(0, 212, 255, 0.5); }
+          50% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.8); }
+        }
+
+        @keyframes blink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0.3; }
+        }
+
+        .animate-fadeIn { animation: fadeIn 0.8s ease-out; }
+        .animate-slideDown { animation: slideDown 0.8s ease-out; }
+        .animate-slideUp { animation: slideUp 0.8s ease-out; }
+        .animate-slideLeft { animation: slideLeft 0.8s ease-out; }
+        .animate-slideRight { animation: slideRight 0.8s ease-out; }
+        .animate-slideInRight { animation: slideInRight 0.5s ease-out; }
+        .animate-scaleIn { animation: scaleIn 1s ease-out; }
+        .animate-progressBar { animation: progressBar 0.8s ease-out; }
+        .animate-orbit { animation: orbit 2s linear infinite; }
+        .animate-glow { animation: glow 2s ease-in-out infinite; }
+        .animate-blink { animation: blink 1s ease-in-out infinite; }
+        
+        .hover\\:scale-102:hover { transform: scale(1.02); }
       `}</style>
     </div>
   )
