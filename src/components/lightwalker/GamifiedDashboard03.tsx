@@ -117,7 +117,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
       )
       
       // Debug Buddha specifically
-      const buddha = gamifiedRoleModels.find(rm => rm.commonName === 'Buddha')
+      const buddha = gamifiedRoleModels.find((rm: RoleModel) => rm.commonName === 'Buddha')
       if (buddha) {
         console.log('🧘 Buddha debug:', {
           commonName: buddha.commonName,
