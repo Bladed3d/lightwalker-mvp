@@ -44,19 +44,46 @@ interface LightwalkerCharacter {
   }[]
 }
 
+interface UserTrait {
+  subTraitCode: string
+  subTrait: {
+    title: string
+    description: string
+    method: string
+    benefit: string
+    trait: {
+      name: string
+      slug: string
+      roleModel: {
+        id: string
+        code: string
+        commonName: string
+        primaryDomain: string
+        famousQuotes: string
+        primaryColor?: string
+        secondaryColor?: string
+        particleType?: string
+      }
+    }
+  }
+}
+
 interface LightwalkerCharacterDisplayProps {
-  selectedTraits: {traitId: string, roleModelId: string, traitName: string}[]
+  selectedTraits?: {traitId: string, roleModelId: string, traitName: string}[] // Legacy format
+  userTraits?: UserTrait[] // New relational format
   onBeginDailyPractice: () => void
   characterId?: string
 }
 
 export default function LightwalkerCharacterDisplay({ 
   selectedTraits, 
+  userTraits,
   onBeginDailyPractice,
   characterId 
 }: LightwalkerCharacterDisplayProps) {
   console.log('=== LightwalkerCharacterDisplay Props ===')
-  console.log('selectedTraits:', selectedTraits)
+  console.log('selectedTraits (legacy):', selectedTraits)
+  console.log('userTraits (new):', userTraits)
   console.log('characterId:', characterId)
   
   const [character, setCharacter] = useState<LightwalkerCharacter | null>(null)
@@ -67,13 +94,14 @@ export default function LightwalkerCharacterDisplay({
   const [synthesisAttempted, setSynthesisAttempted] = useState(false)
 
   useEffect(() => {
-    if (!synthesisAttempted && selectedTraits.length > 0) {
+    const hasData = (userTraits && userTraits.length > 0) || (selectedTraits && selectedTraits.length > 0)
+    if (!synthesisAttempted && hasData) {
       console.log('=== useEffect Triggered ===')
       console.log('About to call synthesizeCharacter...')
       setSynthesisAttempted(true)
       synthesizeCharacter()
     }
-  }, [selectedTraits])
+  }, [selectedTraits, userTraits])
 
   useEffect(() => {
     // Rotate through quotes every 5 seconds
@@ -91,152 +119,99 @@ export default function LightwalkerCharacterDisplay({
     setIsLoading(true)
     
     try {
-      console.log('=== Multi-Role Model Character Synthesis ===')
-      console.log('selectedTraits:', selectedTraits)
+      console.log('=== NEW RELATIONAL CHARACTER SYNTHESIS ===')
       
-      if (!selectedTraits || selectedTraits.length === 0) {
-        throw new Error('No traits selected')
-      }
-      
-      // Load all role models
-      console.log('STEP 1: Loading role models...')
-      const roleModelResponse = await fetch('/api/role-models')
-      const { roleModels } = await roleModelResponse.json()
-      console.log('Loaded role models count:', roleModels.length)
-      
-      // Get unique role models from selected traits
-      console.log('STEP 2: Finding involved role models...')
-      const uniqueRoleModelIds = Array.from(new Set(selectedTraits.map(trait => trait.roleModelId)))
-      console.log('Unique role model IDs:', uniqueRoleModelIds)
-      
-      const involvedRoleModels = uniqueRoleModelIds.map(id => 
-        roleModels.find((rm: any) => rm.id === id)
-      ).filter(Boolean)
-      
-      console.log('Involved role models:', involvedRoleModels.map((rm: any) => rm.commonName))
-      
-      // Build attribute details by finding each trait in its source role model
-      console.log('STEP 3: Building attribute details...')
-      const attributeDetails: Attribute[] = []
-      
-      for (const trait of selectedTraits) {
-        console.log(`Processing trait: ${trait.traitName} from role model ${trait.roleModelId}`)
-        const sourceRoleModel = roleModels.find((rm: any) => rm.id === trait.roleModelId)
-        console.log('Found source role model:', sourceRoleModel?.commonName)
+      // Prioritize new relational data, fall back to legacy if needed
+      if (userTraits && userTraits.length > 0) {
+        console.log('Using NEW relational data structure')
+        console.log('User traits:', userTraits.length)
         
-        if (sourceRoleModel?.enhancedAttributes) {
-          console.log('Enhanced attributes found, looking for trait:', trait.traitId)
-          
-          // Convert kebab-case trait ID to Title Case for matching
-          const titleCaseTraitName = trait.traitId
-            .split('-')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ')
-          
-          console.log('Converted trait ID to title case:', titleCaseTraitName)
-          
-          // Try to match by name (Title Case) since role model attributes use Title Case names
-          const attribute = sourceRoleModel.enhancedAttributes.find((attr: any) => 
-            attr.name === titleCaseTraitName
-          )
-          console.log('Found attribute:', attribute?.name)
-          
-          if (attribute) {
-            attributeDetails.push({
-              id: trait.traitId, // Keep original kebab-case ID
-              name: attribute.name,
-              description: attribute.description,
-              category: attribute.category || 'Personal Development',
-              benefit: attribute.benefit,
-              roleModelImplementations: [{
-                roleModelId: sourceRoleModel.id,
-                method: attribute.method || `${sourceRoleModel.commonName}'s Approach`,
-                description: attribute.description
-              }]
-            })
-          } else {
-            console.error(`Could not find attribute "${titleCaseTraitName}" in role model ${sourceRoleModel.commonName}`)
-            console.log('Available attributes:', sourceRoleModel.enhancedAttributes.map((attr: any) => attr.name))
+        // Extract data from relational structure - much simpler!
+        const attributeDetails: Attribute[] = userTraits.map(ut => ({
+          id: ut.subTrait.trait.slug,
+          name: ut.subTrait.trait.name,
+          description: ut.subTrait.description,
+          category: 'Personal Development',
+          benefit: ut.subTrait.benefit,
+          roleModelImplementations: [{
+            roleModelId: ut.subTrait.trait.roleModel.id,
+            method: ut.subTrait.method,
+            description: ut.subTrait.description
+          }]
+        }))
+        
+        // Get unique role models - direct from relational data
+        const involvedRoleModels = Array.from(
+          new Map(userTraits.map(ut => [
+            ut.subTrait.trait.roleModel.id, 
+            ut.subTrait.trait.roleModel
+          ])).values()
+        )
+        
+        console.log('Involved role models:', involvedRoleModels.map(rm => rm.commonName))
+        
+        // Primary role model (most traits)
+        const roleModelCounts = userTraits.reduce((acc, ut) => {
+          const rmId = ut.subTrait.trait.roleModel.id
+          acc[rmId] = (acc[rmId] || 0) + 1
+          return acc
+        }, {} as Record<string, number>)
+        
+        const primaryRoleModelId = Object.entries(roleModelCounts)
+          .sort(([,a], [,b]) => b - a)[0][0]
+        const primaryRoleModel = involvedRoleModels.find(rm => rm.id === primaryRoleModelId)!
+        
+        // Create synthesis
+        const roleModelNames = involvedRoleModels.map(rm => rm.commonName)
+        const synthesizedPersonality = `I am a unique synthesis drawing wisdom from ${roleModelNames.join(', ')}. Through their combined teachings, I've developed ${attributeDetails.map(attr => attr.name.toLowerCase()).join(', ')}, creating a personalized approach to life that blends the best of these legendary figures.`
+
+        const dailyBehaviors = attributeDetails.map(attr => 
+          `I practice ${attr.name.toLowerCase()} using ${attr.roleModelImplementations[0].method}`
+        )
+
+        const situationalResponses = attributeDetails.slice(0, 3).map((attr, index) => {
+          const situations = [
+            "Facing a difficult decision",
+            "Dealing with setbacks", 
+            "Planning important work"
+          ]
+          return {
+            situation: situations[index] || "Challenging moment",
+            response: `I apply ${attr.name.toLowerCase()} using ${attr.roleModelImplementations[0].method}`,
+            method: attr.roleModelImplementations[0].method || attr.name
           }
-        } else {
-          console.error(`No enhanced attributes found for role model ${sourceRoleModel?.commonName}`)
+        })
+
+        const synthesizedCharacter: LightwalkerCharacter = {
+          roleModel: {
+            ...primaryRoleModel,
+            archetype: getArchetype(primaryRoleModel.commonName),
+            primaryColor: getPrimaryColor(primaryRoleModel.commonName),
+            secondaryColor: getSecondaryColor(primaryRoleModel.commonName),
+            particleType: getParticleType(primaryRoleModel.commonName),
+            famousQuotes: JSON.parse(primaryRoleModel.famousQuotes || '[]')
+          },
+          selectedAttributes: attributeDetails,
+          synthesizedPersonality,
+          dailyBehaviors,
+          situationalResponses
         }
-      }
-      
-      console.log('Built attribute details:', attributeDetails.map(attr => attr.name))
-      
-      if (attributeDetails.length === 0) {
-        throw new Error('No attribute details could be built from selected traits')
-      }
-      
-      // Create a primary role model (most frequently represented)
-      console.log('STEP 4: Determining primary role model...')
-      const roleModelCounts = selectedTraits.reduce((acc, trait) => {
-        acc[trait.roleModelId] = (acc[trait.roleModelId] || 0) + 1
-        return acc
-      }, {} as Record<string, number>)
-      
-      console.log('Role model counts:', roleModelCounts)
-      
-      const primaryRoleModelId = Object.entries(roleModelCounts)
-        .sort(([,a], [,b]) => b - a)[0][0]
-      const primaryRoleModel = roleModels.find((rm: any) => rm.id === primaryRoleModelId)
-      
-      if (!primaryRoleModel) {
-        throw new Error(`Could not find primary role model with ID: ${primaryRoleModelId}`)
-      }
-      
-      console.log('Primary role model:', primaryRoleModel.commonName)
-      
-      // Synthesize personality from multiple sources
-      console.log('STEP 5: Creating synthesized personality...')
-      const roleModelNames = involvedRoleModels.map((rm: any) => rm.commonName)
-      const synthesizedPersonality = `I am a unique synthesis drawing wisdom from ${roleModelNames.join(', ')}. Through their combined teachings, I've developed ${attributeDetails.map(attr => attr.name.toLowerCase()).join(', ')}, creating a personalized approach to life that blends the best of these legendary figures.`
 
-      const dailyBehaviors = attributeDetails.map((attr: Attribute) => 
-        `I practice ${attr.name.toLowerCase()} using ${attr.roleModelImplementations[0].method}`
-      )
-
-      const situationalResponses = attributeDetails.slice(0, 3).map((attr: Attribute, index: number) => {
-        const situations = [
-          "Facing a difficult decision",
-          "Dealing with setbacks", 
-          "Planning important work"
-        ]
-        return {
-          situation: situations[index] || "Challenging moment",
-          response: `I apply ${attr.name.toLowerCase()} using ${attr.roleModelImplementations[0].method}`,
-          method: attr.roleModelImplementations[0].method || attr.name
-        }
-      })
-
-      console.log('STEP 6: Creating final character object...')
-      const synthesizedCharacter: LightwalkerCharacter = {
-        roleModel: {
-          ...primaryRoleModel,
-          archetype: getArchetype(primaryRoleModel.commonName),
-          primaryColor: getPrimaryColor(primaryRoleModel.commonName),
-          secondaryColor: getSecondaryColor(primaryRoleModel.commonName),
-          particleType: getParticleType(primaryRoleModel.commonName)
-        },
-        selectedAttributes: attributeDetails,
-        synthesizedPersonality,
-        dailyBehaviors,
-        situationalResponses
+        setCharacter(synthesizedCharacter)
+        setTimeout(() => setShowSynthesis(true), 500)
+        
+      } else if (selectedTraits && selectedTraits.length > 0) {
+        console.log('Falling back to LEGACY data structure')
+        // TODO: Keep legacy synthesis for backwards compatibility
+        throw new Error('Legacy synthesis not implemented yet - please create a new character')
+      } else {
+        throw new Error('No trait data available')
       }
-
-      console.log('STEP 7: Setting character state...')
-      setCharacter(synthesizedCharacter)
-      console.log('Character set successfully!')
-      
-      // Show synthesis animation after data loads
-      setTimeout(() => setShowSynthesis(true), 500)
       
     } catch (error) {
       console.error('=== SYNTHESIS ERROR ===')
       console.error('Error details:', error)
       console.error('Error message:', error instanceof Error ? error.message : 'Unknown error')
-      console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace')
     } finally {
       setIsLoading(false)
     }

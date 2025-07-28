@@ -8,6 +8,7 @@ import { Settings } from 'lucide-react'
 interface SavedCharacter {
   id: string
   selectedTraits: {traitId: string, roleModelId: string, traitName: string}[]
+  userTraits?: any[] // New relational data
   characterName?: string
   discoveryPoints?: number
   level?: number
@@ -171,6 +172,7 @@ export default function CharacterPage() {
       {/* Character Display */}
       <LightwalkerCharacterDisplay
         selectedTraits={character.selectedTraits}
+        userTraits={character.userTraits}
         onBeginDailyPractice={handleBeginDailyPractice}
         characterId={characterId}
       />

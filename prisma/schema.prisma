@@ -295,6 +295,7 @@ model WaitlistEntry {
 
 model RoleModel {
   id                    String   @id @default(cuid())
+  code                  String?  @unique // "BD", "SJ", "EI" - 2-3 char codes
   fullName              String   @map("full_name")
   commonName            String   @map("common_name")
   lifeSpan              String   @map("life_span")
@@ -366,8 +367,8 @@ model RoleModel {
   potentialConflicts    String   @map("potential_conflicts")
   userImplementation    String   @map("user_implementation")
   
-  // Enhanced Attributes for Discovery Dashboard
-  enhancedAttributes    String?  @map("enhanced_attributes") // JSON array of attribute objects with name, description, benefit, oppositeOf, method
+  // LEGACY FIELDS - Keep during migration
+  enhancedAttributes    String?  @map("enhanced_attributes") // Will be migrated to Trait table
   
   // Source & Quality
   primarySources        String   @map("primary_sources")
@@ -388,10 +389,12 @@ model RoleModel {
   updatedAt             DateTime @updatedAt @map("updated_at")
 
   // Relations
-  userRoleModelConsultations UserRoleModelConsultation[]
-  lightwalkerRoleModels      LightwalkerRoleModel[]
+  traits                        Trait[]
+  userRoleModelConsultations    UserRoleModelConsultation[]
+  lightwalkerRoleModels         LightwalkerRoleModel[]
 
   @@map("role_models")
+  @@index([code])
   @@index([commonName, isActive])
   @@index([primaryDomain])
 }
@@ -431,7 +434,84 @@ model LightwalkerRoleModel {
   @@index([userLightwalkerId])
 }
 
-// NEW: Saved Character System for Multi-Role Model + Traits Discovery
+// NEW: Trait System for Multi-Pathway Discovery
+model Trait {
+  id                    String   @id @default(cuid())
+  traitCode             String   @unique // "BD.01", "SJ.03"
+  roleModelCode         String   @map("role_model_code") // "BD", "SJ" (foreign key to RoleModel.code)
+  traitNumber           Int      @map("trait_number") // 1, 2, 3... (order within role model)
+  name                  String   // "Compassionately Wise"
+  slug                  String   // "compassionately-wise"
+  
+  // Search optimization for discovery pathways
+  problemTags           String[] @map("problem_tags") // ["anger", "judgment", "conflict"]
+  valueTags             String[] @map("value_tags") // ["compassion", "empathy", "understanding"]  
+  actionTags            String[] @map("action_tags") // ["meditation", "pause", "breathe"]
+  
+  isActive              Boolean  @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  roleModel             RoleModel @relation(fields: [roleModelCode], references: [code])
+  subTraits             SubTrait[]
+
+  @@map("traits")
+  @@index([roleModelCode])
+  @@index([traitCode])
+  @@index([problemTags])
+  @@index([valueTags])
+  @@index([actionTags])
+}
+
+model SubTrait {
+  id                    String   @id @default(cuid())
+  subTraitCode          String   @unique // "BD.01.ATT", "BD.01.PRB", "BD.01.ACT"
+  traitCode             String   @map("trait_code") // "BD.01" (foreign key to Trait.traitCode)
+  type                  String   // "ATTRIBUTE", "PROBLEM", "ACTION"
+  
+  title                 String   // "Compassionate Wisdom", "Getting Angry", "Daily Meditation"
+  description           String   // Full content for this tab
+  method                String   // How the role model practices this
+  benefit               String   // What user gains from this
+  oppositeOf            String?  @map("opposite_of") // What this replaces
+  
+  // Search optimization
+  searchTerms           String[] @map("search_terms") // All searchable keywords for this subtrait
+  
+  isActive              Boolean  @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  trait                 Trait @relation(fields: [traitCode], references: [traitCode])
+  userCharacterTraits   UserCharacterTrait[]
+
+  @@map("sub_traits")
+  @@index([traitCode])
+  @@index([subTraitCode])
+  @@index([type])
+  @@index([searchTerms])
+}
+
+model UserCharacterTrait {
+  id                    String   @id @default(cuid())
+  characterId           String   @map("character_id") // Foreign key to SavedCharacter.id
+  subTraitCode          String   @map("sub_trait_code") // "BD.01.ATT" (what user actually selected)
+  addedAt               DateTime @default(now()) @map("added_at")
+  order                 Int      // User's ordering of their selected traits
+
+  // Relations
+  character             SavedCharacter @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  subTrait              SubTrait @relation(fields: [subTraitCode], references: [subTraitCode])
+
+  @@map("user_character_traits")
+  @@index([characterId])
+  @@index([subTraitCode])
+  @@unique([characterId, subTraitCode]) // Prevent duplicate trait selections
+}
+
+// Updated Saved Character System for New Relational Structure
 model SavedCharacter {
   id                    String   @id @default(cuid())
   sessionId             String?  @map("session_id") // For anonymous users
@@ -439,14 +519,17 @@ model SavedCharacter {
   characterName         String?  @map("character_name") // Optional custom name
   discoveryPoints       Int?     @default(0) @map("discovery_points")
   level                 Int?     @default(1)
-  // Store selected traits with their source role models as JSON
-  selectedTraits        String   @map("selected_traits") // JSON array of {traitId, roleModelId, traitName}
   isActive              Boolean  @default(true) @map("is_active")
   lastViewedAt          DateTime @default(now()) @map("last_viewed_at")
   createdAt             DateTime @default(now()) @map("created_at")
   updatedAt             DateTime @updatedAt @map("updated_at")
+  
+  // LEGACY FIELD - Keep during migration
+  selectedTraits        String?  @map("selected_traits") // Will be migrated to UserCharacterTrait
 
+  // Relations
   user                  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userTraits            UserCharacterTrait[]
 
   @@map("saved_characters")
   @@index([sessionId, isActive])

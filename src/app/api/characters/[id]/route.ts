@@ -21,10 +21,27 @@ export async function GET(
     const character = await prisma.savedCharacter.findUnique({
       where: { 
         id: params.id
+      },
+      include: {
+        userTraits: {
+          include: {
+            subTrait: {
+              include: {
+                trait: {
+                  include: {
+                    roleModel: true
+                  }
+                }
+              }
+            }
+          },
+          orderBy: { order: 'asc' }
+        }
       }
     })
 
-    console.log('Found character:', character)
+    console.log('Found character:', character?.id)
+    console.log('User traits count:', character?.userTraits?.length)
 
     if (!character) {
       return NextResponse.json(
@@ -46,10 +63,30 @@ export async function GET(
       data: { lastViewedAt: new Date() }
     })
 
+    // If no userTraits (new relational data), fall back to legacy selectedTraits
+    let selectedTraits: any[] = []
+    
+    if (character.userTraits && character.userTraits.length > 0) {
+      // Use new relational structure
+      selectedTraits = character.userTraits.map(ut => ({
+        traitId: ut.subTrait.trait.slug,
+        roleModelId: ut.subTrait.trait.roleModel.id,
+        traitName: ut.subTrait.trait.name,
+        subTraitCode: ut.subTraitCode,
+        method: ut.subTrait.method,
+        description: ut.subTrait.description
+      }))
+    } else if (character.selectedTraits) {
+      // Fall back to legacy JSON data
+      selectedTraits = JSON.parse(character.selectedTraits)
+    }
+
     return NextResponse.json({ 
       character: {
         ...character,
-        selectedTraits: JSON.parse(character.selectedTraits)
+        selectedTraits,
+        // Also provide the full relational data for advanced use
+        userTraits: character.userTraits
       }
     })
   } catch (error) {
