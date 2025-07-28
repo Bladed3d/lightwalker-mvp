@@ -499,79 +499,173 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
         </div>
       </div>
 
-      {/* Main Content Grid */}
+      {/* Role Model Gallery - Horizontal Scroll (Original Layout) */}
       <div className="max-w-7xl mx-auto px-6 py-4 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4 mb-6 animate-slideUp relative">
+          {/* Vertical Title on Left Edge */}
+          <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
+            <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
+                style={{ transform: 'rotate(-90deg) translate(-100%, 0)', transformOrigin: 'left top' }}>
+              ROLE MODELS
+            </h3>
+          </div>
           
-          {/* Left Panel - Role Model Selection */}
-          <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4">
-            <div className="flex items-center mb-4">
-              <h3 className="text-xl font-semibold text-cyan-400 font-mono">
-                ROLE MODEL SELECTION
+          <div className="flex space-x-4 overflow-x-auto pb-2 custom-scrollbar ml-8">
+            {roleModels.map((roleModel, index) => (
+              <div
+                key={roleModel.id}
+                className={`min-w-[280px] relative p-4 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-102 ${
+                  selectedRoleModel === roleModel.id
+                    ? 'bg-gradient-to-r from-cyan-900/50 to-purple-900/50 border-cyan-400 shadow-lg'
+                    : 'bg-gray-800/30 border-gray-600 hover:border-cyan-500/50'
+                }`}
+                onClick={() => handleRoleModelSelect(roleModel.id)}
+                style={{ 
+                  animationDelay: `${index * 0.1}s`,
+                  ...(selectedRoleModel === roleModel.id && {
+                    background: `linear-gradient(45deg, ${roleModel.primaryColor}20, ${roleModel.secondaryColor}20)`,
+                    boxShadow: `0 0 20px ${roleModel.primaryColor}30`
+                  })
+                }}
+              >
+                {/* Archetype pill in top-left corner */}
+                <div className="absolute top-2 left-2 z-10">
+                  <span 
+                    className="px-2 py-1 rounded-full text-xs font-medium capitalize text-black"
+                    style={{ backgroundColor: roleModel.primaryColor }}
+                  >
+                    {roleModel.archetype}
+                  </span>
+                </div>
+                
+                <div className="relative flex flex-col items-center text-center space-y-3">
+                  <div 
+                    className="w-28 h-28 rounded-full flex items-center justify-center text-2xl border-2 overflow-hidden"
+                    style={{ 
+                      borderColor: roleModel.primaryColor,
+                      backgroundColor: `${roleModel.primaryColor}20`
+                    }}
+                  >
+                    <img 
+                      src={roleModel.imageUrl} 
+                      alt={roleModel.commonName}
+                      className="w-full h-full object-cover rounded-full"
+                      onLoad={() => console.log(`✅ Image loaded: ${roleModel.imageUrl}`)}
+                      onError={(e) => {
+                        console.log(`❌ Image failed to load: ${roleModel.imageUrl}`);
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                        if (fallback) fallback.style.display = 'block';
+                      }}
+                    />
+                    <div className="text-2xl" style={{ display: 'none' }}>👤</div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white text-lg">{roleModel.commonName}</h4>
+                    <p className="text-sm text-gray-400">{roleModel.primaryDomain}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content - Character Hub + Trait Constellation */}
+      <div className="max-w-7xl mx-auto px-6 py-2 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          
+          {/* Left Panel - Character Hub (2/5 width) */}
+          <div className="lg:col-span-2 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft relative">
+            {/* Vertical Title on Left Edge */}
+            <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
+              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
+                  style={{ transform: 'rotate(-90deg) translate(-100%, 0)', transformOrigin: 'left top' }}>
+                PROFILE
               </h3>
             </div>
             
-            <div className="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
-              {roleModels.map((roleModel, index) => (
-                <div
-                  key={roleModel.id}
-                  className={`relative p-4 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-102 ${
-                    selectedRoleModel === roleModel.id
-                      ? 'bg-gradient-to-r from-cyan-900/50 to-purple-900/50 border-cyan-400 shadow-lg'
-                      : 'bg-gray-800/30 border-gray-600 hover:border-cyan-500/50'
-                  }`}
-                  onClick={() => handleRoleModelSelect(roleModel.id)}
-                  style={{ 
-                    animationDelay: `${index * 0.1}s`,
-                    ...(selectedRoleModel === roleModel.id && {
-                      background: `linear-gradient(45deg, ${roleModel.primaryColor}20, ${roleModel.secondaryColor}20)`,
-                      boxShadow: `0 0 20px ${roleModel.primaryColor}30`
-                    })
-                  }}
-                >
-                  {/* Archetype pill */}
-                  <div className="absolute top-2 right-2 z-10">
-                    <span 
-                      className="px-2 py-1 rounded-full text-xs font-medium capitalize text-black"
-                      style={{ backgroundColor: roleModel.primaryColor }}
-                    >
-                      {roleModel.archetype}
-                    </span>
+            {/* Holographic Character Preview */}
+            <div className="relative h-64 mb-6 border border-cyan-500/50 rounded-lg bg-gradient-to-b from-cyan-900/20 to-purple-900/20 overflow-hidden ml-8">
+              <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+              
+              {selectedRoleModelData ? (
+                <div className="absolute inset-4 flex items-center justify-center animate-scaleIn">
+                  <div 
+                    className="w-32 h-32 rounded-full flex items-center justify-center text-4xl border-2 shadow-lg animate-pulse"
+                    style={{ 
+                      borderColor: selectedRoleModelData.primaryColor,
+                      backgroundColor: `${selectedRoleModelData.primaryColor}20`,
+                      boxShadow: `0 0 20px ${selectedRoleModelData.primaryColor}50`
+                    }}
+                  >
+                    🧠
                   </div>
                   
-                  <div className="flex items-center space-x-4">
-                    <div 
-                      className="w-12 h-12 rounded-full flex items-center justify-center text-2xl font-bold"
-                      style={{ backgroundColor: `${roleModel.primaryColor}20`, color: roleModel.primaryColor }}
-                    >
-                      {roleModel.commonName.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-white">{roleModel.commonName}</h4>
-                      <p className="text-sm text-gray-400">{roleModel.primaryDomain}</p>
-                      {roleModel.lifeMission && (
-                        <p className="text-xs text-cyan-300 mt-1 line-clamp-2">{roleModel.lifeMission}</p>
-                      )}
-                    </div>
+                  {/* Particle Effects */}
+                  {[...Array(12)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute w-2 h-2 rounded-full animate-orbit"
+                      style={{ 
+                        backgroundColor: selectedRoleModelData.primaryColor,
+                        transform: `rotate(${i * 30}deg) translateX(60px)`,
+                        animationDelay: `${i * 0.1}s`
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+                  <div className="text-center">
+                    <div className="text-6xl mb-2 animate-bounce">⚡</div>
+                    <div className="text-sm font-mono">Awaiting Archetype Selection</div>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
+
+            {/* Character Stats */}
+            {selectedRoleModelData && (
+              <div className="space-y-3 animate-fadeIn ml-8">
+                <div className="bg-gray-800/50 rounded p-3 border border-cyan-500/30">
+                  <div className="text-sm text-gray-400 mb-1">ARCHETYPE</div>
+                  <div className="text-cyan-400 font-semibold capitalize">{selectedRoleModelData.archetype}</div>
+                </div>
+                <div className="bg-gray-800/50 rounded p-3 border border-cyan-500/30">
+                  <div className="text-sm text-gray-400 mb-1">PRIMARY DOMAIN</div>
+                  <div className="text-purple-400">{selectedRoleModelData.primaryDomain}</div>
+                </div>
+                <div className="bg-gray-800/50 rounded p-3 border border-cyan-500/30">
+                  <div className="text-sm text-gray-400 mb-1">TRAIT CAPACITY</div>
+                  <div className="text-green-400">{selectedAttributes.length}/{selectedRoleModelData.attributeCount}</div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Right Panel - Enhanced Attribute Selection */}
-          <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-cyan-400 font-mono">
-                {selectedRoleModelData 
-                  ? `${selectedRoleModelData.commonName.toUpperCase()} ATTRIBUTES`
-                  : 'ATTRIBUTE SELECTION'
-                }
+          {/* Right Panel - Trait Constellation (3/5 width = 60%) */}
+          <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight relative">
+            {/* Vertical Title on Left Edge */}
+            <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
+              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
+                  style={{ transform: 'rotate(-90deg) translate(-100%, 0)', transformOrigin: 'left top' }}>
+                ATTRIBUTES
               </h3>
-              <div className="text-sm text-gray-400">
-                {selectedAttributes.length}/5 selected
-              </div>
             </div>
+            
+            <div className="ml-8">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-lg font-semibold text-white">
+                  {selectedRoleModelData 
+                    ? `${selectedRoleModelData.commonName} Attributes`
+                    : 'Select Role Model First'
+                  }
+                </h4>
+                <div className="text-sm text-gray-400">
+                  {selectedAttributes.length}/5 selected
+                </div>
+              </div>
             
             <div className="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
               {attributes.map((attribute) => (
@@ -677,20 +771,27 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
               ))}
             </div>
 
-            {/* Create Lightwalker Button */}
-            {selectedAttributes.length > 0 && (
-              <div className="mt-6 pt-4 border-t border-gray-700">
+            {/* Activation Button */}
+            {selectedAttributes.length >= 3 && (
+              <div className="mt-6 pt-4 border-t border-cyan-500/30 animate-fadeIn ml-8">
                 <button 
-                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                  onClick={() => onLightwalkerCreated({ attributes: selectedAttributes })}
+                  className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 animate-pulse"
+                  onClick={() => onLightwalkerCreated({ 
+                    archetype: selectedRoleModelData?.archetype,
+                    attributes: selectedAttributes,
+                    discoveryPoints: gamification.discoveryPoints,
+                    level: gamification.level
+                  })}
                 >
                   <span className="flex items-center justify-center space-x-2">
-                    <span>🚀</span>
-                    <span>CREATE MY LIGHTWALKER™ ({selectedAttributes.length} attributes)</span>
+                    <span>⚡</span>
+                    <span>ACTIVATE LIGHTWALKER™</span>
+                    <span>({selectedAttributes.length} traits)</span>
                   </span>
                 </button>
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>
@@ -754,6 +855,27 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           from { transform: translateX(100%); opacity: 0; }
           to { transform: translateX(0); opacity: 1; }
         }
+        @keyframes orbit {
+          from { transform: rotate(0deg) translateX(60px); }
+          to { transform: rotate(360deg) translateX(60px); }
+        }
+        @keyframes glow {
+          0%, 100% { box-shadow: 0 0 5px rgba(0, 212, 255, 0.5); }
+          50% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.8); }
+        }
+        @keyframes scaleIn {
+          from { transform: scale(0.8); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes slideLeft {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(0); }
+        }
+        .animate-scaleIn { animation: scaleIn 1s ease-out; }
+        .animate-orbit { animation: orbit 2s linear infinite; }
+        .animate-glow { animation: glow 2s ease-in-out infinite; }
+        .animate-slideLeft { animation: slideLeft 0.8s ease-out; }
+        .hover\\:scale-102:hover { transform: scale(1.02); }
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;

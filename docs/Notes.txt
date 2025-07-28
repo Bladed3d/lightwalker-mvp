@@ -5,3 +5,15 @@ create images at gemini.google.com
 Prompt:
 Please create a watercolor painting, head shot of Isaac Newton holding an apple, in the style of Pixar, bold colors, HDR, 8K, ratio 1:1
 
+to see what names in role model images do the following:
+1. Open the browser console at
+  https://lightwalker-mvp.vercel.app/gamified-simple
+  2. Look for the log message "📷 Expected image filenames:"
+  3. You'll see exactly what each role model expects, like:
+    - Isaac Newton → /role-models/isaac-newton.jpg
+    - Steve Jobs → /role-models/steve-jobs.jpg
+    - etc.
+
+  Then just name your image files to match exactly what's shown in the
+  console!
+  
