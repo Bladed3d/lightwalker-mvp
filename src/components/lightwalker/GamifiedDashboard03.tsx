@@ -533,10 +533,8 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
                 
                 <div className="relative flex flex-col items-center text-center space-y-3">
                   <div 
-                    className="rounded-full flex items-center justify-center text-2xl border-2 overflow-hidden"
+                    className="w-28 h-28 rounded-full flex items-center justify-center text-2xl border-2 overflow-hidden"
                     style={{ 
-                      width: '30px',
-                      height: '30px',
                       borderColor: roleModel.primaryColor,
                       backgroundColor: `${roleModel.primaryColor}20`
                     }}
