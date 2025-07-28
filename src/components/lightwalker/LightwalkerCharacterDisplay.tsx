@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Brain, Star, Zap, Clock, Target, Quote, Settings } from 'lucide-react'
 
 interface RoleModel {
@@ -81,9 +81,10 @@ export default function LightwalkerCharacterDisplay({
   onBeginDailyPractice,
   characterId 
 }: LightwalkerCharacterDisplayProps) {
-  console.log('=== LightwalkerCharacterDisplay Props ===')
-  console.log('selectedTraits (legacy):', selectedTraits)
-  console.log('userTraits (new):', userTraits)
+  // Track component renders
+  console.log('=== COMPONENT RENDER at', new Date().toISOString(), '===')
+  console.log('selectedTraits (legacy):', selectedTraits?.length)
+  console.log('userTraits (new):', userTraits?.length)
   console.log('characterId:', characterId)
   
   const [character, setCharacter] = useState<LightwalkerCharacter | null>(null)
@@ -93,15 +94,19 @@ export default function LightwalkerCharacterDisplay({
   const [showSettings, setShowSettings] = useState(false)
   const [synthesisAttempted, setSynthesisAttempted] = useState(false)
 
+  // Create stable references for trait data to prevent re-renders
+  const stableUserTraitsLength = useMemo(() => userTraits?.length || 0, [userTraits?.length])
+  const stableSelectedTraitsLength = useMemo(() => selectedTraits?.length || 0, [selectedTraits?.length])
+
   useEffect(() => {
-    const hasData = (userTraits && userTraits.length > 0) || (selectedTraits && selectedTraits.length > 0)
+    const hasData = stableUserTraitsLength > 0 || stableSelectedTraitsLength > 0
     if (!synthesisAttempted && hasData) {
       console.log('=== useEffect Triggered ===')
       console.log('About to call synthesizeCharacter...')
       setSynthesisAttempted(true)
       synthesizeCharacter()
     }
-  }, [selectedTraits, userTraits])
+  }, [stableUserTraitsLength, stableSelectedTraitsLength]) // Don't include synthesisAttempted to avoid loops
 
   useEffect(() => {
     // Rotate through quotes every 5 seconds
