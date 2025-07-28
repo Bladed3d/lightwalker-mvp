@@ -94,7 +94,7 @@ export default function GamifiedDiscoveryDashboard({ onLightwalkerCreated }: Gam
         id: roleModel.id,
         commonName: roleModel.commonName,
         primaryDomain: roleModel.primaryDomain,
-        imageUrl: `/role-models/${roleModel.id || roleModel.commonName.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '')}.jpg`,
+        imageUrl: `/role-models/${roleModel.commonName.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '')}.jpg`,
         attributeCount: Array.isArray(roleModel.coreValues) ? roleModel.coreValues.length : 0,
         selectedAttributes: 0,
         fullName: roleModel.fullName,
