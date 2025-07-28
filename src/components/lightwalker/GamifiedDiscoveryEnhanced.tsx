@@ -215,11 +215,17 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
 
     try {
       // Try to load enhanced attributes from database
+      console.log(`🔍 Loading enhanced attributes for ${roleModel.commonName} (${roleModelId})`)
       const response = await fetch(`/api/role-models/${roleModelId}`)
+      console.log('📡 API response status:', response.status)
+      
       if (response.ok) {
-        const roleModelData = await response.json()
+        const data = await response.json()
+        console.log('📦 API response data:', data)
+        const roleModelData = data.roleModel || data
         
         if (roleModelData.enhancedAttributes && roleModelData.enhancedAttributes.length > 0) {
+          console.log(`✅ Found ${roleModelData.enhancedAttributes.length} enhanced attributes in database`)
           const dbAttributes = roleModelData.enhancedAttributes.map((attr: any, index: number) => ({
             id: attr.name.toLowerCase().replace(/\s+/g, '-'),
             name: attr.name,
@@ -240,11 +246,16 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           
           setAttributes(dbAttributes)
           console.log(`✅ Loaded ${dbAttributes.length} enhanced attributes for ${roleModel.commonName} from database`)
+          console.log('🔍 Sample attribute oppositeOf:', dbAttributes[0]?.oppositeOf)
           return
+        } else {
+          console.warn('❌ No enhanced attributes found in database response')
         }
+      } else {
+        console.warn('❌ API response not OK:', response.status, response.statusText)
       }
     } catch (error) {
-      console.warn('Failed to load enhanced attributes from database:', error)
+      console.warn('❌ Failed to load enhanced attributes from database:', error)
     }
     
     // Fallback to hardcoded Steve Jobs attributes if database fails
