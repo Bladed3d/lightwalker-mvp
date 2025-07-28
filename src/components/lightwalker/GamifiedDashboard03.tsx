@@ -521,9 +521,19 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
                   })
                 }}
               >
+                {/* Archetype pill in top-left corner */}
+                <div className="absolute top-2 left-2 z-10">
+                  <span 
+                    className="px-2 py-1 rounded-full text-xs font-medium capitalize text-black"
+                    style={{ backgroundColor: roleModel.primaryColor }}
+                  >
+                    {roleModel.archetype}
+                  </span>
+                </div>
+                
                 <div className="relative flex flex-col items-center text-center space-y-3">
                   <div 
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-2xl border-2 overflow-hidden"
+                    className="w-24 h-24 rounded-full flex items-center justify-center text-2xl border-2 overflow-hidden"
                     style={{ 
                       borderColor: roleModel.primaryColor,
                       backgroundColor: `${roleModel.primaryColor}20`
@@ -545,15 +555,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
                   </div>
                   <div>
                     <h4 className="font-semibold text-white text-lg">{roleModel.commonName}</h4>
-                    <p className="text-sm text-gray-400 mb-2">{roleModel.primaryDomain}</p>
-                    <div className="text-xs">
-                      <span 
-                        className="px-3 py-1 rounded-full text-black font-medium capitalize"
-                        style={{ backgroundColor: roleModel.primaryColor }}
-                      >
-                        {roleModel.archetype}
-                      </span>
-                    </div>
+                    <p className="text-sm text-gray-400">{roleModel.primaryDomain}</p>
                   </div>
                 </div>
               </div>
