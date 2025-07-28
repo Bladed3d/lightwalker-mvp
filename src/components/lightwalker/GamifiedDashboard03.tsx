@@ -111,6 +111,10 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
       
       setRoleModels(gamifiedRoleModels)
       console.log('✅ Loaded gamified role models:', gamifiedRoleModels.length)
+      console.log('📷 Expected image filenames:')
+      gamifiedRoleModels.forEach(rm => 
+        console.log(`  - ${rm.commonName} → ${rm.imageUrl}`)
+      )
       
     } catch (error) {
       console.error('Failed to load role models:', error)
