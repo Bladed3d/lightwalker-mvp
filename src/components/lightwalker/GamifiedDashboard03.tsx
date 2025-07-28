@@ -499,7 +499,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
           <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
             <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
                 style={{ transform: 'rotate(-90deg) translate(-100%, 0)', transformOrigin: 'left top' }}>
-              ARCHETYPE SELECTION
+              ROLE MODELS
             </h3>
           </div>
           
@@ -560,7 +560,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
             <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
               <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
                   style={{ transform: 'rotate(-90deg) translate(-100%, 0)', transformOrigin: 'left top' }}>
-                CONSCIOUSNESS CORE
+                PROFILE
               </h3>
             </div>
             
@@ -629,7 +629,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
             <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
               <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
                   style={{ transform: 'rotate(-90deg) translate(-100%, 0)', transformOrigin: 'left top' }}>
-                TRAIT CONSTELLATION
+                ATTRIBUTES
               </h3>
             </div>
             
