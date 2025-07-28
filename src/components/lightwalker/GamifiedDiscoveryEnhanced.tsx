@@ -190,6 +190,17 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
       }))
       
       setRoleModels(fallbackRoleModels)
+      
+      console.log('⚠️ Using fallback role models:')
+      fallbackRoleModels.forEach(rm => 
+        console.log(`  - ${rm.commonName} → ${rm.imageUrl}`)
+      )
+      
+      // Debug specific problematic ones
+      const buddha = fallbackRoleModels.find(rm => rm.commonName === 'Buddha')
+      const mlk = fallbackRoleModels.find(rm => rm.commonName === 'Martin Luther King Jr.')
+      if (buddha) console.log('🧘 Fallback Buddha URL:', buddha.imageUrl)
+      if (mlk) console.log('✊ Fallback MLK URL:', mlk.imageUrl)
     }
   }
 
