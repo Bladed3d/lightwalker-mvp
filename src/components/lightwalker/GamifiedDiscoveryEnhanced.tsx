@@ -116,7 +116,7 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
     } catch (error) {
       console.error('Failed to load role models:', error)
       
-      // Enhanced fallback with gamified properties
+      // Enhanced fallback with gamified properties - expanded set for production
       setRoleModels([
         {
           id: 'steve-jobs',
@@ -131,16 +131,64 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           particleType: 'sparks'
         },
         {
-          id: 'oprah-winfrey',
-          commonName: 'Oprah Winfrey',
-          primaryDomain: 'Empathy & Communication',
-          imageUrl: '/role-models/oprah.jpg',
+          id: 'buddha',
+          commonName: 'Buddha',
+          primaryDomain: 'Spiritual wisdom and liberation from suffering',
+          imageUrl: '/role-models/buddha.jpg',
+          attributeCount: 5,
+          selectedAttributes: 0,
+          archetype: 'mystic',
+          primaryColor: '#8A2BE2',
+          secondaryColor: '#6A1B9A',
+          particleType: 'glow'
+        },
+        {
+          id: 'marcus-aurelius',
+          commonName: 'Marcus Aurelius',
+          primaryDomain: 'Wisdom & Self-Discipline',
+          imageUrl: '/role-models/marcus-aurelius.jpg',
+          attributeCount: 4,
+          selectedAttributes: 0,
+          archetype: 'wisdom',
+          primaryColor: '#FFD700',
+          secondaryColor: '#CCB000',
+          particleType: 'pulse'
+        },
+        {
+          id: 'maya-angelou',
+          commonName: 'Maya Angelou',
+          primaryDomain: 'Resilience & Grace',
+          imageUrl: '/role-models/maya-angelou.jpg',
+          attributeCount: 5,
+          selectedAttributes: 0,
+          archetype: 'creator',
+          primaryColor: '#00FF88',
+          secondaryColor: '#00CC66',
+          particleType: 'cascade'
+        },
+        {
+          id: 'martin-luther-king-jr',
+          commonName: 'Martin Luther King Jr.',
+          primaryDomain: 'Civil rights leadership and nonviolent resistance',
+          imageUrl: '/role-models/martin-luther-king-jr.jpg',
           attributeCount: 5,
           selectedAttributes: 0,
           archetype: 'leader',
           primaryColor: '#FF00FF',
           secondaryColor: '#CC00CC',
           particleType: 'flow'
+        },
+        {
+          id: 'joan-of-arc',
+          commonName: 'Joan of Arc',
+          primaryDomain: 'Courage and unwavering faith',
+          imageUrl: '/role-models/joan-of-arc.jpg',
+          attributeCount: 4,
+          selectedAttributes: 0,
+          archetype: 'guardian',
+          primaryColor: '#FF6B35',
+          secondaryColor: '#CC5529',
+          particleType: 'spiral'
         }
       ])
     }
