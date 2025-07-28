@@ -84,6 +84,30 @@ This is fundamental to the learning-through-copying model. Users observe and cop
 - Smart categorization solves template scaling issues
 - Server setup requires complete dependency installation in subdirectory
 
+## CRITICAL: How to Add Role Models (Don't Overcomplicate This!)
+
+**Steve Jobs was added using `scripts/seed-role-models.ts` - just use the same script!**
+
+**To add more role models:**
+1. Edit `scripts/seed-role-models.ts`
+2. Add new objects to the `roleModelsData` array (copy Steve Jobs format exactly)
+3. Run: `npx ts-node scripts/seed-role-models.ts`
+4. That's it! Don't create new scripts or APIs.
+
+**The script already has the complete schema structure - just copy the Steve Jobs entry format.**
+
+**NEVER:**
+- Create new seeding scripts
+- Try to use the API endpoints
+- Overcomplicate with schema analysis
+- Start from scratch
+
+**ALWAYS:**
+- Use the existing working script
+- Copy the exact format that works
+- Add to the existing array
+- Run the existing command
+
 ## Success Metrics
 
 - 80%+ users successfully create Lightwalker they're excited about

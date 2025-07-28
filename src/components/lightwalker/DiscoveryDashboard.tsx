@@ -23,6 +23,8 @@ interface Attribute {
   name: string
   category: string
   description: string
+  benefit?: string
+  oppositeOf?: string
   roleModelImplementations: {
     roleModelId: string
     method: string
@@ -183,21 +185,105 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
         ]
       }))
       
-      // Add some enhanced attributes based on Steve Jobs specifically
+      // Add Steve Jobs specific attributes with 6th-grade explanations and benefits
       if (roleModelId === 'steve-jobs') {
-        attributesFromValues.push({
-          id: 'strategic-focus',
-          name: 'Strategic Focus',
-          category: 'Decision-Making',
-          description: 'The ability to identify what matters most and say no to everything else',
-          roleModelImplementations: [
-            {
-              roleModelId: 'steve-jobs',
-              method: 'Annual Retreat Process',
-              description: 'List 10 priorities, slash to 3. Deciding what NOT to do is as important as deciding what to do.'
-            }
-          ]
-        })
+        const jobsAttributes = [
+          {
+            id: 'strategic-focus',
+            name: 'Strategic Focus',
+            category: 'Decision-Making',
+            description: 'You finish what matters most instead of being busy with everything',
+            benefit: 'Stop feeling overwhelmed and actually complete important projects',
+            oppositeOf: 'Scattered attention that leaves everything half-done',
+            roleModelImplementations: [
+              {
+                roleModelId: 'steve-jobs',
+                method: 'Annual Retreat Process',
+                description: 'Every year, list 10 things you want to do. Then cross out 7 and only focus on the top 3. Say no to everything else.'
+              }
+            ]
+          },
+          {
+            id: 'design-perfectionism',
+            name: 'Design Perfectionism',
+            category: 'Quality Standards',
+            description: 'You make things beautiful and simple, not just functional',
+            benefit: 'Create work that people love using and talking about',
+            oppositeOf: 'Good enough mentality that creates forgettable results',
+            roleModelImplementations: [
+              {
+                roleModelId: 'steve-jobs',
+                method: 'Three-Click Rule',
+                description: 'Any task should take 3 clicks or less. If it takes more, redesign it until it\'s simple.'
+              }
+            ]
+          },
+          {
+            id: 'visionary-innovation',
+            name: 'Visionary Innovation', 
+            category: 'Creative Thinking',
+            description: 'You see what people need before they know they need it',
+            benefit: 'Stay ahead of trends and create breakthrough solutions',
+            oppositeOf: 'Following what everyone else is already doing',
+            roleModelImplementations: [
+              {
+                roleModelId: 'steve-jobs',
+                method: 'Think Different Principle',
+                description: 'Ask "What would delight users?" instead of "What do competitors do?" Focus on user experience over features.'
+              }
+            ]
+          },
+          {
+            id: 'reality-distortion-field',
+            name: 'Inspiring Leadership',
+            category: 'Influence',
+            description: 'You get people excited to do their best work and achieve the impossible',
+            benefit: 'Build teams that go above and beyond and love working with you',
+            oppositeOf: 'Accepting limitations and settling for mediocre results',
+            roleModelImplementations: [
+              {
+                roleModelId: 'steve-jobs',
+                method: 'Reality Distortion Field',
+                description: 'Paint a vision so compelling that people believe they can achieve more than they thought possible. Set high standards and inspire rather than demand.'
+              }
+            ]
+          },
+          {
+            id: 'intuitive-decision-making',
+            name: 'Intuitive Decision Making',
+            category: 'Decision-Making', 
+            description: 'You trust your gut feeling when data isn\'t enough',
+            benefit: 'Make confident decisions quickly and avoid analysis paralysis',
+            oppositeOf: 'Getting stuck overthinking every choice until opportunities pass',
+            roleModelImplementations: [
+              {
+                roleModelId: 'steve-jobs',
+                method: 'Feel-Based Testing',
+                description: 'After gathering basic facts, ask "How does this feel?" Trust your instincts about what feels right or wrong.'
+              }
+            ]
+          },
+          {
+            id: 'elegant-simplicity',
+            name: 'Elegant Simplicity',
+            category: 'Problem Solving',
+            description: 'You remove the unnecessary to make the necessary clear',
+            benefit: 'Create solutions that are powerful yet easy to understand and use',
+            oppositeOf: 'Making things complicated and hard to understand',
+            roleModelImplementations: [
+              {
+                roleModelId: 'steve-jobs',
+                method: 'Subtraction Method',
+                description: 'Look at any solution and ask "What can we remove?" Keep subtracting until only the essential remains. Simplicity is the ultimate sophistication.'
+              }
+            ]
+          }
+        ]
+        
+        // Replace the core values with these enhanced attributes
+        setAttributes(jobsAttributes)
+        console.log(`✅ Generated ${jobsAttributes.length} enhanced attributes for Steve Jobs`)
+        return
       }
       
       setAttributes(attributesFromValues)
@@ -422,9 +508,24 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
                   <div className="flex-1">
                     <div className="font-medium text-gray-900">{attribute.name}</div>
                     <div className="text-sm text-gray-600 mb-2">{attribute.description}</div>
+                    
+                    {attribute.benefit && (
+                      <div className="bg-green-50 rounded p-2 text-xs mb-2">
+                        <div className="font-medium text-green-800">✅ Benefit:</div>
+                        <div className="text-green-700">{attribute.benefit}</div>
+                      </div>
+                    )}
+                    
+                    {attribute.oppositeOf && (
+                      <div className="bg-red-50 rounded p-2 text-xs mb-2">
+                        <div className="font-medium text-red-800">❌ Instead of:</div>
+                        <div className="text-red-700">{attribute.oppositeOf}</div>
+                      </div>
+                    )}
+                    
                     {attribute.roleModelImplementations.map((impl, index) => (
                       <div key={index} className="bg-blue-50 rounded p-2 text-xs">
-                        <div className="font-medium text-blue-800">{impl.method}</div>
+                        <div className="font-medium text-blue-800">🔧 {impl.method}</div>
                         <div className="text-blue-600">{impl.description}</div>
                       </div>
                     ))}
