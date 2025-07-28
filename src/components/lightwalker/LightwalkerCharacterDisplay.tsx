@@ -121,10 +121,12 @@ export default function LightwalkerCharacterDisplay({
   }, [character])
 
   const synthesizeCharacter = async () => {
+    const synthesisId = Math.random().toString(36).substring(7)
+    console.log(`=== NEW SYNTHESIS START [${synthesisId}] ===`)
     setIsLoading(true)
     
     try {
-      console.log('=== NEW RELATIONAL CHARACTER SYNTHESIS ===')
+      console.log(`=== SYNTHESIS [${synthesisId}]: Starting character synthesis ===`)
       
       // Prioritize new relational data, fall back to legacy if needed
       if (userTraits && userTraits.length > 0) {
@@ -203,10 +205,11 @@ export default function LightwalkerCharacterDisplay({
         }
 
         setCharacter(synthesizedCharacter)
+        console.log(`=== SYNTHESIS [${synthesisId}]: SUCCESS - Character created ===`)
         setTimeout(() => setShowSynthesis(true), 500)
         
       } else if (selectedTraits && selectedTraits.length > 0) {
-        console.log('Falling back to LEGACY data structure')
+        console.log(`=== SYNTHESIS [${synthesisId}]: Using LEGACY format ===`)
         // TODO: Keep legacy synthesis for backwards compatibility
         throw new Error('Legacy synthesis not implemented yet - please create a new character')
       } else {
@@ -214,10 +217,11 @@ export default function LightwalkerCharacterDisplay({
       }
       
     } catch (error) {
-      console.error('=== SYNTHESIS ERROR ===')
+      console.error(`=== SYNTHESIS ERROR [${synthesisId}] ===`)
       console.error('Error details:', error)
       console.error('Error message:', error instanceof Error ? error.message : 'Unknown error')
     } finally {
+      console.log(`=== SYNTHESIS END [${synthesisId}] ===`)
       setIsLoading(false)
     }
   }
@@ -431,7 +435,7 @@ export default function LightwalkerCharacterDisplay({
                 Your Lightwalker™
               </h2>
               <p className="text-xl text-gray-300 mb-4">
-                Inspired by {character.roleModel.commonName} · {character.selectedAttributes.length} Selected Traits
+                {character.selectedAttributes.length} Selected Traits from Multiple Masters
               </p>
               
               {/* Synthesis Description */}
