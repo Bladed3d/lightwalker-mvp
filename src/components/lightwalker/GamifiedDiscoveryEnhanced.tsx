@@ -110,6 +110,19 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
     updateGamificationState()
   }, [selectedTraits, selectedRoleModel])
 
+  // Cleanup animations when component unmounts
+  useEffect(() => {
+    return () => {
+      // Clean up any animation elements when leaving the page
+      const animationElements = document.querySelectorAll('.animate-pulse, .animate-spin, .animate-bounce, [class*="particle"]')
+      animationElements.forEach(el => {
+        if (el.parentNode) {
+          el.parentNode.removeChild(el)
+        }
+      })
+    }
+  }, [])
+
   const loadGamifiedRoleModels = async () => {
     try {
       const response = await fetch('/api/role-models')

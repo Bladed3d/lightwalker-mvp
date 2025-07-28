@@ -409,16 +409,17 @@ export default function LightwalkerCharacterDisplay({
           background: `linear-gradient(135deg, ${character.roleModel.primaryColor}10, ${character.roleModel.secondaryColor}10)`
         }}>
           <div className="flex flex-col lg:flex-row items-center lg:items-start space-y-6 lg:space-y-0 lg:space-x-8">
-            {/* Multiple Role Model Avatars */}
+            {/* Multiple Role Model Avatars - Vertical Stack */}
             <div className="relative">
-              <div className="flex items-center justify-center space-x-4">
+              <div className="flex flex-col items-center justify-center space-y-3">
                 {character.involvedRoleModels?.map((roleModel, index) => (
                   <div key={roleModel.id} className="relative group">
                     <div 
-                      className="w-24 h-24 rounded-full border-3 flex items-center justify-center overflow-hidden transition-all hover:scale-110"
+                      className="w-20 h-20 rounded-full border-3 flex items-center justify-center overflow-hidden transition-all hover:scale-110"
                       style={{ 
                         borderColor: roleModel.primaryColor,
-                        backgroundColor: `${roleModel.primaryColor}20`
+                        backgroundColor: `${roleModel.primaryColor}20`,
+                        boxShadow: `0 0 20px ${roleModel.primaryColor}30`
                       }}
                     >
                       <img 
@@ -432,36 +433,30 @@ export default function LightwalkerCharacterDisplay({
                         }}
                       />
                       <div 
-                        className="w-full h-full items-center justify-center text-3xl"
+                        className="w-full h-full items-center justify-center text-2xl"
                         style={{ display: 'none' }}
                       >
                         🧠
                       </div>
                     </div>
                     
-                    {/* Role Model Name Tooltip */}
-                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="bg-black/80 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                    {/* Role Model Name on Hover */}
+                    <div className="absolute -right-24 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                      <div className="bg-black/90 text-white text-xs px-3 py-1 rounded-lg whitespace-nowrap">
                         {roleModel.commonName}
                       </div>
                     </div>
-                    
-                    {/* Small particle effects for each */}
-                    {[...Array(3)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute w-2 h-2 rounded-full animate-orbit"
-                        style={{ 
-                          backgroundColor: roleModel.primaryColor,
-                          transform: `rotate(${i * 120}deg) translateX(40px)`,
-                          animationDelay: `${index * 0.1 + i * 0.2}s`,
-                          animationDuration: '2s'
-                        }}
-                      />
-                    ))}
                   </div>
                 ))}
               </div>
+              
+              {/* Single subtle glow effect instead of individual particles */}
+              <div 
+                className="absolute inset-0 rounded-full opacity-30 blur-xl pointer-events-none"
+                style={{
+                  background: `radial-gradient(circle, ${character.roleModel.primaryColor}40 0%, transparent 70%)`
+                }}
+              />
             </div>
 
             {/* Character Details */}
