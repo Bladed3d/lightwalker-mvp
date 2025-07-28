@@ -99,12 +99,16 @@ export default function LightwalkerCharacterDisplay({
       }
       
       // Load all role models
+      console.log('STEP 1: Loading role models...')
       const roleModelResponse = await fetch('/api/role-models')
       const { roleModels } = await roleModelResponse.json()
       console.log('Loaded role models count:', roleModels.length)
       
       // Get unique role models from selected traits
+      console.log('STEP 2: Finding involved role models...')
       const uniqueRoleModelIds = Array.from(new Set(selectedTraits.map(trait => trait.roleModelId)))
+      console.log('Unique role model IDs:', uniqueRoleModelIds)
+      
       const involvedRoleModels = uniqueRoleModelIds.map(id => 
         roleModels.find((rm: any) => rm.id === id)
       ).filter(Boolean)
@@ -112,12 +116,19 @@ export default function LightwalkerCharacterDisplay({
       console.log('Involved role models:', involvedRoleModels.map((rm: any) => rm.commonName))
       
       // Build attribute details by finding each trait in its source role model
+      console.log('STEP 3: Building attribute details...')
       const attributeDetails: Attribute[] = []
       
       for (const trait of selectedTraits) {
+        console.log(`Processing trait: ${trait.traitName} from role model ${trait.roleModelId}`)
         const sourceRoleModel = roleModels.find((rm: any) => rm.id === trait.roleModelId)
+        console.log('Found source role model:', sourceRoleModel?.commonName)
+        
         if (sourceRoleModel?.enhancedAttributes) {
+          console.log('Enhanced attributes found, looking for trait:', trait.traitId)
           const attribute = sourceRoleModel.enhancedAttributes.find((attr: any) => attr.id === trait.traitId)
+          console.log('Found attribute:', attribute?.name)
+          
           if (attribute) {
             attributeDetails.push({
               id: attribute.id,
@@ -131,25 +142,41 @@ export default function LightwalkerCharacterDisplay({
                 description: attribute.description
               }]
             })
+          } else {
+            console.error(`Could not find attribute ${trait.traitId} in role model ${sourceRoleModel.commonName}`)
           }
+        } else {
+          console.error(`No enhanced attributes found for role model ${sourceRoleModel?.commonName}`)
         }
       }
       
       console.log('Built attribute details:', attributeDetails.map(attr => attr.name))
       
+      if (attributeDetails.length === 0) {
+        throw new Error('No attribute details could be built from selected traits')
+      }
+      
       // Create a primary role model (most frequently represented)
+      console.log('STEP 4: Determining primary role model...')
       const roleModelCounts = selectedTraits.reduce((acc, trait) => {
         acc[trait.roleModelId] = (acc[trait.roleModelId] || 0) + 1
         return acc
       }, {} as Record<string, number>)
       
+      console.log('Role model counts:', roleModelCounts)
+      
       const primaryRoleModelId = Object.entries(roleModelCounts)
         .sort(([,a], [,b]) => b - a)[0][0]
       const primaryRoleModel = roleModels.find((rm: any) => rm.id === primaryRoleModelId)
       
+      if (!primaryRoleModel) {
+        throw new Error(`Could not find primary role model with ID: ${primaryRoleModelId}`)
+      }
+      
       console.log('Primary role model:', primaryRoleModel.commonName)
       
       // Synthesize personality from multiple sources
+      console.log('STEP 5: Creating synthesized personality...')
       const roleModelNames = involvedRoleModels.map((rm: any) => rm.commonName)
       const synthesizedPersonality = `I am a unique synthesis drawing wisdom from ${roleModelNames.join(', ')}. Through their combined teachings, I've developed ${attributeDetails.map(attr => attr.name.toLowerCase()).join(', ')}, creating a personalized approach to life that blends the best of these legendary figures.`
 
@@ -170,6 +197,7 @@ export default function LightwalkerCharacterDisplay({
         }
       })
 
+      console.log('STEP 6: Creating final character object...')
       const synthesizedCharacter: LightwalkerCharacter = {
         roleModel: {
           ...primaryRoleModel,
@@ -184,7 +212,9 @@ export default function LightwalkerCharacterDisplay({
         situationalResponses
       }
 
+      console.log('STEP 7: Setting character state...')
       setCharacter(synthesizedCharacter)
+      console.log('Character set successfully!')
       
       // Show synthesis animation after data loads
       setTimeout(() => setShowSynthesis(true), 500)
