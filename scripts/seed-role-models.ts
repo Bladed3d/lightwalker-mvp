@@ -2982,6 +2982,298 @@ const roleModelsData: RoleModelData[] = [
         method: "When progress seems slow, ask 'What small step can I take today?' and trust that small steps add up"
       }
     ]
+  },
+  {
+    fullName: "Jesus of Nazareth (Jesus Christ)",
+    commonName: "Jesus",
+    lifeSpan: "c. 4 BCE - 30/33 CE (approximately 33-37 years)",
+    culturalContext: "Jewish carpenter from Galilee in Roman-occupied Palestine, founder of Christianity, taught during Second Temple Judaism period",
+    historicalPeriod: "First century CE, Roman Empire, Second Temple Judaism, emergence of Christianity",
+    primaryDomain: "Spiritual teaching, moral leadership, and transformational love",
+    lifeMission: "Teach divine love, demonstrate perfect compassion, and transform human hearts through sacrificial service to others",
+    coreValues: [
+      "Unconditional love for all people, especially the marginalized",
+      "Compassionate service to those who suffer",
+      "Forgiveness and mercy over judgment and revenge",
+      "Truth spoken with love and humility",
+      "Justice for the oppressed and voiceless",
+      "Spiritual transformation through inner change",
+      "Sacrificial giving for the welfare of others"
+    ],
+    valueHierarchy: [
+      "Love for God and others",
+      "Compassionate service",
+      "Truth and integrity",
+      "Justice and mercy",
+      "Personal comfort and safety"
+    ],
+    worldview: "God is love; every person has infinite worth; transformation happens through love and service; suffering can be redemptive; spiritual reality transcends material concerns",
+    personalPhilosophy: "Love your enemies, serve the least among you, forgive without limit, speak truth with compassion",
+    dominantTraits: [
+      "Unconditionally loving - showed equal compassion to outcasts and elite alike",
+      "Radically compassionate - healed the sick, fed the hungry, comforted the grieving",
+      "Truthfully bold - spoke against injustice despite personal danger",
+      "Humbly serving - washed disciples' feet, lived simply despite divine claims",
+      "Forgivingly merciful - pardoned enemies even while being executed",
+      "Spiritually centered - maintained connection to divine purpose through prayer",
+      "Transformatively powerful - changed lives through love rather than force"
+    ],
+    communicationStyle: "Simple parables and stories that common people could understand; gentle with the humble, challenging to the proud; taught through questions and metaphors",
+    emotionalPatterns: "Deep compassion for suffering; righteous anger at injustice; serene peace in crisis; joyful celebration with friends; profound sorrow over human hardness",
+    socialInteractionStyle: "Welcomed all people regardless of social status; especially drawn to outcasts and sinners; patient with followers' weaknesses; fearless with powerful opponents",
+    learningApproach: "Taught through experience and relationship; used everyday situations as spiritual lessons; learned through prayer and solitude with God",
+    decisionProcess: {
+      prayer: "Seek God's will through extended prayer and solitude",
+      compassion: "Consider impact on the suffering and marginalized",
+      truth: "Evaluate alignment with divine truth and love",
+      service: "Choose the path that serves others rather than self",
+      sacrifice: "Willing to accept personal cost for others' benefit",
+      mission: "Maintain focus on ultimate spiritual mission and purpose"
+    },
+    informationGathering: "Prayer and communion with God, observation of human need and suffering, understanding of Jewish scriptures and tradition",
+    evaluationCriteria: "Does this express God's love? Will this help the suffering? Is this true and life-giving? Does this serve the greater good?",
+    riskAssessment: "Willing to face any danger to fulfill divine mission; considered spiritual consequences more important than physical safety",
+    implementationStyle: "Gentle but persistent teaching; leading by example; building community of followers; confronting injustice with love",
+    morningPractices: "Early morning prayer in solitude for communion with God, Reflection on the day's ministry opportunities and divine purpose, Simple breakfast often shared with disciples or community, Preparation for teaching and healing ministry to those in need",
+    workPatterns: "Teaching in synagogues, outdoor gatherings, and private homes, Healing the sick and ministering to physical and spiritual needs, One-on-one discipleship and mentoring of close followers, Confronting religious and political authorities when necessary, Constant availability to those seeking help or spiritual guidance",
+    physicalPractices: "Walking long distances for ministry travel throughout Palestine, Extended periods of fasting for spiritual focus and prayer, Simple eating habits - often dining with tax collectors and sinners, Manual labor as carpenter before beginning public ministry",
+    mentalSpiritualPractices: "Extended periods of solitary prayer, often before dawn or through the night, Meditation on Hebrew scriptures and divine will, Contemplation during wilderness retreats for spiritual renewal, Teaching and reflection with disciples about spiritual truths, Intercession and prayer for others' healing and spiritual needs",
+    eveningRoutines: "Fellowship meals with disciples and friends, including outcasts and sinners, Evening teaching sessions and spiritual discussions, Prayer and reflection on the day's ministry and interactions, Rest and preparation for next day's service to others",
+    weeklyMonthlyRhythms: "Regular synagogue attendance and participation in Jewish religious life, Seasonal travel for ministry throughout Galilee, Judea, and surrounding regions, Periodic retreats to wilderness or quiet places for extended prayer, Major festival participation in Jerusalem with focus on spiritual significance",
+    stressManagement: "Withdrew to solitary places for prayer and communion with God; found strength in divine relationship and mission purpose",
+    conflictResolution: "Responded to hostility with love; used questions to help opponents examine their hearts; sought reconciliation through truth and grace",
+    failureResponse: "Used setbacks as teaching opportunities; maintained faith in divine plan despite apparent defeats; showed patience with disciples' failures",
+    crisisLeadership: "Remained calm and loving under extreme pressure; provided hope and direction during disciples' fear and confusion",
+    adaptationStrategies: "Adjusted teaching methods to different audiences while maintaining core message; flexible in approach but unwavering in love and truth",
+    coreTeachings: "Love God with all your heart and love your neighbor as yourself; Forgive others as you want to be forgiven; Treat others as you want to be treated; Serve rather than be served; Give to those in need without expecting return; Speak truth with love and humility; Find strength through spiritual connection with God",
+    famousQuotes: [
+      "Love your enemies and pray for those who persecute you",
+      "Do unto others as you would have them do unto you",
+      "Blessed are the peacemakers, for they will be called children of God",
+      "Come to me, all you who are weary and burdened, and I will give you rest",
+      "The greatest among you will be your servant",
+      "Father, forgive them, for they do not know what they are doing",
+      "Love one another as I have loved you",
+      "I am the way, the truth, and the life",
+      "Let the little children come to me",
+      "It is more blessed to give than to receive"
+    ],
+    teachingMethods: "Teaching through parables and stories; demonstrating through personal example; healing and serving as acts of love; building relationships with disciples",
+    keyPrinciples: "Unconditional love, sacrificial service, transformative forgiveness, truth with compassion, justice with mercy",
+    practicalApplications: "Conflict resolution through love, leadership through service, moral courage in difficult situations, spiritual growth through prayer and service",
+    familyRelationships: "Honored earthly parents while prioritizing spiritual family; created new family bonds among disciples; cared for mother even while dying",
+    friendshipPatterns: "Deep friendships with disciples based on love and service; welcomed outcasts and sinners; maintained relationships across social boundaries",
+    mentorshipStyle: "Patient teaching through experience; allowing followers to make mistakes and learn; empowering disciples to continue mission",
+    leadershipApproach: "Led through love and service rather than authority; inspired through example; empowered others to serve and lead",
+    conflictHandling: "Responded to attacks with love; used conflicts as teaching opportunities; maintained peace while standing for truth",
+    contemporaryRelevance: "Unconditional love in relationships, servant leadership, forgiveness and reconciliation, social justice advocacy, spiritual growth",
+    dailyLifeApplications: "Practice forgiveness when others hurt you, even if they don't apologize, Look for ways to serve others without expecting anything in return, Spend time in prayer or quiet reflection to stay connected to your deeper purpose, Show extra kindness to people who are struggling or left out, Speak truth with love rather than harshness when addressing problems, Choose compassion over judgment when others make mistakes",
+    decisionTemplates: [
+      "How can I show love in this situation?",
+      "What would serve others rather than myself?",
+      "How can I respond with forgiveness and grace?",
+      "What would demonstrate God's love to others?"
+    ],
+    characterDevelopment: "Unconditional love, sacrificial service, transformative forgiveness, moral courage, spiritual depth",
+    commonMisinterpretations: "His gentleness wasn't weakness but strength; his acceptance of sinners didn't mean approval of sin; his love included justice and truth",
+    personalitySynthesis: "Combines perfect love with unwavering truth, divine authority with humble service, infinite compassion with moral courage",
+    decisionConsultation: "What would Jesus do? Show unconditional love, serve others sacrificially, forgive without limit, speak truth with compassion, choose what helps rather than harms",
+    situationalApplications: "Conflict resolution requiring love and forgiveness, Leadership through service and humility, Moral courage in standing for justice, Spiritual guidance and comfort for those suffering",
+    potentialConflicts: "May conflict with more pragmatic or self-protective approaches; emphasis on self-sacrifice might seem impractical to success-focused users",
+    userImplementation: "Daily prayer or meditation practice, regular service to others in need, forgiveness exercises, truth-speaking with love, sacrificial giving",
+    primarySources: "New Testament Gospels (Matthew, Mark, Luke, John), early Christian writings, letters of Paul and other apostles",
+    historicalSources: "First-century Jewish and Roman historical context, early Christian church documents, contemporary historical references",
+    academicSources: "Biblical scholarship, historical Jesus research, theological studies, first-century Palestinian cultural studies",
+    culturalSources: "Jewish religious traditions, early Christian traditions, Roman Empire cultural context, Mediterranean world of first century",
+    sourceQualityAssessment: "Excellent - extensive documentation in multiple Gospel accounts and early Christian writings, though some theological interpretation required",
+    historicalAccuracy: "Well-documented through multiple Gospel accounts and early Christian sources, with strong scholarly consensus on basic life events",
+    quoteAuthentication: "Most quotes verified through multiple Gospel sources and early Christian writings, with high confidence in authenticity",
+    culturalSensitivity: "Respectful treatment of Jewish heritage and Christian faith traditions while acknowledging diverse theological interpretations",
+    balancedPerspective: "Recognition of both divine claims and human ministry, acknowledging both his teachings and their challenging nature",
+    scholarlyConsensus: "Strong agreement on historical existence and basic teaching themes, with ongoing scholarly discussion about theological interpretations",
+    enhancedAttributes: [
+      {
+        name: "Unconditionally Loving",
+        description: "I love people regardless of how they treat me or whether they deserve it.",
+        benefit: "Creates deep healing and transformation in relationships by removing conditions and barriers",
+        oppositeOf: "Only being kind to people who are nice to you or who can benefit you",
+        method: "Ask 'How can I show love to this person?' even when they're difficult or unkind"
+      },
+      {
+        name: "Sacrificially Serving",
+        description: "I put others' needs before my own comfort and look for ways to help without expecting anything back.",
+        benefit: "Builds meaningful relationships and creates positive change by focusing on others' welfare",
+        oppositeOf: "Only helping others when it's convenient or when you get something in return",
+        method: "Look for one way each day to help someone without them knowing it was you"
+      },
+      {
+        name: "Mercifully Forgiving",
+        description: "I forgive people who hurt me and choose to respond with kindness instead of revenge.",
+        benefit: "Frees yourself from anger and bitterness while giving others a chance to change and grow",
+        oppositeOf: "Holding grudges, seeking revenge, or refusing to forgive until others apologize first",
+        method: "When someone hurts you, pray for them or wish them well instead of plotting payback"
+      },
+      {
+        name: "Truthfully Compassionate",
+        description: "I speak honestly about problems while showing love and understanding for the person.",
+        benefit: "Helps people change and grow by combining truth with safety and encouragement",
+        oppositeOf: "Either avoiding difficult conversations or speaking harshly without care for feelings",
+        method: "Before addressing problems, ask 'How can I say this in a way that shows I care about them?'"
+      },
+      {
+        name: "Spiritually Centered",
+        description: "I take time for prayer, meditation, or quiet reflection to stay connected to what matters most.",
+        benefit: "Maintains inner peace and wisdom by staying connected to deeper purpose and divine guidance",
+        oppositeOf: "Getting so busy with daily tasks that you lose touch with your deeper values and purpose",
+        method: "Start each day with a few minutes of prayer, meditation, or quiet reflection on your purpose"
+      }
+    ]
+  },
+  {
+    fullName: "Patanjali (possibly multiple authors attributed to this name)",
+    commonName: "Patanjali",
+    lifeSpan: "c. 2nd century BCE - 4th century CE (exact dates unknown)",
+    culturalContext: "Ancient Indian sage, traditionally credited with codifying yoga philosophy in the Yoga Sutras, foundation of classical yoga practice",
+    historicalPeriod: "Classical period of Indian philosophy, development of systematic spiritual practices, emergence of formal meditation traditions",
+    primaryDomain: "Spiritual practice, meditation, mental discipline, and consciousness development",
+    lifeMission: "Systematize and teach the path to spiritual liberation through disciplined practice and mental purification",
+    coreValues: [
+      "Systematic spiritual practice leading to liberation",
+      "Mental discipline and control over thought patterns",
+      "Ethical conduct as foundation for spiritual growth",
+      "Direct experience over theoretical knowledge",
+      "Gradual purification of consciousness",
+      "Integration of body, mind, and spirit",
+      "Compassionate detachment from material outcomes"
+    ],
+    valueHierarchy: [
+      "Spiritual liberation and self-realization",
+      "Mental clarity and discipline",
+      "Ethical conduct",
+      "Physical health and balance",
+      "Material success and comfort"
+    ],
+    worldview: "Reality consists of consciousness (purusha) and matter (prakriti); suffering comes from identification with temporary phenomena; liberation achieved through systematic practice",
+    personalPhilosophy: "Through disciplined practice, the fluctuations of the mind can be stilled to reveal the true Self; ethical living and mental discipline lead to spiritual freedom",
+    dominantTraits: [
+      "Systematically methodical - organized spiritual practices into precise, step-by-step methodology",
+      "Mentally disciplined - mastered control over thought patterns and mental fluctuations",
+      "Ethically grounded - emphasized moral conduct as foundation for spiritual advancement",
+      "Experientially focused - prioritized direct spiritual experience over intellectual understanding",
+      "Practically oriented - provided concrete techniques rather than abstract philosophy",
+      "Compassionately detached - taught loving kindness while maintaining non-attachment",
+      "Scientifically precise - approached spirituality with systematic rigor and careful observation"
+    ],
+    communicationStyle: "Concise, precise language with minimal words conveying maximum meaning; systematic presentation of complex ideas; practical instruction over theoretical elaboration",
+    emotionalPatterns: "Cultivated equanimity in all circumstances; practiced loving-kindness toward all beings; maintained detachment from emotional fluctuations",
+    socialInteractionStyle: "Respectful teacher-student relationships; emphasized individual practice while supporting spiritual community; gentle but firm in guidance",
+    learningApproach: "Direct experience through systematic practice; careful observation of mental patterns; gradual progression through stages of development",
+    decisionProcess: {
+      observation: "Observe mental patterns and reactions without immediate judgment",
+      discernment: "Use discriminative wisdom to distinguish between real and temporary",
+      ethics: "Evaluate alignment with ethical principles (yamas and niyamas)",
+      practice: "Choose actions that support spiritual practice and growth",
+      detachment: "Maintain non-attachment to outcomes while acting skillfully",
+      service: "Consider impact on others' spiritual welfare and development"
+    },
+    informationGathering: "Direct inner observation through meditation; systematic study of consciousness; learning from experienced teachers and traditional wisdom",
+    evaluationCriteria: "Does this support spiritual development? Is this aligned with ethical principles? Will this lead to greater mental clarity and peace?",
+    riskAssessment: "Conservative approach prioritizing steady progress over dramatic breakthroughs; emphasis on gradual purification and sustainable practice",
+    implementationStyle: "Systematic, gradual approach with careful attention to proper foundation; emphasis on consistent daily practice over intense sporadic efforts",
+    morningPractices: "Early morning meditation practice (brahma muhurta) for optimal mental clarity, Pranayama (breathing exercises) to balance and energize the system, Physical asana practice to prepare body for meditation, Study of spiritual texts for inspiration and guidance, Setting intention for mindful awareness throughout the day",
+    workPatterns: "Teaching students through direct transmission of yogic techniques, Guiding meditation sessions and breathing practices, Writing and codifying systematic approaches to spiritual development, Observing and analyzing patterns of consciousness and mental activity, Developing and refining practical methods for spiritual advancement",
+    physicalPractices: "Daily asana practice to maintain physical health and flexibility, Pranayama exercises for breath control and energy regulation, Simple vegetarian diet supporting mental clarity and spiritual practice, Regular fasting periods for purification and mental discipline",
+    mentalSpiritualPractices: "Extended meditation sessions for direct experience of consciousness, Systematic practice of the eight limbs of yoga (Ashtanga), Study and contemplation of spiritual principles and teachings, Cultivation of positive mental qualities (loving-kindness, compassion, joy, equanimity), Regular self-inquiry and examination of mental patterns and reactions",
+    eveningRoutines: "Evening meditation practice for integration of day's experiences, Reflection on the day's spiritual practice and areas for improvement, Study of sacred texts and contemplation of spiritual teachings, Preparation for restful sleep through relaxation and breath awareness",
+    weeklyMonthlyRhythms: "Regular intensive practice periods for deeper spiritual development, Seasonal adjustments to practice based on natural cycles, Periodic retreats for extended meditation and spiritual purification, Community gatherings for teaching and shared spiritual practice",
+    stressManagement: "Used breath control and meditation to maintain mental equilibrium; applied principles of non-attachment to reduce suffering from external circumstances",
+    conflictResolution: "Approached conflicts with equanimity and compassion; used discrimination to understand underlying causes; responded from place of spiritual wisdom rather than emotional reaction",
+    failureResponse: "Viewed setbacks as opportunities for deeper understanding; maintained patient persistence in spiritual practice; used failures as material for self-inquiry",
+    crisisLeadership: "Remained centered and calm during difficulties; provided guidance based on spiritual principles; helped others find their own inner stability",
+    adaptationStrategies: "Adapted teaching methods to individual students' needs and capacities; flexible in approach while maintaining core principles",
+    coreTeachings: "The practice of yoga is the cessation of fluctuations in the consciousness; Ethical conduct (yamas and niyamas) forms the foundation of spiritual practice; Systematic progression through eight limbs leads to spiritual liberation; Discriminative wisdom helps distinguish between the eternal Self and temporary phenomena; Consistent practice with devotion leads to spiritual realization; Mental discipline through meditation reveals the true nature of consciousness",
+    famousQuotes: [
+      "Yoga is the cessation of fluctuations in the consciousness",
+      "When you are inspired by some great purpose, your mind transcends limitations",
+      "The success of yoga does not lie in the ability to attain the perfect posture but in how it changes a person",
+      "Undisturbed calmness of mind is attained by cultivating friendliness toward the happy, compassion for the unhappy, delight in the virtuous, and disregard toward the wicked",
+      "Practice and detachment are the means to still the movements of consciousness",
+      "Concentration is binding thought to a single object",
+      "From sustained concentration comes the unfolding of knowledge",
+      "The restraint of the modifications of the mind-stuff is yoga",
+      "When the mind is peaceful, we are happy and healthy",
+      "The physical body is the temple of the soul"
+    ],
+    teachingMethods: "Systematic progression through structured practices; direct transmission from teacher to student; emphasis on personal experience over intellectual understanding",
+    keyPrinciples: "Systematic practice, mental discipline, ethical conduct, discriminative wisdom, non-attachment, spiritual liberation",
+    practicalApplications: "Meditation and mindfulness practices, stress management through breath control, ethical decision-making, mental clarity development",
+    familyRelationships: "Traditional accounts suggest dedication to spiritual teaching over conventional family life; maintained respectful relationships while prioritizing spiritual mission",
+    friendshipPatterns: "Deep teacher-student relationships based on spiritual growth; compassionate but detached approach to all relationships; friendships centered on mutual spiritual development",
+    mentorshipStyle: "Patient, systematic guidance through progressive stages; individualized instruction based on student's capacity; emphasis on direct experience",
+    leadershipApproach: "Led through example and systematic teaching; inspired through demonstration of inner peace and wisdom; empowered students to develop their own practice",
+    conflictHandling: "Maintained equanimity in face of opposition; used wisdom and compassion to address disagreements; focused on truth rather than personal position",
+    contemporaryRelevance: "Mindfulness and meditation practices, stress reduction techniques, mental health and emotional regulation, systematic personal development",
+    dailyLifeApplications: "Practice daily meditation even if just for 5-10 minutes to develop mental clarity, Use breath awareness during stressful situations to maintain calm and perspective, Observe your thoughts and emotions without immediately reacting or judging them, Practice ethical behavior in small daily choices to build character and integrity, Cultivate loving-kindness toward difficult people while maintaining healthy boundaries, Set aside time for self-reflection and examination of your mental patterns",
+    decisionTemplates: [
+      "How can I maintain mental clarity and peace in this situation?",
+      "What would be the most ethical choice that serves everyone's highest good?",
+      "How can I practice non-attachment while still acting responsibly?",
+      "What would support my spiritual growth and development?"
+    ],
+    characterDevelopment: "Mental discipline, ethical conduct, spiritual wisdom, compassionate detachment, systematic practice",
+    commonMisinterpretations: "Detachment doesn't mean emotional coldness but freedom from compulsive attachment; yoga is not just physical postures but complete spiritual practice",
+    personalitySynthesis: "Combines systematic methodology with deep spiritual wisdom, mental discipline with compassionate understanding, practical technique with transcendent realization",
+    decisionConsultation: "What would Patanjali do? Observe the situation with mental clarity, choose the ethical path, practice non-attachment to outcomes, maintain spiritual perspective",
+    situationalApplications: "Stress management through meditation and breath control, Ethical decision-making in complex situations, Mental clarity development for problem-solving, Spiritual practice for personal transformation",
+    potentialConflicts: "May conflict with more emotionally expressive or materially ambitious approaches; emphasis on detachment might seem impractical for relationship-focused users",
+    userImplementation: "Daily meditation practice, breath control exercises, ethical behavior cultivation, systematic self-observation, non-attachment practice",
+    primarySources: "Yoga Sutras of Patanjali, traditional commentaries by ancient scholars, classical yoga texts and philosophical treatises",
+    historicalSources: "Ancient Indian philosophical traditions, early yoga and meditation texts, traditional guru-disciple lineage teachings",
+    academicSources: "Sanskrit philosophical scholarship, yoga studies research, consciousness studies, comparative religion and philosophy",
+    culturalSources: "Hindu philosophical traditions, classical Indian spiritual practices, traditional yoga lineages, meditation traditions",
+    sourceQualityAssessment: "Excellent - well-preserved ancient texts with extensive traditional commentary, though historical details about author(s) remain uncertain",
+    historicalAccuracy: "Core teachings well-documented through ancient texts, though biographical details are largely traditional rather than historically verified",
+    quoteAuthentication: "Most quotes verified through classical Sanskrit texts and traditional commentaries, though some popular quotes may be modern interpretations",
+    culturalSensitivity: "Respectful treatment of Hindu philosophical traditions and classical yoga heritage while avoiding cultural appropriation",
+    balancedPerspective: "Recognition of both the profound wisdom of the teachings and the cultural context of ancient Indian spirituality",
+    scholarlyConsensus: "Strong agreement on the significance and content of the Yoga Sutras, with ongoing scholarly discussion about authorship and dating",
+    enhancedAttributes: [
+      {
+        name: "Mentally Disciplined",
+        description: "I practice controlling my thoughts and reactions instead of letting my mind run wild with worry or anger.",
+        benefit: "Develops inner peace and clarity by gaining mastery over mental patterns and emotional reactions",
+        oppositeOf: "Letting your thoughts and emotions control you or getting swept away by mental drama",
+        method: "Take 5 minutes daily to sit quietly and observe your thoughts without getting caught up in them"
+      },
+      {
+        name: "Systematically Practicing",
+        description: "I follow a regular routine of healthy habits and spiritual practices to gradually improve myself.",
+        benefit: "Creates steady progress and transformation through consistent daily actions rather than hoping for quick fixes",
+        oppositeOf: "Expecting instant results or giving up when you don't see immediate changes",
+        method: "Choose one small practice (like 5 minutes of meditation) and do it every day at the same time"
+      },
+      {
+        name: "Ethically Grounded",
+        description: "I base my decisions on what's right and truthful, even when it's harder or less convenient.",
+        benefit: "Builds strong character and inner peace by aligning actions with deeper values and principles",
+        oppositeOf: "Making decisions based only on what's easy, profitable, or what everyone else is doing",
+        method: "Before big decisions, ask 'What would be the most honest and ethical choice here?'"
+      },
+      {
+        name: "Wisely Detached",
+        description: "I care about outcomes but don't let my happiness depend on getting exactly what I want.",
+        benefit: "Reduces stress and suffering by finding peace regardless of whether things go according to plan",
+        oppositeOf: "Getting extremely upset or devastated when things don't work out the way you expected",
+        method: "Do your best work, then accept whatever happens with grace and look for the lesson"
+      },
+      {
+        name: "Compassionately Aware",
+        description: "I pay attention to what's happening inside me and around me with kindness rather than judgment.",
+        benefit: "Develops wisdom and emotional intelligence by understanding patterns without harsh self-criticism",
+        oppositeOf: "Going through life on autopilot or beating yourself up when you notice mistakes",
+        method: "Notice your thoughts and feelings throughout the day with curiosity: 'Isn't that interesting...'"
+      }
+    ]
   }
 ]
 
