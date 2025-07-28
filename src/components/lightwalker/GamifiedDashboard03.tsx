@@ -533,7 +533,9 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
                       src={roleModel.imageUrl} 
                       alt={roleModel.commonName}
                       className="w-full h-full object-cover rounded-full"
+                      onLoad={() => console.log(`✅ Image loaded: ${roleModel.imageUrl}`)}
                       onError={(e) => {
+                        console.log(`❌ Image failed to load: ${roleModel.imageUrl}`);
                         e.currentTarget.style.display = 'none';
                         e.currentTarget.nextElementSibling.style.display = 'block';
                       }}
