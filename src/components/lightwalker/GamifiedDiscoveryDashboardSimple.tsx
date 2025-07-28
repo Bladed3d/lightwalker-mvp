@@ -494,10 +494,10 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
 
       {/* Archetype Selection - Horizontal Scroll */}
       <div className="max-w-7xl mx-auto px-6 py-4 relative z-10">
-        <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4 mb-6 animate-slideUp relative overflow-visible">
+        <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4 mb-6 animate-slideUp relative">
           {/* Vertical Title on Left Edge */}
-          <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 -rotate-90 origin-left z-20">
-            <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap bg-gray-900/80 px-2 py-1 rounded">
+          <div className="absolute left-1 top-1/2 transform -translate-y-1/2 -rotate-90 origin-center z-20">
+            <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap">
               ARCHETYPE SELECTION
             </h3>
           </div>
@@ -554,10 +554,10 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           
           {/* Left Panel - Character Hub (2/5 width) */}
-          <div className="lg:col-span-2 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft relative overflow-visible">
+          <div className="lg:col-span-2 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft relative">
             {/* Vertical Title on Left Edge */}
-            <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 -rotate-90 origin-left z-20">
-              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap bg-gray-900/80 px-2 py-1 rounded">
+            <div className="absolute left-1 top-1/2 transform -translate-y-1/2 -rotate-90 origin-center z-20">
+              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap">
                 CONSCIOUSNESS CORE
               </h3>
             </div>
@@ -622,10 +622,10 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
           </div>
 
           {/* Right Panel - Trait Constellation (3/5 width = 60%) */}
-          <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight relative overflow-visible">
+          <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight relative">
             {/* Vertical Title on Left Edge */}
-            <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 -rotate-90 origin-left z-20">
-              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap bg-gray-900/80 px-2 py-1 rounded">
+            <div className="absolute left-1 top-1/2 transform -translate-y-1/2 -rotate-90 origin-center z-20">
+              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap">
                 TRAIT CONSTELLATION
               </h3>
             </div>
