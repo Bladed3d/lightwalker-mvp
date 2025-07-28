@@ -34,6 +34,7 @@ interface Attribute {
 
 interface LightwalkerCharacter {
   roleModel: RoleModel
+  involvedRoleModels?: RoleModel[] // All role models that contributed traits
   selectedAttributes: Attribute[]
   synthesizedPersonality: string
   dailyBehaviors: string[]
@@ -155,6 +156,9 @@ export default function LightwalkerCharacterDisplay({
           ])).values()
         )
         
+        // Store involved role models for display
+        const allInvolvedRoleModels = involvedRoleModels
+        
         console.log('Involved role models:', involvedRoleModels.map(rm => rm.commonName))
         
         // Primary role model (most traits)
@@ -198,6 +202,14 @@ export default function LightwalkerCharacterDisplay({
             particleType: getParticleType(primaryRoleModel.commonName),
             famousQuotes: JSON.parse(primaryRoleModel.famousQuotes || '[]')
           },
+          involvedRoleModels: allInvolvedRoleModels.map(rm => ({
+            ...rm,
+            archetype: getArchetype(rm.commonName),
+            primaryColor: getPrimaryColor(rm.commonName),
+            secondaryColor: getSecondaryColor(rm.commonName),
+            particleType: getParticleType(rm.commonName),
+            famousQuotes: JSON.parse(rm.famousQuotes || '[]')
+          })),
           selectedAttributes: attributeDetails,
           synthesizedPersonality,
           dailyBehaviors,
@@ -388,45 +400,59 @@ export default function LightwalkerCharacterDisplay({
           background: `linear-gradient(135deg, ${character.roleModel.primaryColor}10, ${character.roleModel.secondaryColor}10)`
         }}>
           <div className="flex flex-col lg:flex-row items-center lg:items-start space-y-6 lg:space-y-0 lg:space-x-8">
-            {/* Character Avatar */}
+            {/* Multiple Role Model Avatars */}
             <div className="relative">
-              <div 
-                className="w-48 h-48 rounded-full border-4 flex items-center justify-center overflow-hidden"
-                style={{ 
-                  borderColor: character.roleModel.primaryColor,
-                  backgroundColor: `${character.roleModel.primaryColor}20`
-                }}
-              >
-                <img 
-                  src={`/role-models/${character.roleModel.commonName.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '')}.jpg`}
-                  alt={character.roleModel.commonName}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none'
-                    const fallback = e.currentTarget.nextElementSibling as HTMLElement
-                    if (fallback) fallback.style.display = 'flex'
-                  }}
-                />
-                <div 
-                  className="w-full h-full items-center justify-center text-6xl"
-                  style={{ display: 'none' }}
-                >
-                  🧠
-                </div>
+              <div className="flex items-center justify-center space-x-4">
+                {character.involvedRoleModels?.map((roleModel, index) => (
+                  <div key={roleModel.id} className="relative group">
+                    <div 
+                      className="w-24 h-24 rounded-full border-3 flex items-center justify-center overflow-hidden transition-all hover:scale-110"
+                      style={{ 
+                        borderColor: roleModel.primaryColor,
+                        backgroundColor: `${roleModel.primaryColor}20`
+                      }}
+                    >
+                      <img 
+                        src={`/role-models/${roleModel.commonName.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '')}.jpg`}
+                        alt={roleModel.commonName}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none'
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement
+                          if (fallback) fallback.style.display = 'flex'
+                        }}
+                      />
+                      <div 
+                        className="w-full h-full items-center justify-center text-3xl"
+                        style={{ display: 'none' }}
+                      >
+                        🧠
+                      </div>
+                    </div>
+                    
+                    {/* Role Model Name Tooltip */}
+                    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="bg-black/80 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                        {roleModel.commonName}
+                      </div>
+                    </div>
+                    
+                    {/* Small particle effects for each */}
+                    {[...Array(3)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute w-2 h-2 rounded-full animate-orbit"
+                        style={{ 
+                          backgroundColor: roleModel.primaryColor,
+                          transform: `rotate(${i * 120}deg) translateX(40px)`,
+                          animationDelay: `${index * 0.1 + i * 0.2}s`,
+                          animationDuration: '2s'
+                        }}
+                      />
+                    ))}
+                  </div>
+                ))}
               </div>
-              
-              {/* Particle effects around avatar */}
-              {[...Array(8)].map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute w-3 h-3 rounded-full animate-orbit"
-                  style={{ 
-                    backgroundColor: character.roleModel.primaryColor,
-                    transform: `rotate(${i * 45}deg) translateX(100px)`,
-                    animationDelay: `${i * 0.2}s`
-                  }}
-                />
-              ))}
             </div>
 
             {/* Character Details */}
