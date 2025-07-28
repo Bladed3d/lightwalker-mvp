@@ -45,21 +45,18 @@ interface LightwalkerCharacter {
 }
 
 interface LightwalkerCharacterDisplayProps {
-  roleModelId: string
-  selectedAttributeIds: string[]
+  selectedTraits: {traitId: string, roleModelId: string, traitName: string}[]
   onBeginDailyPractice: () => void
   characterId?: string
 }
 
 export default function LightwalkerCharacterDisplay({ 
-  roleModelId, 
-  selectedAttributeIds, 
+  selectedTraits, 
   onBeginDailyPractice,
   characterId 
 }: LightwalkerCharacterDisplayProps) {
   console.log('=== LightwalkerCharacterDisplay Props ===')
-  console.log('roleModelId:', roleModelId)
-  console.log('selectedAttributeIds:', selectedAttributeIds)
+  console.log('selectedTraits:', selectedTraits)
   console.log('characterId:', characterId)
   
   const [character, setCharacter] = useState<LightwalkerCharacter | null>(null)
@@ -72,7 +69,7 @@ export default function LightwalkerCharacterDisplay({
     console.log('=== useEffect Triggered ===')
     console.log('About to call synthesizeCharacter...')
     synthesizeCharacter()
-  }, [roleModelId, selectedAttributeIds])
+  }, [selectedTraits])
 
   useEffect(() => {
     // Rotate through quotes every 5 seconds
@@ -90,53 +87,70 @@ export default function LightwalkerCharacterDisplay({
     setIsLoading(true)
     
     try {
-      console.log('=== Character Synthesis Debug ===')
-      console.log('roleModelId:', roleModelId)
-      console.log('selectedAttributeIds:', selectedAttributeIds)
+      console.log('=== Multi-Role Model Character Synthesis ===')
+      console.log('selectedTraits:', selectedTraits)
       
-      // Load role model data
+      if (!selectedTraits || selectedTraits.length === 0) {
+        throw new Error('No traits selected')
+      }
+      
+      // Load all role models
       const roleModelResponse = await fetch('/api/role-models')
       const { roleModels } = await roleModelResponse.json()
       console.log('Loaded role models count:', roleModels.length)
-      console.log('Role model IDs:', roleModels.map((rm: any) => rm.id))
       
-      const roleModel = roleModels.find((rm: any) => rm.id === roleModelId)
-      console.log('Found role model:', roleModel ? roleModel.commonName : 'NOT FOUND')
+      // Get unique role models from selected traits
+      const uniqueRoleModelIds = Array.from(new Set(selectedTraits.map(trait => trait.roleModelId)))
+      const involvedRoleModels = uniqueRoleModelIds.map(id => 
+        roleModels.find((rm: any) => rm.id === id)
+      ).filter(Boolean)
       
-      if (!roleModel) {
-        throw new Error('Role model not found')
+      console.log('Involved role models:', involvedRoleModels.map((rm: any) => rm.commonName))
+      
+      // Build attribute details by finding each trait in its source role model
+      const attributeDetails: Attribute[] = []
+      
+      for (const trait of selectedTraits) {
+        const sourceRoleModel = roleModels.find((rm: any) => rm.id === trait.roleModelId)
+        if (sourceRoleModel?.enhancedAttributes) {
+          const attribute = sourceRoleModel.enhancedAttributes.find((attr: any) => attr.id === trait.traitId)
+          if (attribute) {
+            attributeDetails.push({
+              id: attribute.id,
+              name: attribute.name,
+              description: attribute.description,
+              category: attribute.category || 'Personal Development',
+              benefit: attribute.benefit,
+              roleModelImplementations: [{
+                roleModelId: sourceRoleModel.id,
+                method: attribute.method || `${sourceRoleModel.commonName}'s Approach`,
+                description: attribute.description
+              }]
+            })
+          }
+        }
       }
-
-      console.log('Role model enhanced attributes count:', roleModel.enhancedAttributes?.length || 0)
-      console.log('Enhanced attribute IDs:', roleModel.enhancedAttributes?.map((attr: any) => attr.id) || [])
-
-      // Get the actual selected enhanced attributes from the role model
-      const selectedEnhancedAttributes = roleModel.enhancedAttributes?.filter((attr: any) => 
-        selectedAttributeIds.includes(attr.id)
-      ) || []
       
-      console.log('Filtered selected attributes count:', selectedEnhancedAttributes.length)
-      console.log('Selected attribute names:', selectedEnhancedAttributes.map((attr: any) => attr.name))
-
-      // Map to our expected format
-      const attributeDetails = selectedEnhancedAttributes.map((attr: any) => ({
-        id: attr.id,
-        name: attr.name,
-        description: attr.description,
-        category: attr.category || 'Personal Development',
-        benefit: attr.benefit,
-        roleModelImplementations: [{
-          roleModelId: roleModel.id,
-          method: attr.method || `${roleModel.commonName}'s Approach`,
-          description: attr.description
-        }]
-      }))
-
-      // Synthesize the unified character
-      const synthesizedPersonality = `I embody the essence of ${roleModel.commonName}, channeling their approach to ${roleModel.primaryDomain.toLowerCase()}. Through their wisdom, I've developed ${attributeDetails.map((attr: Attribute) => attr.name.toLowerCase()).join(', ')}, creating a unique blend of their legendary traits with practical methods for daily life.`
+      console.log('Built attribute details:', attributeDetails.map(attr => attr.name))
+      
+      // Create a primary role model (most frequently represented)
+      const roleModelCounts = selectedTraits.reduce((acc, trait) => {
+        acc[trait.roleModelId] = (acc[trait.roleModelId] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+      
+      const primaryRoleModelId = Object.entries(roleModelCounts)
+        .sort(([,a], [,b]) => b - a)[0][0]
+      const primaryRoleModel = roleModels.find((rm: any) => rm.id === primaryRoleModelId)
+      
+      console.log('Primary role model:', primaryRoleModel.commonName)
+      
+      // Synthesize personality from multiple sources
+      const roleModelNames = involvedRoleModels.map((rm: any) => rm.commonName)
+      const synthesizedPersonality = `I am a unique synthesis drawing wisdom from ${roleModelNames.join(', ')}. Through their combined teachings, I've developed ${attributeDetails.map(attr => attr.name.toLowerCase()).join(', ')}, creating a personalized approach to life that blends the best of these legendary figures.`
 
       const dailyBehaviors = attributeDetails.map((attr: Attribute) => 
-        `I practice ${attr.name.toLowerCase()} by ${attr.roleModelImplementations[0].method || attr.description}`
+        `I practice ${attr.name.toLowerCase()} using ${attr.roleModelImplementations[0].method}`
       )
 
       const situationalResponses = attributeDetails.slice(0, 3).map((attr: Attribute, index: number) => {
@@ -147,18 +161,18 @@ export default function LightwalkerCharacterDisplay({
         ]
         return {
           situation: situations[index] || "Challenging moment",
-          response: `I apply ${attr.name.toLowerCase()} by ${attr.roleModelImplementations[0].method || attr.description}`,
+          response: `I apply ${attr.name.toLowerCase()} using ${attr.roleModelImplementations[0].method}`,
           method: attr.roleModelImplementations[0].method || attr.name
         }
       })
 
       const synthesizedCharacter: LightwalkerCharacter = {
         roleModel: {
-          ...roleModel,
-          archetype: getArchetype(roleModel.commonName),
-          primaryColor: getPrimaryColor(roleModel.commonName),
-          secondaryColor: getSecondaryColor(roleModel.commonName),
-          particleType: getParticleType(roleModel.commonName)
+          ...primaryRoleModel,
+          archetype: getArchetype(primaryRoleModel.commonName),
+          primaryColor: getPrimaryColor(primaryRoleModel.commonName),
+          secondaryColor: getSecondaryColor(primaryRoleModel.commonName),
+          particleType: getParticleType(primaryRoleModel.commonName)
         },
         selectedAttributes: attributeDetails,
         synthesizedPersonality,

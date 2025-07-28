@@ -7,8 +7,7 @@ import { Settings } from 'lucide-react'
 
 interface SavedCharacter {
   id: string
-  roleModelId: string
-  selectedAttributeIds: string[]
+  selectedTraits: {traitId: string, roleModelId: string, traitName: string}[]
   characterName?: string
   discoveryPoints?: number
   level?: number
@@ -171,8 +170,7 @@ export default function CharacterPage() {
 
       {/* Character Display */}
       <LightwalkerCharacterDisplay
-        roleModelId={character.roleModelId}
-        selectedAttributeIds={character.selectedAttributeIds}
+        selectedTraits={character.selectedTraits}
         onBeginDailyPractice={handleBeginDailyPractice}
         characterId={characterId}
       />

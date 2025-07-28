@@ -58,7 +58,7 @@ interface GamifiedDiscoveryEnhancedProps {
 export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: GamifiedDiscoveryEnhancedProps) {
   const [activePathway, setActivePathway] = useState<DiscoveryPathway>('role-model')
   const [selectedRoleModel, setSelectedRoleModel] = useState<string | null>(null)
-  const [selectedAttributes, setSelectedAttributes] = useState<string[]>([])
+  const [selectedTraits, setSelectedTraits] = useState<{traitId: string, roleModelId: string, traitName: string}[]>([])
   const [roleModels, setRoleModels] = useState<RoleModel[]>([])
   const [attributes, setAttributes] = useState<Attribute[]>([])
   const [gamification, setGamification] = useState<GamificationState>({
@@ -108,7 +108,7 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
 
   useEffect(() => {
     updateGamificationState()
-  }, [selectedAttributes, selectedRoleModel])
+  }, [selectedTraits, selectedRoleModel])
 
   const loadGamifiedRoleModels = async () => {
     try {
@@ -516,17 +516,26 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
   }
 
   const handleAttributeToggle = (attributeId: string) => {
-    const wasAlreadySelected = selectedAttributes.includes(attributeId)
+    const wasAlreadySelected = selectedTraits.some(trait => trait.traitId === attributeId)
     
-    setSelectedAttributes(prev => 
-      wasAlreadySelected 
-        ? prev.filter(id => id !== attributeId)
-        : [...prev, attributeId]
-    )
-
-    // Trigger achievement popup for first attribute selection or any new attribute
-    if (!wasAlreadySelected) {
-      triggerAchievement('first-attribute-selected')
+    if (wasAlreadySelected) {
+      // Remove the trait
+      setSelectedTraits(prev => prev.filter(trait => trait.traitId !== attributeId))
+    } else {
+      // Add the trait with its source role model
+      const attribute = attributes.find(attr => attr.id === attributeId)
+      const sourceRoleModel = roleModels.find(rm => rm.id === selectedRoleModel)
+      
+      if (attribute && sourceRoleModel) {
+        setSelectedTraits(prev => [...prev, {
+          traitId: attributeId,
+          roleModelId: selectedRoleModel!,
+          traitName: attribute.name
+        }])
+        
+        // Trigger achievement popup for first attribute selection
+        triggerAchievement('first-attribute-selected')
+      }
     }
   }
 
@@ -555,12 +564,12 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
   }
 
   const updateGamificationState = () => {
-    const basePoints = selectedAttributes.length * 25
+    const basePoints = selectedTraits.length * 25
     const roleModelBonus = selectedRoleModel ? 100 : 0
     const achievementPoints = gamification.achievements.length * 50
     
     const totalPoints = basePoints + roleModelBonus + achievementPoints
-    const completionPercentage = Math.min((selectedAttributes.length / 5) * 100, 100)
+    const completionPercentage = Math.min((selectedTraits.length / 5) * 100, 100)
     const level = Math.floor(totalPoints / 200) + 1
 
     setGamification(prev => ({
@@ -568,8 +577,8 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
       discoveryPoints: totalPoints,
       completionPercentage,
       level,
-      currentPhase: selectedAttributes.length >= 5 ? 'synthesis' : 
-                   selectedAttributes.length > 0 ? 'trait-customization' : 
+      currentPhase: selectedTraits.length >= 5 ? 'synthesis' : 
+                   selectedTraits.length > 0 ? 'trait-customization' : 
                    selectedRoleModel ? 'archetype-selection' : 'welcome'
     }))
   }
@@ -813,7 +822,7 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
                 </div>
                 <div className="bg-gray-800/50 rounded p-3 border border-cyan-500/30">
                   <div className="text-sm text-gray-400 mb-1">TRAIT CAPACITY</div>
-                  <div className="text-green-400">{selectedAttributes.length}/{selectedRoleModelData.attributeCount}</div>
+                  <div className="text-green-400">{selectedTraits.length}/{selectedRoleModelData.attributeCount}</div>
                 </div>
               </div>
             )}
@@ -838,7 +847,7 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
                   }
                 </h4>
                 <div className="text-sm text-gray-400">
-                  {selectedAttributes.length}/5 selected
+                  {selectedTraits.length}/5 selected
                 </div>
               </div>
             
@@ -849,7 +858,7 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
                   <label className="flex items-start space-x-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={selectedAttributes.includes(attribute.id)}
+                      checked={selectedTraits.some(trait => trait.traitId === attribute.id)}
                       onChange={() => handleAttributeToggle(attribute.id)}
                       className="mt-1 h-4 w-4 text-cyan-500 focus:ring-cyan-500 border-gray-600 rounded bg-gray-800"
                     />
@@ -947,14 +956,12 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
             </div>
 
             {/* Activation Button */}
-            {selectedAttributes.length >= 3 && (
+            {selectedTraits.length >= 3 && (
               <div className="mt-6 pt-4 border-t border-cyan-500/30 animate-fadeIn ml-8">
                 <button 
                   className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 animate-pulse"
                   onClick={() => onLightwalkerCreated({ 
-                    roleModelId: selectedRoleModel,
-                    archetype: selectedRoleModelData?.archetype,
-                    attributes: selectedAttributes,
+                    selectedTraits: selectedTraits,
                     discoveryPoints: gamification.discoveryPoints,
                     level: gamification.level
                   })}
@@ -962,7 +969,7 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
                   <span className="flex items-center justify-center space-x-2">
                     <span>⚡</span>
                     <span>ACTIVATE LIGHTWALKER™</span>
-                    <span>({selectedAttributes.length} traits)</span>
+                    <span>({selectedTraits.length} traits)</span>
                   </span>
                 </button>
               </div>

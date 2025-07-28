@@ -5,10 +5,7 @@ import GamifiedDiscoveryEnhanced from '@/components/lightwalker/GamifiedDiscover
 import LightwalkerCharacterDisplay from '@/components/lightwalker/LightwalkerCharacterDisplay'
 
 interface CreatedLightwalker {
-  roleModelId?: string
-  selectedAttributeIds?: string[]
-  archetype?: string
-  attributes?: string[]
+  selectedTraits?: {traitId: string, roleModelId: string, traitName: string}[]
   discoveryPoints?: number
   level?: number
 }
@@ -21,9 +18,7 @@ export default function CharacterCreation() {
     console.log('Lightwalker created:', lightwalkerData)
     
     const characterData = {
-      roleModelId: lightwalkerData.roleModelId,
-      selectedAttributeIds: lightwalkerData.attributes || [],
-      archetype: lightwalkerData.archetype,
+      selectedTraits: lightwalkerData.selectedTraits || [],
       discoveryPoints: lightwalkerData.discoveryPoints,
       level: lightwalkerData.level
     }
@@ -40,8 +35,7 @@ export default function CharacterCreation() {
         },
         body: JSON.stringify({
           sessionId,
-          roleModelId: characterData.roleModelId,
-          selectedAttributeIds: characterData.selectedAttributeIds,
+          selectedTraits: characterData.selectedTraits,
           discoveryPoints: characterData.discoveryPoints,
           level: characterData.level
         })
@@ -87,8 +81,7 @@ export default function CharacterCreation() {
   if (currentPhase === 'character' && createdLightwalker) {
     return (
       <LightwalkerCharacterDisplay
-        roleModelId={createdLightwalker.roleModelId || ''}
-        selectedAttributeIds={createdLightwalker.selectedAttributeIds || []}
+        selectedTraits={createdLightwalker.selectedTraits || []}
         onBeginDailyPractice={handleBeginDailyPractice}
       />
     )
