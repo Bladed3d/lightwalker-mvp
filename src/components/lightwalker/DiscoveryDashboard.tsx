@@ -170,7 +170,7 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
     const roleModel = roleModels.find(rm => rm.id === roleModelId)
     
     // Add Steve Jobs specific attributes with 6th-grade explanations and benefits
-    if (roleModelId === 'steve-jobs') {
+    if (roleModel && roleModel.commonName === 'Steve Jobs') {
         const jobsAttributes = [
           {
             id: 'strategic-focus',
@@ -181,7 +181,7 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
             oppositeOf: 'Scattered attention that leaves everything half-done',
             roleModelImplementations: [
               {
-                roleModelId: 'steve-jobs',
+                roleModelId: roleModel.id,
                 method: 'Annual Retreat Process',
                 description: 'Every year, list 10 things you want to do. Then cross out 7 and only focus on the top 3. Say no to everything else.'
               }
@@ -196,7 +196,7 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
             oppositeOf: 'Good enough mentality that creates forgettable results',
             roleModelImplementations: [
               {
-                roleModelId: 'steve-jobs',
+                roleModelId: roleModel.id,
                 method: 'Three-Click Rule',
                 description: 'Any task should take 3 clicks or less. If it takes more, redesign it until it\'s simple.'
               }
@@ -211,7 +211,7 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
             oppositeOf: 'Following what everyone else is already doing',
             roleModelImplementations: [
               {
-                roleModelId: 'steve-jobs',
+                roleModelId: roleModel.id,
                 method: 'Think Different Principle',
                 description: 'Ask "What would delight users?" instead of "What do competitors do?" Focus on user experience over features.'
               }
@@ -226,7 +226,7 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
             oppositeOf: 'Accepting limitations and settling for mediocre results',
             roleModelImplementations: [
               {
-                roleModelId: 'steve-jobs',
+                roleModelId: roleModel.id,
                 method: 'Reality Distortion Field',
                 description: 'Paint a vision so compelling that people believe they can achieve more than they thought possible. Set high standards and inspire rather than demand.'
               }
@@ -241,7 +241,7 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
             oppositeOf: 'Getting stuck overthinking every choice until opportunities pass',
             roleModelImplementations: [
               {
-                roleModelId: 'steve-jobs',
+                roleModelId: roleModel.id,
                 method: 'Feel-Based Testing',
                 description: 'After gathering basic facts, ask "How does this feel?" Trust your instincts about what feels right or wrong.'
               }
@@ -256,7 +256,7 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
             oppositeOf: 'Making things complicated and hard to understand',
             roleModelImplementations: [
               {
-                roleModelId: 'steve-jobs',
+                roleModelId: roleModel.id,
                 method: 'Subtraction Method',
                 description: 'Look at any solution and ask "What can we remove?" Keep subtracting until only the essential remains. Simplicity is the ultimate sophistication.'
               }
