@@ -68,7 +68,7 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
         id: roleModel.id,
         commonName: roleModel.commonName,
         primaryDomain: roleModel.primaryDomain,
-        imageUrl: `/role-models/${roleModel.id || roleModel.commonName.toLowerCase().replace(' ', '-')}.jpg`,
+        imageUrl: `/role-models/${roleModel.id || roleModel.commonName.toLowerCase().replace(/\s+/g, '-')}.jpg`,
         attributeCount: Array.isArray(roleModel.coreValues) ? roleModel.coreValues.length : 0,
         selectedAttributes: 0,
         // Additional rich data from database
