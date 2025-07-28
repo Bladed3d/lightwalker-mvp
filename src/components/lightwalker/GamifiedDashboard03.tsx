@@ -819,7 +819,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
           text-orientation: mixed;
           position: absolute;
           top: 50%;
-          left: 24px;
+          left: 2%;
           transform: translateY(-50%);
           height: fit-content;
         }
