@@ -278,7 +278,7 @@ const LightwalkerUserFlowchart = () => {
   };
 
   const getNodeIcon = (id: string) => {
-    const icons = {
+    const icons: Record<string, React.ComponentType<any>> = {
       'start': User,
       'problemCheck': Brain,
       'userQuestion': MessageCircle,

@@ -1,7 +1,13 @@
 neon.tech database connection string:
 psql 'postgresql://neondb_owner:npg_wdYOgPl1RC9W@ep-round-sun-af4jmy8k-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
 
-Database url
+To see what is next to do, Just type "Initialize taskmaster" at the start of any new chat session!
+
+Important links:
+https://lightwalker-mvp.vercel.app/discovery-enhanced
+https://lightwalker-mvp.vercel.app/gamified-simple
+https://lightwalker-mvp.vercel.app/discovery-dashboard
+https://lightwalker-mvp.vercel.app/hud-test
 
 
 create images at gemini.google.com
