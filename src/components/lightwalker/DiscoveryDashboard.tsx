@@ -169,24 +169,8 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
   const loadAttributesForRoleModel = (roleModelId: string) => {
     const roleModel = roleModels.find(rm => rm.id === roleModelId)
     
-    if (roleModel && roleModel.coreValues && roleModel.coreValues.length > 0) {
-      // Transform core values into selectable attributes
-      const attributesFromValues = roleModel.coreValues.map((value, index) => ({
-        id: `${roleModelId}-value-${index}`,
-        name: value,
-        category: 'Core Values',
-        description: `${roleModel.commonName}'s approach to ${value.toLowerCase()}`,
-        roleModelImplementations: [
-          {
-            roleModelId: roleModel.id,
-            method: `${roleModel.commonName}'s Method`,
-            description: `Embody ${value.toLowerCase()} in daily decisions and actions, following ${roleModel.commonName}'s example.`
-          }
-        ]
-      }))
-      
-      // Add Steve Jobs specific attributes with 6th-grade explanations and benefits
-      if (roleModelId === 'steve-jobs') {
+    // Add Steve Jobs specific attributes with 6th-grade explanations and benefits
+    if (roleModelId === 'steve-jobs') {
         const jobsAttributes = [
           {
             id: 'strategic-focus',
@@ -285,6 +269,22 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
         console.log(`✅ Generated ${jobsAttributes.length} enhanced attributes for Steve Jobs`)
         return
       }
+    
+    // For other role models, generate attributes from their core values
+    if (roleModel && roleModel.coreValues && roleModel.coreValues.length > 0) {
+      const attributesFromValues = roleModel.coreValues.map((value, index) => ({
+        id: `${roleModelId}-value-${index}`,
+        name: value,
+        category: 'Core Values',
+        description: `${roleModel.commonName}'s approach to ${value.toLowerCase()}`,
+        roleModelImplementations: [
+          {
+            roleModelId: roleModel.id,
+            method: `${roleModel.commonName}'s Method`,
+            description: `Embody ${value.toLowerCase()} in daily decisions and actions, following ${roleModel.commonName}'s example.`
+          }
+        ]
+      }))
       
       setAttributes(attributesFromValues)
       console.log(`✅ Generated ${attributesFromValues.length} attributes for ${roleModel.commonName}`)
