@@ -12,26 +12,48 @@
 
 **Lightwalker**: AI personality companion system where users create ideal versions of themselves to copy behaviors from.
 
-**Current Status**: Sprint 1 completed successfully in hours (not weeks) including:
-- Smart categorization system with situational vs general templates
-- Database schema with category and pricing fields
-- Tabbed UI interface
-- 4 new situational templates (Divorce Navigator, Relationship Rescue, etc.)
-- Fixed template creation errors and server setup
+**Current Status**: Discovery System Phase COMPLETED ✅ (July 28, 2025)
+
+**✅ COMPLETED FEATURES:**
+- **Full Role Model Discovery System**: 22 comprehensive role models with enhanced attributes
+- **Production Deployment**: https://lightwalker-mvp.vercel.app/discovery-enhanced fully functional
+- **Database Integration**: PostgreSQL with Prisma ORM, all role models seeded
+- **Enhanced Attributes System**: 6th-grade explanations, benefits, oppositeOf, methods for each trait
+- **Gamified UI**: Particles, animations, achievement system foundation
+- **Image System**: All 22 role model images working correctly
+- **Fallback System**: 6 role models display when database unavailable
+
+**🔧 RECENT TECHNICAL FIXES:**
+- Fixed image URL generation to use commonName instead of database IDs
+- Resolved Buddha/MLK Jr. image loading issues (filename casing, period handling)
+- Fixed TypeScript compilation errors with const assertions
+- Enhanced debug logging for production troubleshooting
 
 ## Key Technical Context
 
-**Stack**: Next.js 14, TypeScript, Prisma ORM, SQLite, Tailwind CSS
+**Stack**: Next.js 14, TypeScript, Prisma ORM, PostgreSQL (Neon), Tailwind CSS
 
 **Database**: 
-- Users table with WordPress integration
-- LightwalkerTemplate model with category/monthlyPrice fields
-- Demo user (ID: demo-user-id) for testing
+- **Production**: PostgreSQL on Neon (configured via DATABASE_URL)
+- **RoleModel Schema**: 40+ fields including enhancedAttributes JSON field
+- **22 Role Models**: Buddha, Steve Jobs, MLK Jr., Joan of Arc, Einstein, etc.
+- **Image URLs**: Generated from commonName with space→hyphen, period removal
 
 **Important Commands**:
 - `npm run dev` - Start development server (port 3001)
-- `npx prisma db seed` - Seed database with templates
+- `npx ts-node scripts/seed-role-models.ts` - Seed role models
 - Always run in Lightwalker subdirectory with proper dependencies
+
+**Key File Locations**:
+- **Discovery UI**: `src/components/lightwalker/GamifiedDiscoveryEnhanced.tsx`
+- **Database Schema**: `prisma/schema.prisma`
+- **Role Model Seeding**: `scripts/seed-role-models.ts`
+- **API Endpoint**: `src/app/api/role-models/route.ts`
+- **Images**: `public/role-models/*.jpg` (22 files)
+
+**Production URLs**:
+- **Working Discovery**: https://lightwalker-mvp.vercel.app/discovery-enhanced
+- **GitHub Repo**: https://github.com/Bladed3d/lightwalker-mvp
 
 ## User Experience Research
 
@@ -42,11 +64,36 @@
 3. Day-in-Life Visioning (30-40% of users)
 4. Values-First Discovery (15-25% of users)
 
-## Development Priorities
+## 🚀 NEXT DEVELOPMENT PHASE: POST-CREATION EXPERIENCE
 
-1. **Character Creation**: Multi-pathway discovery system to solve 90/10 problem
-2. **Post-Creation Experience**: Daily behavior copying for both concrete (exercise) and abstract (judgment→gratitude) transformations
-3. **User Flow Documentation**: Every feature needs comprehensive flow mapping before implementation
+**PRIMARY FOCUS**: Users have selected their role model and traits - now what?
+
+**IMMEDIATE PRIORITIES (in order):**
+
+1. **Lightwalker™ Character Display**
+   - Show selected role model + traits as unified "character"
+   - Display daily behavior copying suggestions
+   - "What would [Role Model] do in this situation?" interface
+
+2. **Daily Behavior Copying System**
+   - Morning check-in: "What situations will you face today?"
+   - Real-time suggestions: Tap situations → get role model's approach
+   - Evening reflection: "How did you copy [Trait] today?"
+
+3. **Achievement & Progress System**
+   - Track behavior copying streaks
+   - Unlock new traits/methods as user progresses
+   - Visual progress indicators for trait development
+
+4. **Situation-Based Guidance**
+   - Common situations: work stress, relationships, decisions
+   - Role model's specific approach for each situation
+   - First-person examples: "I pause and consider..." (never "You should...")
+
+**TECHNICAL FOUNDATION READY:**
+- Database schema supports enhanced attributes with methods
+- UI components for role model display exist
+- Gamification system foundation in place
 
 ## CRITICAL BRANDING REQUIREMENT
 
