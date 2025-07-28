@@ -49,7 +49,7 @@ export async function GET(
     return NextResponse.json({ 
       character: {
         ...character,
-        selectedAttributeIds: JSON.parse(character.selectedAttributeIds)
+        selectedTraits: JSON.parse(character.selectedTraits)
       }
     })
   } catch (error) {
@@ -69,7 +69,7 @@ export async function PUT(
   try {
     const body = await request.json()
     const { 
-      selectedAttributeIds, 
+      selectedTraits, 
       characterName,
       discoveryPoints,
       level 
@@ -77,8 +77,8 @@ export async function PUT(
 
     const updateData: any = {}
     
-    if (selectedAttributeIds && Array.isArray(selectedAttributeIds)) {
-      updateData.selectedAttributeIds = JSON.stringify(selectedAttributeIds)
+    if (selectedTraits && Array.isArray(selectedTraits)) {
+      updateData.selectedTraits = JSON.stringify(selectedTraits)
     }
     if (characterName !== undefined) {
       updateData.characterName = characterName
@@ -104,7 +104,7 @@ export async function PUT(
     return NextResponse.json({ 
       character: {
         ...character,
-        selectedAttributeIds: JSON.parse(character.selectedAttributeIds)
+        selectedTraits: JSON.parse(character.selectedTraits)
       }
     })
   } catch (error) {

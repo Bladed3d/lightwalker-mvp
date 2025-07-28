@@ -431,16 +431,16 @@ model LightwalkerRoleModel {
   @@index([userLightwalkerId])
 }
 
-// NEW: Saved Character System for Role Model + Traits Discovery
+// NEW: Saved Character System for Multi-Role Model + Traits Discovery
 model SavedCharacter {
   id                    String   @id @default(cuid())
   sessionId             String?  @map("session_id") // For anonymous users
   userId                String?  @map("user_id") // For logged-in users
-  roleModelId           String   @map("role_model_id")
-  selectedAttributeIds  String   @map("selected_attribute_ids") // JSON array of attribute IDs
   characterName         String?  @map("character_name") // Optional custom name
   discoveryPoints       Int?     @default(0) @map("discovery_points")
   level                 Int?     @default(1)
+  // Store selected traits with their source role models as JSON
+  selectedTraits        String   @map("selected_traits") // JSON array of {traitId, roleModelId, traitName}
   isActive              Boolean  @default(true) @map("is_active")
   lastViewedAt          DateTime @default(now()) @map("last_viewed_at")
   createdAt             DateTime @default(now()) @map("created_at")
@@ -451,5 +451,4 @@ model SavedCharacter {
   @@map("saved_characters")
   @@index([sessionId, isActive])
   @@index([userId, isActive])
-  @@index([roleModelId])
 }

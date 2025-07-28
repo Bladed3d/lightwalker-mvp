@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ 
         character: {
           ...character,
-          selectedAttributeIds: JSON.parse(character.selectedAttributeIds)
+          selectedTraits: JSON.parse(character.selectedTraits)
         }
       })
     }
@@ -89,8 +89,7 @@ export async function POST(request: NextRequest) {
     const { 
       sessionId, 
       userId, 
-      roleModelId, 
-      selectedAttributeIds, 
+      selectedTraits, // New format: [{traitId, roleModelId, traitName}, ...]
       characterName,
       discoveryPoints,
       level 
@@ -103,11 +102,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!roleModelId || !selectedAttributeIds || !Array.isArray(selectedAttributeIds)) {
+    if (!selectedTraits || !Array.isArray(selectedTraits) || selectedTraits.length === 0) {
       return NextResponse.json(
-        { error: 'Role model ID and selected attributes required' },
+        { error: 'Selected traits required' },
         { status: 400 }
       )
+    }
+
+    // Validate trait format
+    for (const trait of selectedTraits) {
+      if (!trait.traitId || !trait.roleModelId || !trait.traitName) {
+        return NextResponse.json(
+          { error: 'Invalid trait format. Each trait must have traitId, roleModelId, and traitName' },
+          { status: 400 }
+        )
+      }
     }
 
     // Check if character already exists and deactivate it
@@ -128,8 +137,7 @@ export async function POST(request: NextRequest) {
       data: {
         sessionId,
         userId,
-        roleModelId,
-        selectedAttributeIds: JSON.stringify(selectedAttributeIds),
+        selectedTraits: JSON.stringify(selectedTraits),
         characterName,
         discoveryPoints: discoveryPoints || 0,
         level: level || 1,
@@ -140,7 +148,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       character: {
         ...character,
-        selectedAttributeIds: JSON.parse(character.selectedAttributeIds)
+        selectedTraits: JSON.parse(character.selectedTraits)
       }
     })
   } catch (error) {
