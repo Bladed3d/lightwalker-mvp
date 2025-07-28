@@ -213,9 +213,38 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
       return
     }
 
+    // Check if the role model already has enhancedAttributes from the main API call
+    if ((roleModel as any).enhancedAttributes && (roleModel as any).enhancedAttributes.length > 0) {
+      console.log(`✅ Using enhanced attributes from main API for ${roleModel.commonName}`)
+      const enhancedAttrs = (roleModel as any).enhancedAttributes
+      
+      const dbAttributes = enhancedAttrs.map((attr: any, index: number) => ({
+        id: attr.name.toLowerCase().replace(/\s+/g, '-'),
+        name: attr.name,
+        category: 'Personal Development',
+        description: attr.description,
+        benefit: attr.benefit,
+        oppositeOf: attr.oppositeOf,
+        level: 0,
+        maxLevel: 5,
+        synergies: [],
+        conflicts: [],
+        roleModelImplementations: [{
+          roleModelId: roleModel.id,
+          method: attr.method || `${roleModel.commonName}'s Approach`,
+          description: attr.description
+        }]
+      }))
+      
+      setAttributes(dbAttributes)
+      console.log(`✅ Loaded ${dbAttributes.length} enhanced attributes for ${roleModel.commonName} from cached data`)
+      console.log('🔍 Sample attribute oppositeOf:', dbAttributes[0]?.oppositeOf)
+      return
+    }
+
     try {
-      // Try to load enhanced attributes from database
-      console.log(`🔍 Loading enhanced attributes for ${roleModel.commonName} (${roleModelId})`)
+      // Fallback: Try to load enhanced attributes from individual API (known to be failing)
+      console.log(`🔍 Trying individual API for ${roleModel.commonName} (${roleModelId})`)
       const response = await fetch(`/api/role-models/${roleModelId}`)
       console.log('📡 API response status:', response.status)
       
@@ -232,7 +261,7 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
             category: 'Personal Development',
             description: attr.description,
             benefit: attr.benefit,
-            oppositeOf: attr.oppositeOf,
+            oppositeOf: attr.oppositeOf,  
             level: 0,
             maxLevel: 5,
             synergies: [],
@@ -245,17 +274,17 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           }))
           
           setAttributes(dbAttributes)
-          console.log(`✅ Loaded ${dbAttributes.length} enhanced attributes for ${roleModel.commonName} from database`)
+          console.log(`✅ Loaded ${dbAttributes.length} enhanced attributes for ${roleModel.commonName} from individual API`)
           console.log('🔍 Sample attribute oppositeOf:', dbAttributes[0]?.oppositeOf)
           return
         } else {
-          console.warn('❌ No enhanced attributes found in database response')
+          console.warn('❌ No enhanced attributes found in individual API response')
         }
       } else {
-        console.warn('❌ API response not OK:', response.status, response.statusText)
+        console.warn('❌ Individual API response not OK:', response.status, response.statusText)
       }
     } catch (error) {
-      console.warn('❌ Failed to load enhanced attributes from database:', error)
+      console.warn('❌ Failed to load enhanced attributes from individual API:', error)
     }
     
     // Fallback to hardcoded Steve Jobs attributes if database fails

@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
         famousQuotes: true,
         contemporaryRelevance: true,
         characterDevelopment: true,
+        enhancedAttributes: true,
         createdAt: true
       },
       orderBy: { commonName: 'asc' }
@@ -48,7 +49,8 @@ export async function GET(request: NextRequest) {
     const formattedRoleModels = roleModels.map(roleModel => ({
       ...roleModel,
       coreValues: JSON.parse(roleModel.coreValues || '[]'),
-      famousQuotes: JSON.parse(roleModel.famousQuotes || '[]')
+      famousQuotes: JSON.parse(roleModel.famousQuotes || '[]'),
+      enhancedAttributes: JSON.parse(roleModel.enhancedAttributes || '[]')
     }))
 
     return NextResponse.json({ roleModels: formattedRoleModels })
