@@ -551,7 +551,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
                       onError={(e) => {
                         console.log(`❌ JPG failed, trying PNG: ${roleModel.imageUrl}.png`);
                         e.currentTarget.src = `${roleModel.imageUrl}.png`;
-                        e.currentTarget.onError = (e2) => {
+                        e.currentTarget.onerror = () => {
                           console.log(`❌ PNG also failed: ${roleModel.imageUrl}.png`);
                           e.currentTarget.style.display = 'none';
                           const fallback = e.currentTarget.nextElementSibling as HTMLElement;
