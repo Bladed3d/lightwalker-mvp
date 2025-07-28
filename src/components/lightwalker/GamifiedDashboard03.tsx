@@ -497,7 +497,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
         <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4 mb-6 animate-slideUp relative">
           {/* Vertical Title on Left Edge */}
           <div className="absolute top-1/2 left-0 z-10 -translate-y-1/2 leading-none" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>
-            <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 leading-normal -ml-px">
+            <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 leading-normal -ml-px" style={{ lineHeight: '0' }}>
               ARCHETYPE SELECTION
             </h3>
           </div>
@@ -557,7 +557,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
           <div className="lg:col-span-2 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft relative">
             {/* Vertical Title on Left Edge */}
             <div className="absolute top-1/2 left-0 z-10 -translate-y-1/2 leading-none" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>
-              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 leading-normal -ml-px">
+              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 leading-normal -ml-px" style={{ lineHeight: '0' }}>
                 CONSCIOUSNESS CORE
               </h3>
             </div>
@@ -625,7 +625,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
           <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight relative">
             {/* Vertical Title on Left Edge */}
             <div className="absolute top-1/2 left-0 z-10 -translate-y-1/2 leading-none" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>
-              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 leading-normal -ml-px">
+              <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 leading-normal -ml-px" style={{ lineHeight: '0' }}>
                 TRAIT CONSTELLATION
               </h3>
             </div>
