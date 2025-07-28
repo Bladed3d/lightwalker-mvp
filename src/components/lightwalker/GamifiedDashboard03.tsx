@@ -537,7 +537,8 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
                       onError={(e) => {
                         console.log(`❌ Image failed to load: ${roleModel.imageUrl}`);
                         e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling.style.display = 'block';
+                        const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                        if (fallback) fallback.style.display = 'block';
                       }}
                     />
                     <div className="text-2xl" style={{ display: 'none' }}>👤</div>
