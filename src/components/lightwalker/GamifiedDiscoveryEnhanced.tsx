@@ -835,6 +835,7 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
                 <button 
                   className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 animate-pulse"
                   onClick={() => onLightwalkerCreated({ 
+                    roleModelId: selectedRoleModel,
                     archetype: selectedRoleModelData?.archetype,
                     attributes: selectedAttributes,
                     discoveryPoints: gamification.discoveryPoints,

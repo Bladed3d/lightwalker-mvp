@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
 import { ChevronRight, User, Brain, MessageCircle, TrendingUp, Trophy, Settings, Heart, FileText, ExternalLink } from 'lucide-react';
 
+interface JourneyNode {
+  id: string;
+  type: string;
+  label: string;
+  description: string;
+  position: { x: number; y: number };
+  docs: string[];
+  status: string;
+  next: string[];
+}
+
 const LightwalkerUserFlowchart = () => {
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [hoveredNode, setHoveredNode] = useState(null);
+  const [selectedNode, setSelectedNode] = useState<JourneyNode | null>(null);
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
   // User journey stages with documentation links
-  const userJourney = {
+  const userJourney: Record<string, JourneyNode> = {
     start: {
       id: 'start',
       type: 'terminator',
