@@ -71,14 +71,40 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
   const [showWelcome, setShowWelcome] = useState(true)
   const [newAchievements, setNewAchievements] = useState<string[]>([])
   const [expandedAttributeTab, setExpandedAttributeTab] = useState<{attributeId: string, tab: string} | null>(null)
+  const [existingCharacterId, setExistingCharacterId] = useState<string | null>(null)
 
   useEffect(() => {
     loadGamifiedRoleModels()
     loadGamifiedAttributes()
+    checkForExistingCharacter()
     if (showWelcome) {
       setTimeout(() => setShowWelcome(false), 3000) // Auto-advance after welcome animation
     }
   }, [])
+
+  const checkForExistingCharacter = async () => {
+    try {
+      const sessionId = getOrCreateSessionId()
+      const response = await fetch(`/api/characters?sessionId=${sessionId}`)
+      if (response.ok) {
+        const { characters } = await response.json()
+        if (characters.length > 0) {
+          setExistingCharacterId(characters[0].id) // Get most recent character
+        }
+      }
+    } catch (error) {
+      console.error('Failed to check for existing character:', error)
+    }
+  }
+
+  const getOrCreateSessionId = (): string => {
+    let sessionId = localStorage.getItem('lightwalker_session_id')
+    if (!sessionId) {
+      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      localStorage.setItem('lightwalker_session_id', sessionId)
+    }
+    return sessionId
+  }
 
   useEffect(() => {
     updateGamificationState()
@@ -939,6 +965,18 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
                     <span>({selectedAttributes.length} traits)</span>
                   </span>
                 </button>
+              </div>
+            )}
+
+            {/* Link to Existing Character */}
+            {existingCharacterId && (
+              <div className="mt-4 text-center">
+                <a 
+                  href={`/character/${existingCharacterId}`}
+                  className="text-cyan-400 hover:text-cyan-300 text-sm underline transition-colors"
+                >
+                  View My Existing Lightwalker™
+                </a>
               </div>
             )}
             </div>
