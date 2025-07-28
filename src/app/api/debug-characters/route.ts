@@ -11,10 +11,21 @@ export async function GET(request: NextRequest) {
       take: 10
     })
 
+    // Test direct lookup of the specific character
+    const testId = 'cmdnkdh1z0000y8e1nz79fzbg'
+    const directLookup = await prisma.savedCharacter.findUnique({
+      where: { id: testId }
+    })
+
     return NextResponse.json({ 
       characters,
       count: characters.length,
-      message: 'Debug: All characters in database'
+      message: 'Debug: All characters in database',
+      testLookup: {
+        searchedId: testId,
+        found: directLookup,
+        exists: !!directLookup
+      }
     })
   } catch (error) {
     console.error('Debug characters failed:', error)
