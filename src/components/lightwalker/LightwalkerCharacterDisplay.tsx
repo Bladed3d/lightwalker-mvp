@@ -110,6 +110,15 @@ export default function LightwalkerCharacterDisplay({
   }, [stableUserTraitsLength, stableSelectedTraitsLength]) // Don't include synthesisAttempted to avoid loops
 
   useEffect(() => {
+    // Cleanup any lingering animations from other components
+    return () => {
+      // Force cleanup of any orphaned animation elements
+      const orphanedElements = document.querySelectorAll('.animate-pulse-purple, .discovery-dots')
+      orphanedElements.forEach(el => el.remove())
+    }
+  }, [])
+
+  useEffect(() => {
     // Rotate through quotes every 5 seconds
     if (character?.roleModel.famousQuotes?.length) {
       const interval = setInterval(() => {
@@ -308,7 +317,7 @@ export default function LightwalkerCharacterDisplay({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black text-white relative">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black text-white relative overflow-hidden">
       {/* Global Settings Button */}
       {characterId && (
         <button
@@ -361,12 +370,12 @@ export default function LightwalkerCharacterDisplay({
         </div>
       )}
 
-      {/* Animated Background */}
-      <div className="fixed inset-0 pointer-events-none">
+      {/* Animated Background - Character Display Only */}
+      <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         {[...Array(20)].map((_, i) => (
           <div
-            key={i}
+            key={`char-bg-${i}`}
             className="absolute w-1 h-1 bg-cyan-400 rounded-full animate-pulse"
             style={{
               left: `${Math.random() * 100}%`,
