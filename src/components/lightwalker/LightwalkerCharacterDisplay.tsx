@@ -57,6 +57,11 @@ export default function LightwalkerCharacterDisplay({
   onBeginDailyPractice,
   characterId 
 }: LightwalkerCharacterDisplayProps) {
+  console.log('=== LightwalkerCharacterDisplay Props ===')
+  console.log('roleModelId:', roleModelId)
+  console.log('selectedAttributeIds:', selectedAttributeIds)
+  console.log('characterId:', characterId)
+  
   const [character, setCharacter] = useState<LightwalkerCharacter | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0)
