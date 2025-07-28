@@ -126,12 +126,24 @@ export default function LightwalkerCharacterDisplay({
         
         if (sourceRoleModel?.enhancedAttributes) {
           console.log('Enhanced attributes found, looking for trait:', trait.traitId)
-          const attribute = sourceRoleModel.enhancedAttributes.find((attr: any) => attr.id === trait.traitId)
+          
+          // Convert kebab-case trait ID to Title Case for matching
+          const titleCaseTraitName = trait.traitId
+            .split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ')
+          
+          console.log('Converted trait ID to title case:', titleCaseTraitName)
+          
+          // Try to match by name (Title Case) since role model attributes use Title Case names
+          const attribute = sourceRoleModel.enhancedAttributes.find((attr: any) => 
+            attr.name === titleCaseTraitName
+          )
           console.log('Found attribute:', attribute?.name)
           
           if (attribute) {
             attributeDetails.push({
-              id: attribute.id,
+              id: trait.traitId, // Keep original kebab-case ID
               name: attribute.name,
               description: attribute.description,
               category: attribute.category || 'Personal Development',
@@ -143,7 +155,8 @@ export default function LightwalkerCharacterDisplay({
               }]
             })
           } else {
-            console.error(`Could not find attribute ${trait.traitId} in role model ${sourceRoleModel.commonName}`)
+            console.error(`Could not find attribute "${titleCaseTraitName}" in role model ${sourceRoleModel.commonName}`)
+            console.log('Available attributes:', sourceRoleModel.enhancedAttributes.map((attr: any) => attr.name))
           }
         } else {
           console.error(`No enhanced attributes found for role model ${sourceRoleModel?.commonName}`)
