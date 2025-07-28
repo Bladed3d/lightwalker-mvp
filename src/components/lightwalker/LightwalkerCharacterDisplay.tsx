@@ -73,7 +73,7 @@ export default function LightwalkerCharacterDisplay({
       setSynthesisAttempted(true)
       synthesizeCharacter()
     }
-  }, [selectedTraits, synthesisAttempted])
+  }, [selectedTraits])
 
   useEffect(() => {
     // Rotate through quotes every 5 seconds
