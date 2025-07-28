@@ -124,10 +124,10 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           primaryDomain: 'Innovation & Strategic Focus',
           attributeCount: 6,
           selectedAttributes: 0,
-          archetype: 'innovator',
+          archetype: 'innovator' as const,
           primaryColor: '#00D4FF',
           secondaryColor: '#0099CC',
-          particleType: 'sparks'
+          particleType: 'sparks' as const
         },
         {
           id: 'buddha',
@@ -135,10 +135,10 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           primaryDomain: 'Spiritual wisdom and liberation from suffering',
           attributeCount: 5,
           selectedAttributes: 0,
-          archetype: 'mystic',
+          archetype: 'mystic' as const,
           primaryColor: '#8A2BE2',
           secondaryColor: '#6A1B9A',
-          particleType: 'glow'
+          particleType: 'glow' as const
         },
         {
           id: 'marcus-aurelius',
@@ -146,10 +146,10 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           primaryDomain: 'Wisdom & Self-Discipline',
           attributeCount: 4,
           selectedAttributes: 0,
-          archetype: 'wisdom',
+          archetype: 'wisdom' as const,
           primaryColor: '#FFD700',
           secondaryColor: '#CCB000',
-          particleType: 'pulse'
+          particleType: 'pulse' as const
         },
         {
           id: 'maya-angelou',
@@ -157,10 +157,10 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           primaryDomain: 'Resilience & Grace',
           attributeCount: 5,
           selectedAttributes: 0,
-          archetype: 'creator',
+          archetype: 'creator' as const,
           primaryColor: '#00FF88',
           secondaryColor: '#00CC66',
-          particleType: 'cascade'
+          particleType: 'cascade' as const
         },
         {
           id: 'martin-luther-king-jr',
@@ -168,10 +168,10 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           primaryDomain: 'Civil rights leadership and nonviolent resistance',
           attributeCount: 5,
           selectedAttributes: 0,
-          archetype: 'leader',
+          archetype: 'leader' as const,
           primaryColor: '#FF00FF',
           secondaryColor: '#CC00CC',
-          particleType: 'flow'
+          particleType: 'flow' as const
         },
         {
           id: 'joan-of-arc',
@@ -179,10 +179,10 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           primaryDomain: 'Courage and unwavering faith',
           attributeCount: 4,
           selectedAttributes: 0,
-          archetype: 'guardian',
+          archetype: 'guardian' as const,
           primaryColor: '#FF6B35',
           secondaryColor: '#CC5529',
-          particleType: 'spiral'
+          particleType: 'spiral' as const
         }
       ].map(roleModel => ({
         ...roleModel,
