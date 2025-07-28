@@ -141,7 +141,7 @@ export async function PUT(
     return NextResponse.json({ 
       character: {
         ...character,
-        selectedTraits: JSON.parse(character.selectedTraits)
+        selectedTraits: character.selectedTraits ? JSON.parse(character.selectedTraits) : []
       }
     })
   } catch (error) {

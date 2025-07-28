@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ 
         character: {
           ...character,
-          selectedTraits: JSON.parse(character.selectedTraits)
+          selectedTraits: character.selectedTraits ? JSON.parse(character.selectedTraits) : []
         }
       })
     }
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       character: {
         ...character,
-        selectedTraits: JSON.parse(character.selectedTraits)
+        selectedTraits: character.selectedTraits ? JSON.parse(character.selectedTraits) : []
       }
     })
   } catch (error) {
