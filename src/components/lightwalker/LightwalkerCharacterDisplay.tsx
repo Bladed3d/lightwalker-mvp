@@ -83,19 +83,33 @@ export default function LightwalkerCharacterDisplay({
     setIsLoading(true)
     
     try {
+      console.log('=== Character Synthesis Debug ===')
+      console.log('roleModelId:', roleModelId)
+      console.log('selectedAttributeIds:', selectedAttributeIds)
+      
       // Load role model data
       const roleModelResponse = await fetch('/api/role-models')
       const { roleModels } = await roleModelResponse.json()
+      console.log('Loaded role models count:', roleModels.length)
+      console.log('Role model IDs:', roleModels.map((rm: any) => rm.id))
+      
       const roleModel = roleModels.find((rm: any) => rm.id === roleModelId)
+      console.log('Found role model:', roleModel ? roleModel.commonName : 'NOT FOUND')
       
       if (!roleModel) {
         throw new Error('Role model not found')
       }
 
+      console.log('Role model enhanced attributes count:', roleModel.enhancedAttributes?.length || 0)
+      console.log('Enhanced attribute IDs:', roleModel.enhancedAttributes?.map((attr: any) => attr.id) || [])
+
       // Get the actual selected enhanced attributes from the role model
       const selectedEnhancedAttributes = roleModel.enhancedAttributes?.filter((attr: any) => 
         selectedAttributeIds.includes(attr.id)
       ) || []
+      
+      console.log('Filtered selected attributes count:', selectedEnhancedAttributes.length)
+      console.log('Selected attribute names:', selectedEnhancedAttributes.map((attr: any) => attr.name))
 
       // Map to our expected format
       const attributeDetails = selectedEnhancedAttributes.map((attr: any) => ({
