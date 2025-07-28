@@ -69,6 +69,8 @@ export default function LightwalkerCharacterDisplay({
   const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
+    console.log('=== useEffect Triggered ===')
+    console.log('About to call synthesizeCharacter...')
     synthesizeCharacter()
   }, [roleModelId, selectedAttributeIds])
 
