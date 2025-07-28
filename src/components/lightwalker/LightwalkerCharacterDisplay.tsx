@@ -64,12 +64,16 @@ export default function LightwalkerCharacterDisplay({
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0)
   const [showSynthesis, setShowSynthesis] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [synthesisAttempted, setSynthesisAttempted] = useState(false)
 
   useEffect(() => {
-    console.log('=== useEffect Triggered ===')
-    console.log('About to call synthesizeCharacter...')
-    synthesizeCharacter()
-  }, [selectedTraits])
+    if (!synthesisAttempted && selectedTraits.length > 0) {
+      console.log('=== useEffect Triggered ===')
+      console.log('About to call synthesizeCharacter...')
+      setSynthesisAttempted(true)
+      synthesizeCharacter()
+    }
+  }, [selectedTraits, synthesisAttempted])
 
   useEffect(() => {
     // Rotate through quotes every 5 seconds
@@ -186,7 +190,10 @@ export default function LightwalkerCharacterDisplay({
       setTimeout(() => setShowSynthesis(true), 500)
       
     } catch (error) {
-      console.error('Failed to synthesize character:', error)
+      console.error('=== SYNTHESIS ERROR ===')
+      console.error('Error details:', error)
+      console.error('Error message:', error instanceof Error ? error.message : 'Unknown error')
+      console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace')
     } finally {
       setIsLoading(false)
     }
