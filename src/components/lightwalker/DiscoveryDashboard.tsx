@@ -45,6 +45,7 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
   const [roleModels, setRoleModels] = useState<RoleModel[]>([])
   const [attributes, setAttributes] = useState<Attribute[]>([])
   const [conversationHistory, setConversationHistory] = useState<any[]>([])
+  const [expandedAttributeTab, setExpandedAttributeTab] = useState<{attributeId: string, tab: string} | null>(null)
 
   useEffect(() => {
     // Load initial data
@@ -302,6 +303,14 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
     )
   }
 
+  const handleTabClick = (attributeId: string, tab: string) => {
+    setExpandedAttributeTab(prev => 
+      prev?.attributeId === attributeId && prev?.tab === tab 
+        ? null // Close if same tab clicked
+        : { attributeId, tab } // Open new tab
+    )
+  }
+
   const getPathwayInstructions = () => {
     switch (activePathway) {
       case 'role-model':
@@ -496,41 +505,98 @@ export default function DiscoveryDashboard({ onLightwalkerCreated }: DiscoveryDa
               }
             </h3>
             
-            <div className="space-y-3">
+            <div className="space-y-4">
               {attributes.map((attribute) => (
-                <label key={attribute.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedAttributes.includes(attribute.id)}
-                    onChange={() => handleAttributeToggle(attribute.id)}
-                    className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900">{attribute.name}</div>
-                    <div className="text-sm text-gray-600 mb-2">{attribute.description}</div>
-                    
-                    {attribute.benefit && (
-                      <div className="bg-green-50 rounded p-2 text-xs mb-2">
-                        <div className="font-medium text-green-800">✅ Benefit:</div>
-                        <div className="text-green-700">{attribute.benefit}</div>
+                <div key={attribute.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                  {/* Checkbox and Main Info */}
+                  <label className="flex items-start space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedAttributes.includes(attribute.id)}
+                      onChange={() => handleAttributeToggle(attribute.id)}
+                      className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900 mb-1">{attribute.name}</div>
+                      <div className="text-sm text-gray-600 mb-3">
+                        {activePathway === 'problem-first' && attribute.oppositeOf 
+                          ? attribute.oppositeOf 
+                          : attribute.description
+                        }
                       </div>
-                    )}
+                    </div>
+                  </label>
+
+                  {/* Compact Tab System */}
+                  <div className="flex space-x-2 mb-2">
+                    <button
+                      onClick={() => handleTabClick(attribute.id, 'attribute')}
+                      className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                        expandedAttributeTab?.attributeId === attribute.id && expandedAttributeTab?.tab === 'attribute'
+                          ? 'bg-green-100 border-green-300 text-green-800'
+                          : 'bg-white border-gray-300 text-gray-600 hover:bg-green-50'
+                      }`}
+                    >
+                      🎯 Attribute
+                    </button>
                     
                     {attribute.oppositeOf && (
-                      <div className="bg-red-50 rounded p-2 text-xs mb-2">
-                        <div className="font-medium text-red-800">❌ Instead of:</div>
-                        <div className="text-red-700">{attribute.oppositeOf}</div>
-                      </div>
+                      <button
+                        onClick={() => handleTabClick(attribute.id, 'problem')}
+                        className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                          expandedAttributeTab?.attributeId === attribute.id && expandedAttributeTab?.tab === 'problem'
+                            ? 'bg-red-100 border-red-300 text-red-800'
+                            : 'bg-white border-gray-300 text-gray-600 hover:bg-red-50'
+                        }`}
+                      >
+                        ❌ Problem
+                      </button>
                     )}
                     
-                    {attribute.roleModelImplementations.map((impl, index) => (
-                      <div key={index} className="bg-blue-50 rounded p-2 text-xs">
-                        <div className="font-medium text-blue-800">🔧 {impl.method}</div>
-                        <div className="text-blue-600">{impl.description}</div>
-                      </div>
-                    ))}
+                    {attribute.roleModelImplementations.length > 0 && (
+                      <button
+                        onClick={() => handleTabClick(attribute.id, 'action')}
+                        className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                          expandedAttributeTab?.attributeId === attribute.id && expandedAttributeTab?.tab === 'action'
+                            ? 'bg-blue-100 border-blue-300 text-blue-800'
+                            : 'bg-white border-gray-300 text-gray-600 hover:bg-blue-50'
+                        }`}
+                      >
+                        🔧 Action
+                      </button>
+                    )}
                   </div>
-                </label>
+
+                  {/* Expanded Tab Content */}
+                  {expandedAttributeTab?.attributeId === attribute.id && (
+                    <div className="mt-3 p-3 rounded-lg border-l-4 bg-gray-50">
+                      {expandedAttributeTab.tab === 'attribute' && attribute.benefit && (
+                        <div className="text-sm text-green-700">
+                          <div className="font-medium text-green-800 mb-1">✅ Benefit:</div>
+                          {attribute.benefit}
+                        </div>
+                      )}
+                      
+                      {expandedAttributeTab.tab === 'problem' && attribute.oppositeOf && (
+                        <div className="text-sm text-red-700">
+                          <div className="font-medium text-red-800 mb-1">❌ Instead of:</div>
+                          {attribute.oppositeOf}
+                        </div>
+                      )}
+                      
+                      {expandedAttributeTab.tab === 'action' && attribute.roleModelImplementations.length > 0 && (
+                        <div className="text-sm text-blue-700">
+                          {attribute.roleModelImplementations.map((impl, index) => (
+                            <div key={index}>
+                              <div className="font-medium text-blue-800 mb-1">🔧 {impl.method}:</div>
+                              {impl.description}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
 
