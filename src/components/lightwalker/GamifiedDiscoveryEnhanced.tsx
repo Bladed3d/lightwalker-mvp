@@ -117,12 +117,11 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
       console.error('Failed to load role models:', error)
       
       // Enhanced fallback with gamified properties - expanded set for production
-      setRoleModels([
+      const fallbackRoleModels = [
         {
           id: 'steve-jobs',
           commonName: 'Steve Jobs',
           primaryDomain: 'Innovation & Strategic Focus',
-          imageUrl: '/role-models/steve-jobs.jpg',
           attributeCount: 6,
           selectedAttributes: 0,
           archetype: 'innovator',
@@ -134,7 +133,6 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           id: 'buddha',
           commonName: 'Buddha',
           primaryDomain: 'Spiritual wisdom and liberation from suffering',
-          imageUrl: '/role-models/buddha.jpg',
           attributeCount: 5,
           selectedAttributes: 0,
           archetype: 'mystic',
@@ -146,7 +144,6 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           id: 'marcus-aurelius',
           commonName: 'Marcus Aurelius',
           primaryDomain: 'Wisdom & Self-Discipline',
-          imageUrl: '/role-models/marcus-aurelius.jpg',
           attributeCount: 4,
           selectedAttributes: 0,
           archetype: 'wisdom',
@@ -158,7 +155,6 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           id: 'maya-angelou',
           commonName: 'Maya Angelou',
           primaryDomain: 'Resilience & Grace',
-          imageUrl: '/role-models/maya-angelou.jpg',
           attributeCount: 5,
           selectedAttributes: 0,
           archetype: 'creator',
@@ -170,7 +166,6 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           id: 'martin-luther-king-jr',
           commonName: 'Martin Luther King Jr.',
           primaryDomain: 'Civil rights leadership and nonviolent resistance',
-          imageUrl: '/role-models/martin-luther-king-jr.jpg',
           attributeCount: 5,
           selectedAttributes: 0,
           archetype: 'leader',
@@ -182,7 +177,6 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           id: 'joan-of-arc',
           commonName: 'Joan of Arc',
           primaryDomain: 'Courage and unwavering faith',
-          imageUrl: '/role-models/joan-of-arc.jpg',
           attributeCount: 4,
           selectedAttributes: 0,
           archetype: 'guardian',
@@ -190,7 +184,12 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           secondaryColor: '#CC5529',
           particleType: 'spiral'
         }
-      ])
+      ].map(roleModel => ({
+        ...roleModel,
+        imageUrl: `/role-models/${roleModel.commonName.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '')}.jpg`
+      }))
+      
+      setRoleModels(fallbackRoleModels)
     }
   }
 
