@@ -492,12 +492,66 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
         </div>
       </div>
 
-      {/* Main Interface */}
-      <div className="max-w-7xl mx-auto px-6 py-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Archetype Selection - Horizontal Scroll */}
+      <div className="max-w-7xl mx-auto px-6 py-4 relative z-10">
+        <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 mb-6 animate-slideUp">
+          <h3 className="text-lg font-semibold text-cyan-400 mb-4 font-mono">
+            ARCHETYPE SELECTION
+          </h3>
           
-          {/* Left Panel - Character Hub */}
-          <div className="lg:col-span-1 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft">
+          <div className="flex space-x-4 overflow-x-auto pb-4 custom-scrollbar">
+            {roleModels.map((roleModel, index) => (
+              <div
+                key={roleModel.id}
+                className={`min-w-[280px] relative p-4 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-102 ${
+                  selectedRoleModel === roleModel.id
+                    ? 'bg-gradient-to-r from-cyan-900/50 to-purple-900/50 border-cyan-400 shadow-lg'
+                    : 'bg-gray-800/30 border-gray-600 hover:border-cyan-500/50'
+                }`}
+                onClick={() => handleRoleModelSelect(roleModel.id)}
+                style={{ 
+                  animationDelay: `${index * 0.1}s`,
+                  ...(selectedRoleModel === roleModel.id && {
+                    background: `linear-gradient(45deg, ${roleModel.primaryColor}20, ${roleModel.secondaryColor}20)`,
+                    boxShadow: `0 0 20px ${roleModel.primaryColor}30`
+                  })
+                }}
+              >
+                <div className="relative flex flex-col items-center text-center space-y-3">
+                  <div 
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-2xl border-2"
+                    style={{ 
+                      borderColor: roleModel.primaryColor,
+                      backgroundColor: `${roleModel.primaryColor}20`
+                    }}
+                  >
+                    👤
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white text-lg">{roleModel.commonName}</h4>
+                    <p className="text-sm text-gray-400 mb-2">{roleModel.primaryDomain}</p>
+                    <div className="text-xs">
+                      <span 
+                        className="px-3 py-1 rounded-full text-black font-medium capitalize"
+                        style={{ backgroundColor: roleModel.primaryColor }}
+                      >
+                        {roleModel.archetype}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Interface - Character Hub + Trait Constellation */}
+      <div className="max-w-7xl mx-auto px-6 py-2 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          
+          {/* Left Panel - Character Hub (2/5 width) */}
+          <div className="lg:col-span-2 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft">
             <h3 className="text-lg font-semibold text-cyan-400 mb-4 font-mono">
               CONSCIOUSNESS CORE
             </h3>
@@ -561,69 +615,17 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
             )}
           </div>
 
-          {/* Center Panel - Archetype Selection */}
-          <div className="lg:col-span-1 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideUp">
-            <h3 className="text-lg font-semibold text-cyan-400 mb-4 font-mono">
-              ARCHETYPE SELECTION
-            </h3>
-            
-            <div className="space-y-4">
-              {roleModels.map((roleModel, index) => (
-                <div
-                  key={roleModel.id}
-                  className={`relative p-4 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-102 ${
-                    selectedRoleModel === roleModel.id
-                      ? 'bg-gradient-to-r from-cyan-900/50 to-purple-900/50 border-cyan-400 shadow-lg'
-                      : 'bg-gray-800/30 border-gray-600 hover:border-cyan-500/50'
-                  }`}
-                  onClick={() => handleRoleModelSelect(roleModel.id)}
-                  style={{ 
-                    animationDelay: `${index * 0.1}s`,
-                    ...(selectedRoleModel === roleModel.id && {
-                      background: `linear-gradient(45deg, ${roleModel.primaryColor}20, ${roleModel.secondaryColor}20)`,
-                      boxShadow: `0 0 20px ${roleModel.primaryColor}30`
-                    })
-                  }}
-                >
-                  <div className="relative flex items-center space-x-3">
-                    <div 
-                      className="w-12 h-12 rounded-full flex items-center justify-center text-xl border-2"
-                      style={{ 
-                        borderColor: roleModel.primaryColor,
-                        backgroundColor: `${roleModel.primaryColor}20`
-                      }}
-                    >
-                      👤
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-white">{roleModel.commonName}</h4>
-                      <p className="text-sm text-gray-400">{roleModel.primaryDomain}</p>
-                      <div className="text-xs mt-1">
-                        <span 
-                          className="px-2 py-1 rounded text-black font-medium capitalize"
-                          style={{ backgroundColor: roleModel.primaryColor }}
-                        >
-                          {roleModel.archetype}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right Panel - Trait Constellation */}
-          <div className="lg:col-span-1 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight">
+          {/* Right Panel - Trait Constellation (3/5 width = 60%) */}
+          <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight">
             <h3 className="text-lg font-semibold text-cyan-400 mb-4 font-mono">
               TRAIT CONSTELLATION
             </h3>
             
-            <div className="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 max-h-96 overflow-y-auto custom-scrollbar">
               {attributes.map((attribute, index) => (
                 <label 
                   key={attribute.id}
-                  className={`block p-3 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-102 ${
+                  className={`block p-4 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-102 ${
                     selectedAttributes.includes(attribute.id)
                       ? 'bg-gradient-to-r from-green-900/50 to-cyan-900/50 border-green-400 shadow-lg animate-glow'
                       : 'bg-gray-800/30 border-gray-600 hover:border-cyan-500/50'
