@@ -10,13 +10,51 @@ const prisma = globalForPrisma.prisma ?? new PrismaClient()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
-// GET /api/characters - Get all characters for a session/user
+// GET /api/characters - Get all characters for a session/user OR specific character by ID
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const sessionId = searchParams.get('sessionId')
     const userId = searchParams.get('userId')
+    const characterId = searchParams.get('id')
 
+    // If specific character ID is requested
+    if (characterId) {
+      console.log('Looking for specific character with ID:', characterId)
+      
+      const character = await prisma.savedCharacter.findUnique({
+        where: { id: characterId }
+      })
+
+      if (!character) {
+        return NextResponse.json(
+          { error: 'Character not found', searchedId: characterId },
+          { status: 404 }
+        )
+      }
+
+      if (!character.isActive) {
+        return NextResponse.json(
+          { error: 'Character is inactive', searchedId: characterId },
+          { status: 404 }
+        )
+      }
+
+      // Update last viewed timestamp
+      await prisma.savedCharacter.update({
+        where: { id: characterId },
+        data: { lastViewedAt: new Date() }
+      })
+
+      return NextResponse.json({ 
+        character: {
+          ...character,
+          selectedAttributeIds: JSON.parse(character.selectedAttributeIds)
+        }
+      })
+    }
+
+    // Otherwise, get all characters for session/user
     if (!sessionId && !userId) {
       return NextResponse.json(
         { error: 'Session ID or User ID required' },

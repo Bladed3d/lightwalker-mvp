@@ -34,7 +34,15 @@ export default function CharacterPage() {
   const loadCharacter = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`/api/characters/${characterId}`)
+      
+      // Try the dynamic route first
+      let response = await fetch(`/api/characters/${characterId}`)
+      
+      // If dynamic route fails, try query parameter approach
+      if (!response.ok) {
+        console.log('Dynamic route failed, trying query parameter approach')
+        response = await fetch(`/api/characters?id=${characterId}`)
+      }
       
       if (!response.ok) {
         if (response.status === 404) {
