@@ -523,13 +523,22 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
               >
                 <div className="relative flex flex-col items-center text-center space-y-3">
                   <div 
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-2xl border-2"
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-2xl border-2 overflow-hidden"
                     style={{ 
                       borderColor: roleModel.primaryColor,
                       backgroundColor: `${roleModel.primaryColor}20`
                     }}
                   >
-                    👤
+                    <img 
+                      src={roleModel.imageUrl} 
+                      alt={roleModel.commonName}
+                      className="w-full h-full object-cover rounded-full"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling.style.display = 'block';
+                      }}
+                    />
+                    <div className="text-2xl" style={{ display: 'none' }}>👤</div>
                   </div>
                   <div>
                     <h4 className="font-semibold text-white text-lg">{roleModel.commonName}</h4>
