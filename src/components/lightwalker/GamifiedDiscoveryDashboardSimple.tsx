@@ -215,7 +215,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
     const newLevel = Math.floor(newPoints / 250) + 1
     const completion = Math.min((selectedAttributes.length / 5) * 100, 100)
     
-    const newAchievements = []
+    const newAchievements: string[] = []
     if (selectedRoleModel && !gamification.achievements.includes('first-archetype')) {
       newAchievements.push('first-archetype')
     }
