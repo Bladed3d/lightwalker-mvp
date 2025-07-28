@@ -496,7 +496,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
       <div className="max-w-7xl mx-auto px-6 py-4 relative z-10">
         <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4 mb-6 animate-slideUp relative">
           {/* Vertical Title on Left Edge */}
-          <div className="absolute left-0 top-0 h-full flex items-center z-10">
+          <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
             <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
                 style={{ transform: 'rotate(-90deg) translate(-100%, 0)', transformOrigin: 'left top' }}>
               ARCHETYPE SELECTION
@@ -557,7 +557,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
           {/* Left Panel - Character Hub (2/5 width) */}
           <div className="lg:col-span-2 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft relative">
             {/* Vertical Title on Left Edge */}
-            <div className="absolute left-0 top-0 h-full flex items-center z-10">
+            <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
               <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
                   style={{ transform: 'rotate(-90deg) translate(-100%, 0)', transformOrigin: 'left top' }}>
                 CONSCIOUSNESS CORE
@@ -626,7 +626,7 @@ export default function GamifiedDiscoveryDashboardSimple({ onLightwalkerCreated 
           {/* Right Panel - Trait Constellation (3/5 width = 60%) */}
           <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight relative">
             {/* Vertical Title on Left Edge */}
-            <div className="absolute left-0 top-0 h-full flex items-center z-10">
+            <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
               <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
                   style={{ transform: 'rotate(-90deg) translate(-100%, 0)', transformOrigin: 'left top' }}>
                 TRAIT CONSTELLATION
