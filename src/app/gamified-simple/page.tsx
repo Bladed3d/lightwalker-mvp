@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import GamifiedDiscoveryDashboardSimple from '@/components/lightwalker/GamifiedDiscoveryDashboardSimple'
+import GamifiedDashboard03 from '@/components/lightwalker/GamifiedDashboard03'
 
 interface LightwalkerData {
   archetype: string
@@ -63,7 +63,7 @@ export default function GamifiedSimplePage() {
 
   return (
     <div>
-      <GamifiedDiscoveryDashboardSimple onLightwalkerCreated={handleLightwalkerCreated} />
+      <GamifiedDashboard03 onLightwalkerCreated={handleLightwalkerCreated} />
     </div>
   )
 }
