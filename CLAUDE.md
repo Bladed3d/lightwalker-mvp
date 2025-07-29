@@ -42,6 +42,13 @@
 
 **Stack**: Next.js 14, TypeScript, Prisma ORM, PostgreSQL (Neon), Tailwind CSS
 
+**⚠️ CRITICAL: DO NOT INSTALL REACT-ROUTER-DOM**
+- This project uses **Next.js App Router** for routing - NOT React Router
+- `react-router-dom` and `@types/react-router-dom` cause pnpm lockfile conflicts
+- These packages were previously installed for testing but removed (commit `229375d`)
+- For navigation, use Next.js `useRouter()`, `Link`, and `redirect()` instead
+- Installing react-router-dom will break Vercel deployments with `ERR_PNPM_OUTDATED_LOCKFILE`
+
 **Database**: 
 - **Production**: PostgreSQL on Neon (configured via DATABASE_URL)
 - **RoleModel Schema**: 40+ fields including enhancedAttributes JSON field
