@@ -26,24 +26,32 @@ export default function CharacterPage() {
   const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
+    const abortController = new AbortController()
+    
     if (characterId) {
-      loadCharacter()
+      loadCharacter(abortController.signal)
+    }
+    
+    return () => {
+      abortController.abort()
+      setIsLoading(false)
+      setError(null)
     }
   }, [characterId])
 
-  const loadCharacter = async () => {
+  const loadCharacter = async (signal?: AbortSignal) => {
     try {
       setIsLoading(true)
       
       // Try the dynamic route first
       console.log('Trying dynamic route:', `/api/characters/${characterId}`)
-      let response = await fetch(`/api/characters/${characterId}`)
+      let response = await fetch(`/api/characters/${characterId}`, { signal })
       
       // If dynamic route fails, try query parameter approach
       if (!response.ok) {
         console.log('Dynamic route failed with status:', response.status)
         console.log('Trying query parameter approach:', `/api/characters?id=${characterId}`)
-        response = await fetch(`/api/characters?id=${characterId}`)
+        response = await fetch(`/api/characters?id=${characterId}`, { signal })
         
         if (response.ok) {
           console.log('Query parameter approach succeeded!')
@@ -70,6 +78,10 @@ export default function CharacterPage() {
       console.log('Character data loaded:', data)
       setCharacter(data.character)
     } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('Request was aborted')
+        return
+      }
       console.error('Failed to load character:', error)
       setError('Failed to load character')
     } finally {
