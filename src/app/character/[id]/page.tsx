@@ -78,7 +78,7 @@ export default function CharacterPage() {
       console.log('Character data loaded:', data)
       setCharacter(data.character)
     } catch (error) {
-      if (error.name === 'AbortError') {
+      if (error instanceof Error && error.name === 'AbortError') {
         console.log('Request was aborted')
         return
       }
