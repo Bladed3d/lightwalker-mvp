@@ -118,17 +118,39 @@ export default function LightwalkerCharacterDisplay({
     }
   }, [])
 
+  // Collect all quotes from all involved role models
+  const allQuotes = useMemo(() => {
+    if (!character?.involvedRoleModels) return []
+    
+    const quotes: {quote: string, author: string}[] = []
+    character.involvedRoleModels.forEach(roleModel => {
+      if (roleModel.famousQuotes) {
+        const quotesArray = Array.isArray(roleModel.famousQuotes) 
+          ? roleModel.famousQuotes 
+          : JSON.parse(roleModel.famousQuotes || '[]')
+        
+        quotesArray.forEach((quote: string) => {
+          quotes.push({
+            quote,
+            author: roleModel.commonName
+          })
+        })
+      }
+    })
+    return quotes
+  }, [character?.involvedRoleModels])
+
   useEffect(() => {
-    // Rotate through quotes every 5 seconds
-    if (character?.roleModel.famousQuotes?.length) {
+    // Rotate through quotes from all role models every 5 seconds
+    if (allQuotes.length > 0) {
       const interval = setInterval(() => {
         setCurrentQuoteIndex((prev) => 
-          (prev + 1) % (character.roleModel.famousQuotes?.length || 1)
+          (prev + 1) % allQuotes.length
         )
       }, 5000)
       return () => clearInterval(interval)
     }
-  }, [character])
+  }, [allQuotes.length])
 
   const synthesizeCharacter = async () => {
     const synthesisId = Math.random().toString(36).substring(7)
@@ -503,14 +525,16 @@ export default function LightwalkerCharacterDisplay({
         </div>
 
         {/* Famous Quote Rotation */}
-        {character.roleModel.famousQuotes && character.roleModel.famousQuotes.length > 0 && (
+        {allQuotes.length > 0 && (
           <div className="bg-black/30 backdrop-blur-sm rounded-xl border border-yellow-500/30 p-6 mb-8 text-center">
             <Quote className="w-8 h-8 mx-auto mb-4 text-yellow-400" />
-            <blockquote className="text-xl italic text-yellow-200 mb-4">
-              "{character.roleModel.famousQuotes[currentQuoteIndex]}"
-            </blockquote>
-            <p className="text-yellow-400 font-medium">
-              — {character.roleModel.commonName}
+            <div className="h-16 flex items-center justify-center">
+              <blockquote className="text-xl italic text-yellow-200 leading-relaxed">
+                "{allQuotes[currentQuoteIndex]?.quote}"
+              </blockquote>
+            </div>
+            <p className="text-yellow-400 font-medium mt-4">
+              — {allQuotes[currentQuoteIndex]?.author}
             </p>
           </div>
         )}

@@ -609,6 +609,21 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
     }
   }
 
+  const getActiveAreaHighlight = () => {
+    switch (activePathway) {
+      case 'role-model':
+        return 'highlight-top'
+      case 'problem-first':
+        return 'highlight-right'
+      case 'day-in-life':
+        return 'highlight-left'
+      case 'values-first':
+        return 'highlight-left'
+      default:
+        return ''
+    }
+  }
+
   const selectedRoleModelData = roleModels.find(rm => rm.id === selectedRoleModel)
 
   return (
@@ -698,7 +713,9 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
 
       {/* Role Model Gallery - Horizontal Scroll (Original Layout) */}
       <div className="max-w-7xl mx-auto px-6 py-4 relative z-10">
-        <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4 mb-6 animate-slideUp relative">
+        <div className={`bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4 mb-6 animate-slideUp relative ${
+          getActiveAreaHighlight() === 'highlight-top' ? 'ring-2 ring-green-400' : ''
+        }`}>
           {/* Vertical Title on Left Edge */}
           <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
             <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
@@ -773,7 +790,9 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           
           {/* Left Panel - Character Hub (2/5 width) */}
-          <div className="lg:col-span-2 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft relative">
+          <div className={`lg:col-span-2 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideLeft relative ${
+            getActiveAreaHighlight() === 'highlight-left' ? 'ring-2 ring-green-400' : ''
+          }`}>
             {/* Vertical Title on Left Edge */}
             <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
               <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
@@ -842,7 +861,9 @@ export default function GamifiedDiscoveryEnhanced({ onLightwalkerCreated }: Gami
           </div>
 
           {/* Right Panel - Trait Constellation (3/5 width = 60%) */}
-          <div className="lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight relative">
+          <div className={`lg:col-span-3 bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-6 animate-slideRight relative ${
+            getActiveAreaHighlight() === 'highlight-right' ? 'ring-2 ring-green-400' : ''
+          }`}>
             {/* Vertical Title on Left Edge */}
             <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
               <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 

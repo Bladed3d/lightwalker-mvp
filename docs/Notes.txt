@@ -3,6 +3,9 @@ psql 'postgresql://neondb_owner:npg_wdYOgPl1RC9W@ep-round-sun-af4jmy8k-pooler.c-
 
 To see what is next to do, Just type "Initialize taskmaster" at the start of any new chat session!
 
+ "Check CLAUDE.md for the latest session update. If Vercel is working again,
+  please check if the deployment went through for commit 3a67533."
+
 Important links:
 https://lightwalker-mvp.vercel.app/discovery-enhanced
 https://lightwalker-mvp.vercel.app/gamified-simple
@@ -27,3 +30,5 @@ to see what names in role model images do the following:
   Then just name your image files to match exactly what's shown in the
   console!
   
+  Fix!!
+  On the Character display page, the quotes only appear from one role model. The quote window changes size for two lines which disrupts the whole screen.

@@ -57,10 +57,16 @@ Create a revolutionary personal development platform that solves the 90/10 probl
 
 ```
 Frontend: Next.js 14 with TypeScript
-Database: SQLite with Prisma ORM
+Database: PostgreSQL (Neon) with Prisma ORM
 Styling: Tailwind CSS
 Authentication: Demo user system (expandable to WordPress integration)
 AI Integration: Claude/OpenAI for character creation and interactions
+Deployment: Vercel (free tier, 100 deployments/day limit)
+
+Planned Migration at 50 Users:
+- Backend: Supabase BaaS (PostgreSQL, Auth, Realtime, Storage)
+- Frontend: Continue on Vercel
+- Benefits: No deployment limits, better scaling, built-in features
 ```
 
 ## MVP Feature Development
@@ -393,6 +399,85 @@ model UserLightwalkerConsultation {
 - **New**: Bidirectional entry (People→Attributes OR Attributes→People) works seamlessly
 - **New**: Problem-first users successfully identify solution attributes and their exemplars
 - **New**: Discovery context is preserved and referenced in later consultations
+
+## Infrastructure Scaling Milestones
+
+### 50 User Milestone - Hosting Infrastructure Upgrade
+**Trigger**: When active user count reaches 50
+**Current Limitation**: Vercel free tier limits to 100 deployments per day
+**Action Required**: Migrate backend to Supabase BaaS while keeping frontend on Vercel
+
+#### Migration Strategy (3-5 Days)
+**Phase 1 - Database Migration (Day 1)**:
+- Export PostgreSQL data from Neon using pg_dump
+- Import to Supabase PostgreSQL 
+- Update Prisma connection string
+- Test all existing queries
+- Keep Neon backup for 30 days
+
+**Phase 2 - API Integration (Day 2)**:
+- Keep existing Next.js API routes unchanged
+- Update database connection to Supabase
+- Verify character creation and synthesis
+- Test all CRUD operations
+
+**Phase 3 - Feature Adoption (Days 3-5)**:
+- Implement Supabase Auth for new users
+- Add realtime subscriptions for character updates
+- Move role model images to Supabase Storage
+- Enable Row Level Security (RLS) for data protection
+
+#### Cost Analysis
+**Current Infrastructure (0-50 users)**:
+- Vercel: Free tier (100 deployments/day limit)
+- Neon PostgreSQL: Free tier
+- Total: $0/month
+
+**At 50 Users (Supabase Migration)**:
+- Vercel Frontend: Free tier
+- Supabase: Free tier (up to 500MB database, 2GB bandwidth)
+- Total: $0/month
+
+**At 200 Users**:
+- Vercel Frontend: Free tier or Pro ($20/month if needed)
+- Supabase: Pro tier (~$25/month)
+- Total: $25-45/month
+- Alternative (Render): $7-20/month but less features
+
+**At 1000+ Users**:
+- Vercel Frontend: Pro ($20/month)
+- Supabase: Pro tier with usage-based pricing (~$25 base + usage)
+- Total: ~$45-100/month depending on usage
+- More cost-effective than Render at scale
+
+#### Benefits of Supabase Migration
+- **No deployment limits**: Backend changes don't count against Vercel's 100/day
+- **Built-in features**: Authentication, realtime, storage included
+- **Better scaling**: Usage-based pricing scales with growth
+- **Developer experience**: Better debugging tools and dashboard
+- **Future-ready**: Supports advanced features like vector embeddings for AI
+
+#### Migration Checklist
+- [ ] Create Supabase project
+- [ ] Export Neon database
+- [ ] Import to Supabase
+- [ ] Update environment variables
+- [ ] Test all API endpoints
+- [ ] Implement Supabase Auth
+- [ ] Add realtime features
+- [ ] Move static assets to Supabase Storage
+- [ ] Update documentation
+- [ ] Monitor performance for 1 week
+
+### 100 User Milestone
+- Evaluate Supabase performance metrics
+- Consider implementing caching layer
+- Review database query optimization
+
+### 500 User Milestone  
+- Evaluate need for CDN (Cloudflare)
+- Consider database read replicas
+- Review API rate limiting needs
 
 ## Implementation Timeline (Realistic: 1 week = 1 hour)
 

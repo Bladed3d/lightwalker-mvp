@@ -29,6 +29,15 @@
 - Fixed TypeScript compilation errors with const assertions
 - Enhanced debug logging for production troubleshooting
 
+**📅 LATEST SESSION (July 29, 2025):**
+- **Major Achievement**: Complete database redesign from JSON to relational structure
+- **Multi-Role-Model Support**: Users can now mix traits from different role models
+- **Character Display**: Shows all contributing role models as vertical avatar stack
+- **Fixed Issues**: Infinite re-render loops, purple dot bleeding, animation cleanup
+- **Deployment Status**: Hit Vercel 100/day limit, waiting for reset
+- **Last Commit**: `3a67533` - All improvements ready to deploy when Vercel resumes
+- **Infrastructure Plan**: Documented Supabase migration for 50 users milestone in PRD
+
 ## Key Technical Context
 
 **Stack**: Next.js 14, TypeScript, Prisma ORM, PostgreSQL (Neon), Tailwind CSS
@@ -43,6 +52,13 @@
 - `npm run dev` - Start development server (port 3001)
 - `npx ts-node scripts/seed-role-models.ts` - Seed role models
 - Always run in Lightwalker subdirectory with proper dependencies
+
+**🚨 CRITICAL DEPLOYMENT LIMITATION:**
+- **Vercel Free Tier**: Only 100 deployments per day
+- **ALWAYS batch multiple fixes/updates before pushing to GitHub**
+- **DO NOT push individual commits** - wait until you have 3-5 related changes
+- **Rate limit resets every 24 hours** - plan deployments accordingly
+- **Manual deployment available** in Vercel dashboard if needed
 
 **Key File Locations**:
 - **Discovery UI**: `src/components/lightwalker/GamifiedDiscoveryEnhanced.tsx`
