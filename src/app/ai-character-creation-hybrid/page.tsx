@@ -119,31 +119,8 @@ Just describe what you're working on, and I'll find the perfect attributes for y
 
     setSearchProcessing(true)
 
-    // Prepare available attributes for AI semantic search
-    const availableAttributes: any[] = []
-    roleModels.forEach(roleModel => {
-      roleModel.enhancedAttributes?.forEach(attribute => {
-        const dailyDoItems = roleModel.dailyDoEnhanced?.attributes?.find(
-          (attr: any) => attr.attributeId === attribute.name.toLowerCase().replace(/\s+/g, '-')
-        )?.dailyDoItems
-
-        availableAttributes.push({
-          roleModel: roleModel.commonName,
-          roleModelId: roleModel.id,
-          attribute: attribute.name,
-          attributeId: attribute.id,
-          description: attribute.description,
-          method: attribute.method,
-          benefit: attribute.benefit || '',
-          dailyDoItems: dailyDoItems || null
-        })
-      })
-    })
-
-    console.log('📊 Prepared', availableAttributes.length, 'attributes for search')
-
-    // Skip AI semantic search - go directly to basic search with extracted keywords
-    console.log('🔍 Using keyword-based search (no AI database scan)')
+    // Direct keyword-based search - no data preparation needed
+    console.log('🔍 Using lightweight keyword search (no phone book processing)')
     performBasicSearch(query)
     setSearchProcessing(false)
   }
@@ -235,6 +212,8 @@ Just describe what you're working on, and I'll find the perfect attributes for y
     if (topResults.length > 0) {
       const topResult = topResults[0]
       console.log('🎯 Highlighting top result:', topResult.roleModel, '-', topResult.attribute)
+      console.log('🎯 Role model ID:', topResult.roleModelId)
+      console.log('🎯 Available role models:', roleModels.map(rm => `${rm.commonName}:${rm.id}`))
       setHighlightedRoleModel(topResult.roleModelId)
       setHighlightedAttribute(topResult.attributeId)
       setSelectedRoleModel(topResult.roleModelId)
@@ -255,7 +234,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
         body: JSON.stringify({
           userInput: aiConversation,
           context: {
-            foundMatches: searchResults.length,
+            foundMatches: 0, // Will be updated after search completes
             selectedAttributes: selectedAttributes.length
           }
         })
@@ -270,7 +249,18 @@ Just describe what you're working on, and I'll find the perfect attributes for y
           const keywords = data.keywords.join(' ')
           console.log('🎯 AI extracted keywords:', keywords)
           setSearchQuery(keywords)
-          // Keep AI mode active - don't switch to manual
+          
+          // Update AI message after search completes
+          setTimeout(() => {
+            const matchCount = searchResults.length
+            if (matchCount === 0) {
+              setAiMessage(`I didn't find matches for "${aiConversation}". Try simpler terms like "focus", "stress", or "confidence".`)
+            } else if (matchCount === 1) {
+              setAiMessage(`Perfect! I found exactly what you're looking for. Check the box if it resonates with you.`)
+            } else {
+              setAiMessage(`Great! I found ${matchCount} approaches that could help. I've highlighted the strongest match, but explore the options below. Pick up to 2 that resonate most.`)
+            }
+          }, 1000) // Wait for search to complete
         }
         
       } else {
