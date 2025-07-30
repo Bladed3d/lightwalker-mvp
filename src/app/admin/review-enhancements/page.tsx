@@ -59,26 +59,83 @@ export default function ReviewEnhancementsPage() {
 
   const performSearch = (query: string) => {
     const results: SearchResult[] = []
-    const searchTerms = query.toLowerCase().split(' ')
+    
+    // Filter out common stop words and extract meaningful terms
+    const stopWords = ['how', 'can', 'i', 'to', 'be', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'for', 'with', 'by', 'the', 'of', 'is', 'are', 'was', 'were', 'will', 'would', 'could', 'should', 'do', 'does', 'did', 'have', 'has', 'had', 'get', 'got', 'make', 'made', 'take', 'took', 'help', 'want', 'need']
+    
+    // Extract base terms
+    let searchTerms = query.toLowerCase()
+      .split(' ')
+      .filter(term => term.length > 2 && !stopWords.includes(term))
+    
+    // Add synonyms for common user intents
+    const synonymMap: Record<string, string[]> = {
+      'focus': ['focus', 'concentration', 'attention', 'strategic', 'priorities', 'distraction'],
+      'overwhelmed': ['overwhelmed', 'stress', 'chaos', 'busy', 'pressure'],
+      'priorities': ['priorities', 'focus', 'strategic', 'important', 'essential'],
+      'procrastination': ['procrastination', 'delay', 'avoidance', 'motivation'],
+      'decisions': ['decisions', 'choice', 'judgment', 'strategy'],
+      'stress': ['stress', 'overwhelmed', 'pressure', 'anxiety', 'calm'],
+      'gratitude': ['gratitude', 'appreciation', 'thankful', 'positive']
+    }
+    
+    // Expand search terms with synonyms
+    const expandedTerms = new Set(searchTerms)
+    searchTerms.forEach(term => {
+      if (synonymMap[term]) {
+        synonymMap[term].forEach(synonym => expandedTerms.add(synonym))
+      }
+    })
+    
+    searchTerms = Array.from(expandedTerms)
+    
+    // If no meaningful terms, return empty
+    if (searchTerms.length === 0) {
+      setSearchResults([])
+      setSelectedResult(null)
+      return
+    }
 
     roleModels.forEach(roleModel => {
       roleModel.enhancedAttributes?.forEach(attribute => {
         let relevanceScore = 0
-        const searchableText = `${attribute.name} ${attribute.description} ${attribute.method} ${attribute.benefit}`.toLowerCase()
         
-        // Calculate relevance based on search terms
+        // Primary searchable content (higher weight)
+        const primaryText = `${attribute.name} ${attribute.description}`.toLowerCase()
+        const methodText = `${attribute.method}`.toLowerCase() 
+        const benefitText = `${attribute.benefit || ''}`.toLowerCase()
+        
+        // Daily-Do content (if available)
+        const dailyDoItems = roleModel.dailyDoEnhanced?.attributes?.find(
+          (attr: any) => attr.attributeId === attribute.name.toLowerCase().replace(/\s+/g, '-')
+        )?.dailyDoItems
+        
+        const dailyDoText = dailyDoItems ? 
+          dailyDoItems.map((item: any) => `${item.action} ${item.category} ${item.successCriteria}`).join(' ').toLowerCase() : ''
+        
+        // Calculate relevance with weighted scoring
         searchTerms.forEach(term => {
-          if (searchableText.includes(term)) {
-            relevanceScore += searchableText.split(term).length - 1
+          // High weight for attribute name matches
+          if (primaryText.includes(term)) {
+            relevanceScore += (primaryText.split(term).length - 1) * 10
+          }
+          
+          // Medium weight for method/benefit matches  
+          if (methodText.includes(term)) {
+            relevanceScore += (methodText.split(term).length - 1) * 5
+          }
+          
+          if (benefitText.includes(term)) {
+            relevanceScore += (benefitText.split(term).length - 1) * 5
+          }
+          
+          // High weight for Daily-Do content matches (most relevant to user)
+          if (dailyDoText.includes(term)) {
+            relevanceScore += (dailyDoText.split(term).length - 1) * 8
           }
         })
 
         if (relevanceScore > 0) {
-          // Get Daily-Do items if available
-          const dailyDoItems = roleModel.dailyDoEnhanced?.attributes?.find(
-            (attr: any) => attr.attributeId === attribute.name.toLowerCase().replace(/\s+/g, '-')
-          )?.dailyDoItems
-
           results.push({
             roleModel: roleModel.commonName,
             attribute: attribute.name,
@@ -176,7 +233,7 @@ AI Context: User seems to be struggling with ${searchQuery.toLowerCase()}. This 
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search like a customer: 'I can't focus', 'feeling overwhelmed', 'bad at priorities'..."
+              placeholder="Search like a customer: 'focus', 'overwhelmed', 'priorities', 'procrastination', 'stress'..."
               className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-cyan-500 focus:outline-none"
             />
           </div>
@@ -355,7 +412,7 @@ AI Context: User seems to be struggling with ${searchQuery.toLowerCase()}. This 
                 <Search className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-medium text-white mb-2">Search for Customer Problems</h3>
                 <p className="text-gray-400 mb-4">
-                  Try searches like: "can't focus", "feeling overwhelmed", "bad at priorities", "procrastination"
+                  Try searches like: "focus", "overwhelmed", "priorities", "procrastination"
                 </p>
                 <p className="text-sm text-gray-500">
                   See exactly what solutions your customers would find
