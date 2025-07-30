@@ -53,6 +53,7 @@ export default function AICharacterCreationHybridPage() {
   const [isAIMode, setIsAIMode] = useState(true)
   const [aiConversation, setAiConversation] = useState('')
   const [aiProcessing, setAiProcessing] = useState(false)
+  const [searchProcessing, setSearchProcessing] = useState(false)
   const [aiMessage, setAiMessage] = useState('')
   const [highlightedRoleModel, setHighlightedRoleModel] = useState<string>('')
   const [highlightedAttribute, setHighlightedAttribute] = useState<string>('')
@@ -112,8 +113,11 @@ Just describe what you're working on, and I'll find the perfect attributes for y
       setSearchResults([])
       setHighlightedRoleModel('')
       setHighlightedAttribute('')
+      setSearchProcessing(false)
       return
     }
+
+    setSearchProcessing(true)
 
     // Prepare available attributes for AI semantic search
     const availableAttributes: any[] = []
@@ -189,6 +193,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
           setSelectedRoleModel(topResult.roleModelId)
         }
         
+        setSearchProcessing(false)
         return
       } else {
         console.log('⚠️ AI search returned no matches or failed:', data)
@@ -200,6 +205,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
     // Fallback to basic search if AI fails
     console.log('🔄 Falling back to basic search...')
     performBasicSearch(query)
+    setSearchProcessing(false)
   }
 
   const performBasicSearch = (query: string) => {
@@ -562,11 +568,11 @@ Just describe what you're working on, and I'll find the perfect attributes for y
                     />
                     <button
                       onClick={handleAIConversation}
-                      disabled={!aiConversation.trim() || aiProcessing}
+                      disabled={!aiConversation.trim() || aiProcessing || searchProcessing}
                       className="mt-3 px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                      <Sparkles className={`h-4 w-4 ${aiProcessing ? 'animate-spin' : ''}`} />
-                      {aiProcessing ? 'Analyzing...' : 'Add Superpowers to my Lightwalker™'}
+                      <Sparkles className={`h-4 w-4 ${(aiProcessing || searchProcessing) ? 'animate-spin' : ''}`} />
+                      {aiProcessing ? 'Analyzing...' : searchProcessing ? 'Finding Matches...' : 'Add Superpowers to my Lightwalker™'}
                     </button>
                   </div>
                   

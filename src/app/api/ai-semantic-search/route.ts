@@ -34,10 +34,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Create a concise attribute list for AI analysis
-    const attributeSummary = availableAttributes.map((attr: any) => ({
+    const attributeSummary = availableAttributes.map((attr: any, i: number) => ({
+      index: i + 1,
       roleModel: attr.roleModel,
       roleModelId: attr.roleModelId,
-      attribute: attr.attribute,
+      attribute: attr.attribute,  
       attributeId: attr.attributeId,
       description: attr.description?.substring(0, 100) || '',
       method: attr.method?.substring(0, 100) || ''
@@ -48,8 +49,8 @@ export async function POST(request: NextRequest) {
 USER SEARCH: "${searchQuery}"
 
 AVAILABLE ATTRIBUTES:
-${attributeSummary.map((attr, i) => 
-  `${i+1}. ${attr.roleModel} - ${attr.attribute}: ${attr.description}`
+${attributeSummary.map((attr) => 
+  `${attr.index}. ${attr.roleModel} (ID: ${attr.roleModelId}) - ${attr.attribute} (ID: ${attr.attributeId}): ${attr.description}`
 ).join('\n')}
 
 TASK: Find the 5 most relevant attributes that match what the user is looking for. Consider:
@@ -58,13 +59,15 @@ TASK: Find the 5 most relevant attributes that match what the user is looking fo
 - Related concepts and synonyms
 - Practical applications
 
+IMPORTANT: Use the exact roleModelId and attributeId from the available attributes list below.
+
 Return ONLY a JSON array of matches with this exact format:
 [
   {
     "roleModel": "exact role model name",
-    "roleModelId": "exact roleModelId", 
+    "roleModelId": "exact roleModelId from available attributes", 
     "attribute": "exact attribute name",
-    "attributeId": "exact attributeId",
+    "attributeId": "exact attributeId from available attributes",
     "relevanceScore": 95,
     "reasoning": "brief explanation why this matches"
   }
