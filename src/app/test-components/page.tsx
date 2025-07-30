@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import LightwalkerTimeline3 from '@/components/test/LightwalkerTimeline3';
 
 export default function TestComponentsPage() {
   return (
@@ -12,10 +13,7 @@ export default function TestComponentsPage() {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className="text-2xl font-semibold mb-4">Timeline Components</h2>
             <div className="border-2 border-dashed border-gray-300 p-4 rounded text-center">
-              <p className="text-gray-500">
-                Timeline components are in development.<br/>
-                The <code>src/components/test/</code> folder is excluded from git until ready.
-              </p>
+              <LightwalkerTimeline3 />
             </div>
           </div>
         </div>
