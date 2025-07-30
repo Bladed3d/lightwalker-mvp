@@ -208,15 +208,33 @@ Just describe what you're working on, and I'll find the perfect attributes for y
     console.log('🎭 Found', topResults.length, 'search results:', topResults.map(r => `${r.roleModel}-${r.attribute}`))
     setSearchResults(topResults)
     
+    // Update AI message based on results
+    if (topResults.length === 0) {
+      setAiMessage(`I didn't find matches for "${query}". Try simpler terms like "focus", "stress", or "confidence".`)
+    } else if (topResults.length === 1) {
+      setAiMessage(`Perfect! I found exactly what you're looking for. Check the box if it resonates with you.`)
+    } else {
+      setAiMessage(`Great! I found ${topResults.length} approaches that could help. I've highlighted the strongest match, but explore the options below. Pick up to 2 that resonate most.`)
+    }
+    
     // Auto-highlight top result
     if (topResults.length > 0) {
       const topResult = topResults[0]
       console.log('🎯 Highlighting top result:', topResult.roleModel, '-', topResult.attribute)
-      console.log('🎯 Role model ID:', topResult.roleModelId)
+      console.log('🎯 Role model ID to highlight:', topResult.roleModelId)
       console.log('🎯 Available role models:', roleModels.map(rm => `${rm.commonName}:${rm.id}`))
-      setHighlightedRoleModel(topResult.roleModelId)
-      setHighlightedAttribute(topResult.attributeId)
-      setSelectedRoleModel(topResult.roleModelId)
+      
+      // Clear previous highlights first, then set new ones
+      setHighlightedRoleModel('')
+      setHighlightedAttribute('')
+      
+      // Use setTimeout to ensure state updates are processed
+      setTimeout(() => {
+        setHighlightedRoleModel(topResult.roleModelId)
+        setHighlightedAttribute(topResult.attributeId)
+        setSelectedRoleModel(topResult.roleModelId)
+        console.log('✅ Set highlightedRoleModel to:', topResult.roleModelId)
+      }, 10)
     }
   }
 
@@ -250,17 +268,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
           console.log('🎯 AI extracted keywords:', keywords)
           setSearchQuery(keywords)
           
-          // Update AI message after search completes
-          setTimeout(() => {
-            const matchCount = searchResults.length
-            if (matchCount === 0) {
-              setAiMessage(`I didn't find matches for "${aiConversation}". Try simpler terms like "focus", "stress", or "confidence".`)
-            } else if (matchCount === 1) {
-              setAiMessage(`Perfect! I found exactly what you're looking for. Check the box if it resonates with you.`)
-            } else {
-              setAiMessage(`Great! I found ${matchCount} approaches that could help. I've highlighted the strongest match, but explore the options below. Pick up to 2 that resonate most.`)
-            }
-          }, 1000) // Wait for search to complete
+          // Message will be updated after search completes in performBasicSearch
         }
         
       } else {
@@ -322,14 +330,19 @@ Just describe what you're working on, and I'll find the perfect attributes for y
   }
 
   const handleAttributeToggle = (attributeId: string) => {
+    console.log('🔘 handleAttributeToggle called with:', attributeId)
     const attribute = attributes.find(attr => attr.id === attributeId)
     const currentRoleModel = roleModels.find(rm => rm.id === selectedRoleModel)
     
-    if (!attribute || !currentRoleModel) return
+    if (!attribute || !currentRoleModel) {
+      console.log('❌ Missing attribute or role model')
+      return
+    }
 
     const isSelected = selectedAttributes.some(attr => 
       attr.roleModelId === selectedRoleModel && attr.attributeId === attributeId
     )
+    console.log('🔘 isSelected:', isSelected, 'for attribute:', attributeId)
 
     if (isSelected) {
       setSelectedAttributes(prev => 
@@ -354,6 +367,10 @@ Just describe what you're working on, and I'll find the perfect attributes for y
         }
       ])
     }
+
+    // Update highlighted role model to match the selected attribute
+    setHighlightedRoleModel(currentRoleModel.id)
+    console.log('🎯 Updated highlighted role model to:', currentRoleModel.commonName)
   }
 
   const getUniqueRoleModels = () => {
@@ -583,7 +600,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
                       <div className="space-y-3">
                         {searchResults.map((result, index) => (
                           <div
-                            key={index}
+                            key={`search-${result.roleModelId}-${result.attributeId}`}
                             onClick={() => toggleAttributeSelection(result)}
                             className={`p-3 border rounded-lg cursor-pointer transition-all ${
                               result.selected 
@@ -649,7 +666,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
               <div className="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
                 {attributes.map((attribute) => (
                   <div 
-                    key={attribute.id} 
+                    key={`attribute-${selectedRoleModel}-${attribute.id}`} 
                     className={`border rounded-lg p-4 transition-all duration-300 ${
                       highlightedAttribute === attribute.id
                         ? 'border-green-500 bg-green-500/10 ring-2 ring-green-400 animate-pulse'
