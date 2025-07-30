@@ -85,10 +85,15 @@ Just describe what you're working on, and I'll find the perfect attributes for y
   }, [searchQuery, roleModels])
 
   useEffect(() => {
+    console.log('🔄 selectedRoleModel changed to:', selectedRoleModel)
     if (selectedRoleModel) {
       const roleModel = roleModels.find(rm => rm.id === selectedRoleModel)
+      console.log('🔍 Found role model:', roleModel?.commonName)
       if (roleModel?.enhancedAttributes) {
+        console.log('📋 Loading', roleModel.enhancedAttributes.length, 'attributes for', roleModel.commonName)
         setAttributes(roleModel.enhancedAttributes)
+      } else {
+        console.log('❌ No enhancedAttributes found for', roleModel?.commonName)
       }
     }
   }, [selectedRoleModel, roleModels])
@@ -235,16 +240,37 @@ Just describe what you're working on, and I'll find the perfect attributes for y
         setSelectedRoleModel(topResult.roleModelId)
         console.log('✅ Set highlightedRoleModel to:', topResult.roleModelId)
         
-        // Auto-scroll to highlighted role model
+        // Auto-scroll to highlighted role model with custom easing
         setTimeout(() => {
-          const roleModelElement = document.querySelector(`[data-role-model-id="${topResult.roleModelId}"]`)
-          if (roleModelElement) {
-            roleModelElement.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'nearest', 
-              inline: 'center' 
-            })
-            console.log('📍 Scrolled to role model:', topResult.roleModel)
+          const roleModelElement = document.querySelector(`[data-role-model-id="${topResult.roleModelId}"]`) as HTMLElement
+          const scrollContainer = roleModelElement?.parentElement as HTMLElement
+          
+          if (roleModelElement && scrollContainer) {
+            // Custom smooth scroll with deceleration easing
+            const targetLeft = roleModelElement.offsetLeft - (scrollContainer.clientWidth / 2) + (roleModelElement.clientWidth / 2)
+            const startLeft = scrollContainer.scrollLeft
+            const distance = targetLeft - startLeft
+            const duration = 800 // 800ms for smooth deceleration
+            const startTime = performance.now()
+            
+            const easeOutCubic = (t: number): number => {
+              return 1 - Math.pow(1 - t, 3) // Cubic easing out for smooth deceleration
+            }
+            
+            const animateScroll = (currentTime: number) => {
+              const elapsed = currentTime - startTime
+              const progress = Math.min(elapsed / duration, 1)
+              const easedProgress = easeOutCubic(progress)
+              
+              scrollContainer.scrollLeft = startLeft + (distance * easedProgress)
+              
+              if (progress < 1) {
+                requestAnimationFrame(animateScroll)
+              }
+            }
+            
+            requestAnimationFrame(animateScroll)
+            console.log('📍 Custom scrolled to role model:', topResult.roleModel)
           }
         }, 100)
       }, 10)
@@ -332,13 +358,13 @@ Just describe what you're working on, and I'll find the perfect attributes for y
     setHighlightedRoleModel(result.roleModelId)
     setSelectedRoleModel(result.roleModelId) // Show all attributes for this role model
     
+    // Update only the specific search result item
     setSearchResults(prev => 
-      prev.map(item => ({
-        ...item,
-        selected: item.roleModelId === result.roleModelId && item.attributeId === result.attributeId 
-          ? !item.selected 
-          : item.selected
-      }))
+      prev.map(item => 
+        item.roleModelId === result.roleModelId && item.attributeId === result.attributeId
+          ? { ...item, selected: !item.selected }
+          : item
+      )
     )
   }
 
@@ -385,16 +411,37 @@ Just describe what you're working on, and I'll find the perfect attributes for y
     setHighlightedRoleModel(currentRoleModel.id)
     console.log('🎯 Updated highlighted role model to:', currentRoleModel.commonName)
     
-    // Auto-scroll to the highlighted role model
+    // Auto-scroll to the highlighted role model with custom easing
     setTimeout(() => {
-      const roleModelElement = document.querySelector(`[data-role-model-id="${currentRoleModel.id}"]`)
-      if (roleModelElement) {
-        roleModelElement.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'nearest', 
-          inline: 'center' 
-        })
-        console.log('📍 Scrolled to role model from attribute selection:', currentRoleModel.commonName)
+      const roleModelElement = document.querySelector(`[data-role-model-id="${currentRoleModel.id}"]`) as HTMLElement
+      const scrollContainer = roleModelElement?.parentElement as HTMLElement
+      
+      if (roleModelElement && scrollContainer) {
+        // Custom smooth scroll with deceleration easing
+        const targetLeft = roleModelElement.offsetLeft - (scrollContainer.clientWidth / 2) + (roleModelElement.clientWidth / 2)
+        const startLeft = scrollContainer.scrollLeft
+        const distance = targetLeft - startLeft
+        const duration = 800 // 800ms for smooth deceleration
+        const startTime = performance.now()
+        
+        const easeOutCubic = (t: number): number => {
+          return 1 - Math.pow(1 - t, 3) // Cubic easing out for smooth deceleration
+        }
+        
+        const animateScroll = (currentTime: number) => {
+          const elapsed = currentTime - startTime
+          const progress = Math.min(elapsed / duration, 1)
+          const easedProgress = easeOutCubic(progress)
+          
+          scrollContainer.scrollLeft = startLeft + (distance * easedProgress)
+          
+          if (progress < 1) {
+            requestAnimationFrame(animateScroll)
+          }
+        }
+        
+        requestAnimationFrame(animateScroll)
+        console.log('📍 Custom scrolled to role model from attribute selection:', currentRoleModel.commonName)
       }
     }, 100)
   }
@@ -464,7 +511,10 @@ Just describe what you're working on, and I'll find the perfect attributes for y
                     ? 'bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-green-400 shadow-lg ring-2 ring-green-400 animate-pulse'
                     : 'bg-gray-800/30 border-gray-600 hover:border-cyan-500/50'
                 }`}
-                onClick={() => setSelectedRoleModel(roleModel.id)}
+                onClick={() => {
+                  console.log('🎯 Clicked role model:', roleModel.commonName, 'ID:', roleModel.id)
+                  setSelectedRoleModel(roleModel.id)
+                }}
                 style={{ 
                   ...(selectedRoleModel === roleModel.id && {
                     background: `linear-gradient(45deg, ${roleModel.primaryColor}20, ${roleModel.secondaryColor}20)`,
@@ -585,13 +635,56 @@ Just describe what you're working on, and I'll find the perfect attributes for y
                     </button>
                   </div>
                   
-                  {/* AI Response Message */}
+                  {/* AI Response Message & Search Results */}
                   {aiMessage && (
-                    <div className="flex-1 p-4 bg-purple-900/30 border border-purple-500/40 rounded-lg overflow-y-auto">
-                      <div className="flex items-start gap-2">
-                        <Sparkles className="h-5 w-5 text-purple-400 mt-0.5 flex-shrink-0" />
-                        <div className="text-purple-100 text-sm whitespace-pre-line">{aiMessage}</div>
+                    <div className="flex-1 flex flex-col overflow-y-auto">
+                      <div className="p-4 bg-purple-900/30 border border-purple-500/40 rounded-lg mb-4">
+                        <div className="flex items-start gap-2">
+                          <Sparkles className="h-5 w-5 text-purple-400 mt-0.5 flex-shrink-0" />
+                          <div className="text-purple-100 text-sm whitespace-pre-line">{aiMessage}</div>
+                        </div>
                       </div>
+                      
+                      {/* AI Search Results */}
+                      {searchResults.length > 0 && (
+                        <div className="space-y-3">
+                          {searchResults.map((result, index) => (
+                            <div
+                              key={`ai-search-${result.roleModelId}-${result.attributeId}`}
+                              onClick={() => toggleAttributeSelection(result)}
+                              className={`p-3 border rounded-lg cursor-pointer transition-all ${
+                                result.selected 
+                                  ? 'border-cyan-500 bg-cyan-500/10' 
+                                  : highlightedAttribute === result.attributeId
+                                  ? 'border-green-500 bg-green-500/10 ring-2 ring-green-400 animate-pulse'
+                                  : 'border-gray-600 hover:border-gray-500 bg-gray-700/30'
+                              }`}
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    {result.selected ? (
+                                      <CheckSquare className="h-4 w-4 text-cyan-400" />
+                                    ) : (
+                                      <Square className="h-4 w-4 text-gray-400" />
+                                    )}
+                                    <div className="font-medium text-white text-sm">{result.attribute}</div>
+                                    {highlightedAttribute === result.attributeId && (
+                                      <span className="bg-green-500 text-white px-1 py-0.5 rounded text-xs font-bold">
+                                        AI Pick!
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-gray-400 mb-1">{result.roleModel}</div>
+                                  <div className="text-xs text-gray-500 line-clamp-2">
+                                    {result.originalMethod}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
