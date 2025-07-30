@@ -105,7 +105,10 @@ Just describe what you're working on, and I'll find the perfect attributes for y
   }
 
   const performSearch = async (query: string) => {
+    console.log('🔍 performSearch called with query:', query)
+    
     if (query.length <= 2) {
+      console.log('❌ Query too short, clearing results')
       setSearchResults([])
       setHighlightedRoleModel('')
       setHighlightedAttribute('')
@@ -133,7 +136,10 @@ Just describe what you're working on, and I'll find the perfect attributes for y
       })
     })
 
+    console.log('📊 Prepared', availableAttributes.length, 'attributes for search')
+
     try {
+      console.log('🤖 Attempting AI semantic search...')
       // Use AI semantic search
       const response = await fetch('/api/ai-semantic-search', {
         method: 'POST',
@@ -146,9 +152,13 @@ Just describe what you're working on, and I'll find the perfect attributes for y
         })
       })
 
+      console.log('📡 AI search response status:', response.status)
       const data = await response.json()
+      console.log('🎯 AI search response data:', data)
 
       if (data.success && data.matches.length > 0) {
+        console.log('✅ AI search successful, found', data.matches.length, 'matches')
+        
         // Convert AI matches to SearchResult format
         const aiResults: SearchResult[] = data.matches.map((match: any) => ({
           roleModel: match.roleModel,
@@ -167,23 +177,28 @@ Just describe what you're working on, and I'll find the perfect attributes for y
           )
         }))
 
+        console.log('🎭 Setting search results:', aiResults)
         setSearchResults(aiResults)
         
         // Auto-highlight top AI result
         if (aiResults.length > 0) {
           const topResult = aiResults[0]
+          console.log('🎯 Highlighting top result:', topResult.roleModel, '-', topResult.attribute)
           setHighlightedRoleModel(topResult.roleModelId)
           setHighlightedAttribute(topResult.attributeId)
           setSelectedRoleModel(topResult.roleModelId)
         }
         
         return
+      } else {
+        console.log('⚠️ AI search returned no matches or failed:', data)
       }
     } catch (error) {
-      console.error('AI semantic search failed, falling back to basic search:', error)
+      console.error('❌ AI semantic search failed, falling back to basic search:', error)
     }
 
     // Fallback to basic search if AI fails
+    console.log('🔄 Falling back to basic search...')
     performBasicSearch(query)
   }
 
