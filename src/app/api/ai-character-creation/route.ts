@@ -15,29 +15,24 @@ export async function POST(request: NextRequest) {
     // Extract keywords from user input
     const keywordResult = await aiService.extractKeywords(userInput)
 
-    // Generate contextual AI response
-    const aiResponse = await aiService.generateResponse({
-      userInput,
-      extractedKeywords: keywordResult.keywords,
-      foundMatches: context?.foundMatches || 0,
-      selectedAttributes: context?.selectedAttributes || 0
-    })
-
     return NextResponse.json({
       success: true,
       keywords: keywordResult.keywords,
       primaryIntent: keywordResult.primaryIntent,
       confidence: keywordResult.confidence,
-      aiMessage: aiResponse.message,
-      suggestions: aiResponse.suggestions || []
+      aiMessage: `Perfect! I extracted keywords: ${keywordResult.keywords.join(', ')}. Let me search for relevant attributes...`,
+      suggestions: []
     })
 
   } catch (error) {
     console.error('AI character creation API error:', error)
+    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error')
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     
     return NextResponse.json(
       { 
         error: 'AI processing failed',
+        details: error instanceof Error ? error.message : 'Unknown error',
         fallback: {
           keywords: [],
           aiMessage: "I'm having trouble processing that right now. Try using simple terms like 'focus', 'stress', or 'confidence'.",

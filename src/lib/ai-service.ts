@@ -23,7 +23,8 @@ class AIService {
    */
   async extractKeywords(userInput: string): Promise<KeywordExtractionResult> {
     try {
-      const response = await fetch(this.baseURL, {
+      // Use EXACT same configuration as working debug endpoint
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -32,32 +33,16 @@ class AIService {
           'X-Title': 'Lightwalker Character Creation'
         },
         body: JSON.stringify({
-          model: 'deepseek/deepseek-r1:free', // Free DeepSeek R1 reasoning model - confirmed working
+          model: 'openai/gpt-4o-mini',
           messages: [{
             role: 'system',
-            content: `You are a keyword extraction expert for a personal development app. 
-            
-Extract 1-3 key terms from user input and determine their primary intent:
-- "problems": challenges they face (distraction, overwhelm, anger, stress)
-- "traits": strengths they want (focus, patience, confidence, wisdom) 
-- "people": specific individuals they admire
-- "habits": daily actions they want to develop
-
-Return ONLY a JSON object with this exact format:
-{
-  "keywords": ["focus", "work"],
-  "primaryIntent": "traits", 
-  "confidence": 0.85
-}
-
-Focus on extracting the core meaning, not filler words.`
-          },
-          {
+            content: 'You extract keywords for character building. Only respond with valid JSON.'
+          }, {
             role: 'user',
-            content: userInput
+            content: `Extract keywords from: "${userInput}"\n\nOur database has: Steve Jobs, Einstein, Buddha, Newton, Leonardo da Vinci, Marcus Aurelius, Joan of Arc, Marie Curie, Maya Angelou, Martin Luther King Jr., Patanjali.\n\nFor personal development attributes, use adjective forms (forgiving not forgiveness, patient not patience, focused not focus).\n\nIf people are mentioned, map them to our similar role models:\n- Bill Gates/Tim Cook → "Steve Jobs" (tech innovator)\n- Gandhi/Mandela → "Martin Luther King Jr." (peaceful leader) \n- Oprah/Tony Robbins → "Maya Angelou" (inspiring communicator)\n- Any scientist → "Einstein", "Newton", or "Marie Curie"\n- Any philosopher → "Marcus Aurelius" or "Buddha"\n- Any artist → "Leonardo da Vinci"\n- Any warrior/leader → "Joan of Arc"\n\nReturn only this JSON format: {"keywords": ["focused", "Steve Jobs"], "primaryIntent": "traits", "confidence": 0.9}\n\nPrimaryIntent options: "problems", "traits", "people", "habits", "unclear"`
           }],
-          max_tokens: 150,
-          temperature: 0.3
+          max_tokens: 100,
+          temperature: 0.1
         })
       })
 
@@ -67,17 +52,35 @@ Focus on extracting the core meaning, not filler words.`
 
       const data = await response.json()
       const content = data.choices[0]?.message?.content
-
+      
       try {
-        return JSON.parse(content)
+        // Strip markdown code blocks if present - EXACT copy from working debug endpoint
+        let cleanContent = content.trim()
+        
+        // Remove opening ```json and closing ```
+        if (cleanContent.startsWith('```json')) {
+          cleanContent = cleanContent.slice(7) // Remove '```json'
+        }
+        if (cleanContent.endsWith('```')) {
+          cleanContent = cleanContent.slice(0, -3) // Remove closing '```'
+        }
+        
+        cleanContent = cleanContent.trim()
+        console.log('🔧 Original content:', content)
+        console.log('🔧 Cleaned content:', cleanContent)
+        
+        const parsed = JSON.parse(cleanContent)
+        console.log('✅ SUCCESS: Parsed JSON:', parsed)
+        return parsed
       } catch (parseError) {
-        // Fallback parsing if JSON is malformed
-        return this.fallbackKeywordExtraction(userInput)
+        console.log('🚨 JSON Parse Error:', parseError)
+        console.log('🚨 Raw content:', content)
+        throw new Error(`OpenRouter JSON parse failed: ${parseError}`)
       }
 
     } catch (error) {
-      console.error('AI keyword extraction failed:', error)
-      return this.fallbackKeywordExtraction(userInput)
+      console.error('🚨 OpenRouter API call completely failed:', error)
+      throw error
     }
   }
 
@@ -94,13 +97,9 @@ Focus on extracting the core meaning, not filler words.`
     }
   ): Promise<AIResponse> {
     
-    // Use templates for cost efficiency, add light AI personalization
-    if (context.foundMatches === 0) {
-      return {
-        message: `I'm not finding exact matches for "${context.userInput}". Try simpler terms like "focus", "stress", "confidence", or "patience". What specific challenge or strength would you like to work on?`,
-        suggestions: ['focus', 'stress', 'confidence', 'patience', 'anger', 'empathy']
-      }
-    }
+    // AI should extract keywords first, then search handles the "found matches" logic
+    console.log('🚨 generateResponse called with context:', context)
+    throw new Error('generateResponse should not be called - keywords should be extracted first!')
 
     if (context.foundMatches === 1) {
       return {
@@ -132,7 +131,7 @@ Focus on extracting the core meaning, not filler words.`
     
     // Simple keyword matching
     const problemWords = ['distract', 'stress', 'overwhelm', 'anger', 'anxiety', 'procrastinat', 'focus problem', 'can\'t concentrate']
-    const traitWords = ['focus', 'confidence', 'patience', 'wisdom', 'empathy', 'courage', 'discipline']
+    const traitWords = ['focus', 'confidence', 'patience', 'wisdom', 'empathy', 'courage', 'discipline', 'forgiveness', 'forgiving']
     const peopleWords = ['jobs', 'buddha', 'einstein', 'gandhi', 'aurelius', 'mandela']
     
     const keywords: string[] = []

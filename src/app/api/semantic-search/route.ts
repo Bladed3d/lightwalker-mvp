@@ -38,6 +38,14 @@ export async function POST(request: NextRequest) {
     
     console.log('📊 Found', roleModels.length, 'role models')
     console.log('📊 Sample role model attributes:', roleModels[0]?.enhancedAttributes?.length || 0)
+    
+    // Debug first role model attributes
+    if (roleModels[0]?.enhancedAttributes) {
+      console.log('📊 First role model:', roleModels[0].commonName)
+      const attrs = Array.isArray(roleModels[0].enhancedAttributes) ? 
+        roleModels[0].enhancedAttributes : JSON.parse(roleModels[0].enhancedAttributes)
+      console.log('📊 Sample attributes:', attrs.slice(0, 2).map((a: any) => a.name))
+    }
 
     const results: SearchResult[] = []
 
@@ -102,6 +110,16 @@ async function performDirectMatching(roleModels: any[], keywords: string[]): Pro
     const attributes = roleModel.enhancedAttributes
     console.log(`📍 Checking ${roleModel.commonName}: attributes type=${typeof attributes}, isArray=${Array.isArray(attributes)}`)
     
+    // Check if any keyword matches the role model name directly
+    const roleModelNameBonus = keywords.some(keyword => 
+      roleModel.commonName.toLowerCase().includes(keyword.toLowerCase()) ||
+      roleModel.fullName?.toLowerCase().includes(keyword.toLowerCase())
+    ) ? 50 : 0
+    
+    if (roleModelNameBonus > 0) {
+      console.log(`🎯 ROLE MODEL NAME MATCH: ${roleModel.commonName} matched with keywords`)
+    }
+    
     // Handle both JSON string and parsed object
     let parsedAttributes = []
     if (typeof attributes === 'string') {
@@ -118,7 +136,7 @@ async function performDirectMatching(roleModels: any[], keywords: string[]): Pro
     console.log(`📍 ${roleModel.commonName} has ${parsedAttributes.length} parsed attributes`)
     
     parsedAttributes.forEach((attribute: any, index: number) => {
-      let relevanceScore = 0
+      let relevanceScore = roleModelNameBonus // Start with role model name bonus
       const attributeText = `${attribute.name} ${attribute.description} ${attribute.method}`.toLowerCase()
       
       if (index === 0) {
@@ -141,13 +159,14 @@ async function performDirectMatching(roleModels: any[], keywords: string[]): Pro
         }
       })
 
-      if (relevanceScore > 0) {
+      // If role model name matched, include ALL attributes with name bonus
+      if (relevanceScore > 0 || roleModelNameBonus > 0) {
         console.log(`✅ Found match: ${roleModel.commonName} - ${attribute.name} (score: ${relevanceScore})`)
         results.push({
           roleModel: roleModel.commonName,
           roleModelId: roleModel.id,
           attribute: attribute.name,
-          attributeId: attribute.id,
+          attributeId: `${roleModel.id}-${attribute.name.toLowerCase().replace(/\s+/g, '-')}`,
           originalMethod: attribute.method,
           dailyDoItems: undefined,
           relevanceScore,
@@ -186,7 +205,7 @@ async function performSemanticMatching(roleModels: any[], searchQuery: string, k
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-r1:free',
+        model: 'openai/gpt-4o-mini',
         messages: [{
           role: 'system',
           content: `You are a semantic search expert. Find the most relevant personal development attributes for the user's search.
@@ -252,8 +271,14 @@ async function performFuzzyMatching(roleModels: any[], searchQuery: string): Pro
   roleModels.forEach(roleModel => {
     const attributes = Array.isArray(roleModel.enhancedAttributes) ? roleModel.enhancedAttributes : []
     
+    // Check if any search term matches the role model name
+    const roleModelNameBonus = searchTerms.some(term => 
+      roleModel.commonName.toLowerCase().includes(term.toLowerCase()) ||
+      roleModel.fullName?.toLowerCase().includes(term.toLowerCase())
+    ) ? 25 : 0
+    
     attributes.forEach((attribute: any) => {
-      let relevanceScore = 0
+      let relevanceScore = roleModelNameBonus // Start with role model name bonus
       const attributeText = `${attribute.name} ${attribute.description} ${attribute.method}`.toLowerCase()
       
       // Simple fuzzy matching - count how many search terms appear anywhere in the content
@@ -273,7 +298,7 @@ async function performFuzzyMatching(roleModels: any[], searchQuery: string): Pro
           roleModel: roleModel.commonName,
           roleModelId: roleModel.id,
           attribute: attribute.name,
-          attributeId: attribute.id,
+          attributeId: `${roleModel.id}-${attribute.name.toLowerCase().replace(/\s+/g, '-')}`,
           originalMethod: attribute.method,
           dailyDoItems: undefined,
           relevanceScore,
