@@ -1,0 +1,2628 @@
+{
+  "summary": {
+    "totalActivities": 110,
+    "totalAttributes": 105,
+    "totalRoleModels": 22,
+    "extractedAt": "2025-07-29T20:34:43.080Z",
+    "roleModelBreakdown": {
+      "Steve Jobs": 5,
+      "Isaac Newton": 5,
+      "Buddha": 5,
+      "Albert Einstein": 5,
+      "Marie Curie": 5,
+      "Leonardo da Vinci": 5,
+      "Marcus Aurelius": 5,
+      "Benjamin Franklin": 5,
+      "Joan of Arc": 5,
+      "Nelson Mandela": 5,
+      "Socrates": 5,
+      "Maya Angelou": 5,
+      "Abraham Lincoln": 5,
+      "Rosa Parks": 5,
+      "Frederick Douglass": 5,
+      "Eleanor Roosevelt": 5,
+      "Mahatma Gandhi": 5,
+      "Winston Churchill": 5,
+      "Theodore Roosevelt": 5,
+      "Martin Luther King Jr.": 5,
+      "Jesus": 5,
+      "Patanjali": 5
+    }
+  },
+  "activitiesByAttribute": {
+    "Perfectionist": [
+      {
+        "roleModel": "Steve Jobs",
+        "method": "Ask 'How can this be 10x better?' before calling anything finished",
+        "description": "I care deeply about every tiny detail. I believe if something is worth doing, it's worth doing perfectly.",
+        "benefit": "Creates products and experiences that truly delight people and stand out from the competition"
+      }
+    ],
+    "Focused": [
+      {
+        "roleModel": "Steve Jobs",
+        "method": "List 10 priorities, then cross out 7. Only work on the remaining 3.",
+        "description": "I say no to almost everything so I can say yes to the most important things. Focus means elimination.",
+        "benefit": "Achieves breakthrough results by putting all energy into what matters most"
+      }
+    ],
+    "Visionary": [
+      {
+        "roleModel": "Steve Jobs",
+        "method": "Ask 'What would the perfect solution look like?' and work backwards",
+        "description": "I see possibilities that don't exist yet and imagine products people don't know they want.",
+        "benefit": "Creates revolutionary breakthroughs instead of just incremental improvements"
+      }
+    ],
+    "Demanding": [
+      {
+        "roleModel": "Steve Jobs",
+        "method": "Ask 'What would happen if we tried to make this 10x better?' and actually try it",
+        "description": "I push people to do their absolute best work because I believe everyone can achieve more than they think possible.",
+        "benefit": "Inspires teams to create their greatest work and reach new levels of excellence"
+      }
+    ],
+    "Design-Obsessed": [
+      {
+        "roleModel": "Steve Jobs",
+        "method": "Ask 'How does this make someone feel?' and redesign until the feeling is magical",
+        "description": "I believe beautiful design isn't just decoration - it's how something works and feels to use.",
+        "benefit": "Creates products that are not just functional but emotionally meaningful and delightful"
+      }
+    ],
+    "Systematically Methodical": [
+      {
+        "roleModel": "Isaac Newton",
+        "method": "Start with fundamentals, document everything, and build knowledge brick by brick",
+        "description": "I approach every problem step-by-step, building from basic principles to complex understanding.",
+        "benefit": "Solves complex problems that seem impossible by breaking them into manageable pieces"
+      }
+    ],
+    "Deeply Focused": [
+      {
+        "roleModel": "Isaac Newton",
+        "method": "Choose one important problem and think about it continuously until clarity emerges",
+        "description": "I concentrate completely on one problem for hours or days until I understand it thoroughly.",
+        "benefit": "Achieves breakthroughs that require sustained mental effort and deep thinking"
+      }
+    ],
+    "Evidence-Based": [
+      {
+        "roleModel": "Isaac Newton",
+        "method": "Ask 'What evidence supports this?' and test ideas through systematic observation",
+        "description": "I only believe what I can prove through observation, measurement, and mathematical reasoning.",
+        "benefit": "Makes decisions based on solid facts rather than opinions or wishful thinking"
+      }
+    ],
+    "Patient Perfectionist": [
+      {
+        "roleModel": "Isaac Newton",
+        "method": "Work steadily on important problems, testing and refining until the solution is complete",
+        "description": "I work on problems for years, refining my understanding until I get them exactly right.",
+        "benefit": "Creates lasting solutions and discoveries that stand the test of time"
+      }
+    ],
+    "Intellectually Humble": [
+      {
+        "roleModel": "Isaac Newton",
+        "method": "Remember that every answer reveals new questions to explore and understand",
+        "description": "I know that what I understand is tiny compared to all there is to know about the universe.",
+        "benefit": "Stays curious and keeps learning instead of thinking you already know everything"
+      }
+    ],
+    "Mindfully Present": [
+      {
+        "roleModel": "Buddha",
+        "method": "Notice when your mind wanders and gently bring attention back to your breath",
+        "description": "I pay complete attention to this moment, noticing my thoughts and feelings without getting lost in them.",
+        "benefit": "Reduces stress and anxiety by staying focused on what's actually happening right now"
+      }
+    ],
+    "Compassionately Wise": [
+      {
+        "roleModel": "Buddha",
+        "method": "Ask 'What pain might be causing this person to act this way?' before responding",
+        "description": "I respond to difficult people and situations with understanding rather than anger or judgment.",
+        "benefit": "Builds better relationships and reduces conflict by seeing the human side of every situation"
+      }
+    ],
+    "Peacefully Detached": [
+      {
+        "roleModel": "Buddha",
+        "method": "Do your best, then accept whatever happens with grace and learn from it",
+        "description": "I care about outcomes but don't let my happiness depend on getting exactly what I want.",
+        "benefit": "Stays emotionally balanced whether things go well or poorly"
+      }
+    ],
+    "Simply Content": [
+      {
+        "roleModel": "Buddha",
+        "method": "Notice and appreciate simple pleasures like sunshine, good food, or friendly conversation",
+        "description": "I find joy in basic pleasures and don't need expensive things or constant excitement to be happy.",
+        "benefit": "Feels grateful and satisfied with life instead of always wanting more"
+      }
+    ],
+    "Patiently Teaching": [
+      {
+        "roleModel": "Buddha",
+        "method": "Listen first to understand their perspective, then share insights that connect to their experience",
+        "description": "I help others learn by meeting them where they are and explaining things in ways they can understand.",
+        "benefit": "Helps people grow and change through understanding rather than pressure or criticism"
+      }
+    ],
+    "Imaginatively Curious": [
+      {
+        "roleModel": "Albert Einstein",
+        "method": "Visualize problems as mental movies and play with impossible scenarios to find insights",
+        "description": "I think in pictures and ask 'What if?' questions that help me understand how things really work.",
+        "benefit": "Discovers creative solutions by looking at problems from completely new angles"
+      }
+    ],
+    "Playfully Creative": [
+      {
+        "roleModel": "Albert Einstein",
+        "method": "Take ideas from one area and ask 'How might this apply to something completely different?'",
+        "description": "I mix ideas from different areas and play with concepts like a child plays with toys.",
+        "benefit": "Combines knowledge in unexpected ways to create breakthrough innovations"
+      }
+    ],
+    "Independently Thinking": [
+      {
+        "roleModel": "Albert Einstein",
+        "method": "Ask 'What if the opposite were true?' and think through problems from scratch",
+        "description": "I question what everyone believes is true and think for myself, even when others disagree.",
+        "benefit": "Finds truth and solutions that others miss by not following the crowd"
+      }
+    ],
+    "Wonderfully Simple": [
+      {
+        "roleModel": "Albert Einstein",
+        "method": "Keep asking 'How can I explain this more simply?' until a child could understand it",
+        "description": "I look for the simplest explanation that explains the most things, believing the universe is elegant.",
+        "benefit": "Finds clear, understandable solutions instead of making things more complicated than necessary"
+      }
+    ],
+    "Humanely Responsible": [
+      {
+        "roleModel": "Albert Einstein",
+        "method": "Ask 'How will this help or hurt humanity?' before making important decisions",
+        "description": "I think about how my work affects all people and try to use knowledge to make the world better.",
+        "benefit": "Creates positive impact by considering the bigger picture and moral implications"
+      }
+    ],
+    "Systematically Persistent": [
+      {
+        "roleModel": "Marie Curie",
+        "method": "Break big goals into daily tasks and track progress in a dedicated notebook",
+        "description": "I work steadily toward my goals every day, keeping detailed records and never giving up on important work.",
+        "benefit": "Achieves breakthrough results through consistent effort rather than depending on luck or talent alone"
+      }
+    ],
+    "Barrier-Breaking Determined": [
+      {
+        "roleModel": "Marie Curie",
+        "method": "Focus on being undeniably excellent at your work while quietly breaking down barriers",
+        "description": "I prove my worth through excellent work rather than complaining about unfair treatment.",
+        "benefit": "Opens doors and changes minds by demonstrating capability rather than just arguing for rights"
+      }
+    ],
+    "Humbly Dedicated": [
+      {
+        "roleModel": "Marie Curie",
+        "method": "Ask 'Is this moving my mission forward?' rather than 'Will this get me recognition?'",
+        "description": "I focus on the work itself rather than seeking recognition or comparing myself to others.",
+        "benefit": "Stays motivated by internal satisfaction rather than external validation or competition"
+      }
+    ],
+    "Precisely Methodical": [
+      {
+        "roleModel": "Marie Curie",
+        "method": "Keep detailed records of your experiments, decisions, and results for future reference",
+        "description": "I measure twice, cut once, and document everything so I can learn from both successes and failures.",
+        "benefit": "Makes steady progress by building on previous work rather than constantly starting over"
+      }
+    ],
+    "Sacrificially Focused": [
+      {
+        "roleModel": "Marie Curie",
+        "method": "Identify what you truly value most and be willing to say no to other things",
+        "description": "I'm willing to give up comfort and convenience to pursue what truly matters to me.",
+        "benefit": "Achieves meaningful goals by investing time and energy where it counts most"
+      }
+    ],
+    "Endlessly Curious": [
+      {
+        "roleModel": "Leonardo da Vinci",
+        "method": "Ask 'How does this work?' and 'What if I tried this differently?' about everyday things",
+        "description": "I ask questions about everything I see and want to understand how and why things work the way they do.",
+        "benefit": "Discovers connections and innovations that others miss by investigating everything deeply"
+      }
+    ],
+    "Precisely Observant": [
+      {
+        "roleModel": "Leonardo da Vinci",
+        "method": "Spend time really looking at things and sketch what you observe to see it clearly",
+        "description": "I look very carefully at details that most people overlook and draw what I see to understand it better.",
+        "benefit": "Understands problems and opportunities more completely by noticing important details"
+      }
+    ],
+    "Creatively Connecting": [
+      {
+        "roleModel": "Leonardo da Vinci",
+        "method": "Ask 'What if I combined this idea with something from a completely different area?'",
+        "description": "I combine ideas from different areas to create something new that nobody has thought of before.",
+        "benefit": "Creates breakthrough innovations by mixing knowledge from different fields"
+      }
+    ],
+    "Beautifully Functional": [
+      {
+        "roleModel": "Leonardo da Vinci",
+        "method": "Always ask 'How can I make this work better AND look more beautiful?'",
+        "description": "I believe that things should work perfectly and look beautiful at the same time.",
+        "benefit": "Creates solutions that are both highly effective and emotionally satisfying"
+      }
+    ],
+    "Systematically Learning": [
+      {
+        "roleModel": "Leonardo da Vinci",
+        "method": "Keep a learning notebook and practice your most important skills every single day",
+        "description": "I keep detailed notes and practice every day to get better at understanding and creating.",
+        "benefit": "Builds deep expertise over time through consistent practice and careful documentation"
+      }
+    ],
+    "Wisely Accepting": [
+      {
+        "roleModel": "Marcus Aurelius",
+        "method": "Ask 'Can I actually control this?' and only spend energy on things where the answer is yes",
+        "description": "I focus my energy only on things I can actually change and accept everything else with peace.",
+        "benefit": "Reduces stress and frustration by putting effort where it can actually make a difference"
+      }
+    ],
+    "Virtuously Guided": [
+      {
+        "roleModel": "Marcus Aurelius",
+        "method": "Before deciding, ask 'What would a person of good character do in this situation?'",
+        "description": "I make decisions based on what's right and good, not just what's easy or profitable for me.",
+        "benefit": "Builds strong character and self-respect while creating positive impact on others"
+      }
+    ],
+    "Calmly Rational": [
+      {
+        "roleModel": "Marcus Aurelius",
+        "method": "Take three deep breaths and ask 'What are the facts here?' before responding",
+        "description": "I think clearly about problems instead of letting my emotions make decisions for me.",
+        "benefit": "Makes better decisions by using logic rather than being driven by temporary feelings"
+      }
+    ],
+    "Dutifully Serving": [
+      {
+        "roleModel": "Marcus Aurelius",
+        "method": "Ask 'How will this affect other people?' and 'What serves the greater good?'",
+        "description": "I think about what's best for everyone, not just myself, when making important choices.",
+        "benefit": "Creates positive impact and earns respect by considering the bigger picture"
+      }
+    ],
+    "Reflectively Learning": [
+      {
+        "roleModel": "Marcus Aurelius",
+        "method": "Spend 10 minutes each evening asking 'What did I do well today?' and 'What can I improve?'",
+        "description": "I think about my actions at the end of each day to learn from mistakes and celebrate growth.",
+        "benefit": "Continuously improves by learning from experience rather than repeating mistakes"
+      }
+    ],
+    "Systematically Improving": [
+      {
+        "roleModel": "Benjamin Franklin",
+        "method": "Choose 3-5 important habits and track them daily on a simple chart or app",
+        "description": "I track my habits and goals every day to make sure I'm actually getting better at the things that matter.",
+        "benefit": "Makes real progress on important goals instead of just hoping things will get better"
+      }
+    ],
+    "Practically Useful": [
+      {
+        "roleModel": "Benjamin Franklin",
+        "method": "Before starting something new, ask 'How will this actually help me or others?'",
+        "description": "I focus on learning and doing things that actually help solve real problems for myself and others.",
+        "benefit": "Builds valuable skills and creates solutions that make a real difference in people's lives"
+      }
+    ],
+    "Diplomatically Wise": [
+      {
+        "roleModel": "Benjamin Franklin",
+        "method": "Listen first to understand what others really want, then find solutions that work for everyone",
+        "description": "I find ways for everyone to win instead of trying to prove I'm right or beat others.",
+        "benefit": "Builds better relationships and gets better results by making others feel heard and valued"
+      }
+    ],
+    "Curiously Scientific": [
+      {
+        "roleModel": "Benjamin Franklin",
+        "method": "Try small experiments to test important ideas before making major commitments",
+        "description": "I test my ideas in small ways before committing, and I'm willing to change my mind when I learn new things.",
+        "benefit": "Avoids big mistakes by testing ideas first and continuously improves by learning from experience"
+      }
+    ],
+    "Civically Contributing": [
+      {
+        "roleModel": "Benjamin Franklin",
+        "method": "Choose one way to regularly contribute to your community or help solve problems bigger than yourself",
+        "description": "I look for ways to make my community better, not just focus on my own success and happiness.",
+        "benefit": "Creates positive impact while building relationships and a sense of meaningful purpose"
+      }
+    ],
+    "Courageously Faithful": [
+      {
+        "roleModel": "Joan of Arc",
+        "method": "Ask 'What do I know is right?' and act on it despite criticism or doubt from others",
+        "description": "I act on my deepest beliefs even when everyone thinks I'm wrong or crazy.",
+        "benefit": "Accomplishes things others think impossible by staying true to inner convictions"
+      }
+    ],
+    "Fearlessly Leading": [
+      {
+        "roleModel": "Joan of Arc",
+        "method": "When something needs to be done, volunteer to go first and show others how it's done",
+        "description": "I go first into difficult situations to show others it can be done, even when I'm scared.",
+        "benefit": "Inspires others to be brave and follow by demonstrating courage through action"
+      }
+    ],
+    "Purely Principled": [
+      {
+        "roleModel": "Joan of Arc",
+        "method": "Decide your core values ahead of time and stick to them even when it costs you something",
+        "description": "I stick to my moral standards even when it would be easier or more profitable to compromise.",
+        "benefit": "Earns deep respect and trust by being someone others can count on to do the right thing"
+      }
+    ],
+    "Humbly Serving": [
+      {
+        "roleModel": "Joan of Arc",
+        "method": "Regularly ask 'How can I use what I have to help others?' and take action on the answer",
+        "description": "I remember that my abilities and opportunities are meant to help others, not just myself.",
+        "benefit": "Creates lasting positive impact by using talents and resources for the greater good"
+      },
+      {
+        "roleModel": "Nelson Mandela",
+        "method": "Ask 'How can I use my abilities to help others grow?' in every role you have",
+        "description": "I use my position and abilities to help others succeed rather than just advancing myself.",
+        "benefit": "Creates positive impact while earning respect and building a meaningful legacy"
+      }
+    ],
+    "Spiritually Guided": [
+      {
+        "roleModel": "Joan of Arc",
+        "method": "Before big decisions, spend time in prayer, meditation, or quiet reflection to seek guidance",
+        "description": "I take time to pray, meditate, or reflect quietly to find wisdom for important decisions.",
+        "benefit": "Makes better choices by connecting with deeper wisdom and purpose beyond just logical thinking"
+      }
+    ],
+    "Dignifiedly Resilient": [
+      {
+        "roleModel": "Nelson Mandela",
+        "method": "When mistreated, ask 'How can I respond in a way that maintains my dignity and their humanity?'",
+        "description": "I maintain my self-respect and treat others respectfully even when they treat me unfairly or badly.",
+        "benefit": "Keeps your integrity intact while inspiring others and potentially changing their hearts and minds"
+      }
+    ],
+    "Reconcilingly Forgiving": [
+      {
+        "roleModel": "Nelson Mandela",
+        "method": "Ask 'What would healing look like?' instead of 'How can I get them back?'",
+        "description": "I choose to forgive and work with former enemies to build something better together.",
+        "benefit": "Heals relationships and creates lasting solutions instead of ongoing cycles of conflict"
+      }
+    ],
+    "Patiently Strategic": [
+      {
+        "roleModel": "Nelson Mandela",
+        "method": "Focus on progress over perfection and celebrate small steps toward bigger goals",
+        "description": "I'm willing to wait and work gradually toward big goals instead of expecting instant results.",
+        "benefit": "Achieves lasting change by building strong foundations rather than quick fixes that don't last"
+      },
+      {
+        "roleModel": "Abraham Lincoln",
+        "method": "Keep working toward your goal while watching for the right opportunity to make your move",
+        "description": "I work toward big goals gradually and wait for the right moment to act instead of rushing.",
+        "benefit": "Achieves lasting change by building support and choosing the best timing for important actions"
+      }
+    ],
+    "Educationally Growing": [
+      {
+        "roleModel": "Nelson Mandela",
+        "method": "Read, learn, or develop skills regularly with the goal of serving others better",
+        "description": "I believe learning and education are the most powerful ways to create positive change in my life and world.",
+        "benefit": "Continuously improves abilities and understanding, making you more effective at solving problems"
+      }
+    ],
+    "Questioningly Curious": [
+      {
+        "roleModel": "Socrates",
+        "method": "When someone claims something important, ask 'What evidence supports this?' and 'How do you know?'",
+        "description": "I ask 'How do I know this is true?' about important beliefs instead of just accepting what everyone says.",
+        "benefit": "Discovers truth and avoids mistakes by thinking critically instead of following the crowd"
+      }
+    ],
+    "Humbly Learning": [
+      {
+        "roleModel": "Socrates",
+        "method": "Say 'I don't know, but I'd like to learn' when you encounter something unfamiliar",
+        "description": "I admit when I don't know something and see it as an opportunity to learn rather than something embarrassing.",
+        "benefit": "Keeps learning and growing instead of pretending to know everything and missing opportunities"
+      },
+      {
+        "roleModel": "Abraham Lincoln",
+        "method": "Read regularly from diverse sources and ask 'What might I be wrong about?'",
+        "description": "I keep reading, listening, and changing my mind when I discover I was wrong about something.",
+        "benefit": "Continuously improves understanding and decision-making by staying open to new information"
+      }
+    ],
+    "Virtuously Principled": [
+      {
+        "roleModel": "Socrates",
+        "method": "Ask 'What would a person of good character do?' and follow through even when it's hard",
+        "description": "I do what's right even when it's difficult, unpopular, or costs me something personally.",
+        "benefit": "Builds strong character and self-respect while creating positive impact on others"
+      }
+    ],
+    "Dialogically Connecting": [
+      {
+        "roleModel": "Socrates",
+        "method": "Ask genuine questions to understand others' perspectives before sharing your own views",
+        "description": "I have real conversations where we explore ideas together instead of just trying to win arguments.",
+        "benefit": "Learns from others and builds better relationships through genuine understanding"
+      }
+    ],
+    "Courageously Authentic": [
+      {
+        "roleModel": "Socrates",
+        "method": "Ask 'What do I really believe is right?' and act on it regardless of social pressure",
+        "description": "I stay true to my values and speak up for what's right even when others disagree or criticize me.",
+        "benefit": "Lives with integrity and self-respect while inspiring others to be more authentic"
+      }
+    ],
+    "Courageously Truthful": [
+      {
+        "roleModel": "Maya Angelou",
+        "method": "Share something real about your challenges when others are facing similar difficulties",
+        "description": "I share my real experiences, including painful ones, to help others feel less alone and more hopeful.",
+        "benefit": "Helps others heal by showing that difficult experiences can be survived and transformed into wisdom"
+      }
+    ],
+    "Gracefully Resilient": [
+      {
+        "roleModel": "Maya Angelou",
+        "method": "Ask 'What can I learn from this?' and 'How can this experience help someone else?'",
+        "description": "I bounce back from setbacks while maintaining my dignity and using what I learned to help others.",
+        "benefit": "Recovers from difficulties stronger than before while inspiring others to do the same"
+      }
+    ],
+    "Eloquently Expressive": [
+      {
+        "roleModel": "Maya Angelou",
+        "method": "Before speaking, ask 'Will these words help or hurt?' and choose language that uplifts",
+        "description": "I choose my words carefully because I know they have the power to heal or hurt others.",
+        "benefit": "Communicates more effectively and creates positive impact through thoughtful language"
+      }
+    ],
+    "Wisely Teaching": [
+      {
+        "roleModel": "Maya Angelou",
+        "method": "When someone faces a challenge you've overcome, share what you learned and how you grew",
+        "description": "I share what I've learned from my experiences to help others avoid mistakes and find their strength.",
+        "benefit": "Multiplies positive impact by helping others learn from your experiences and wisdom"
+      }
+    ],
+    "Dignifiedly Rising": [
+      {
+        "roleModel": "Maya Angelou",
+        "method": "Remind yourself 'I deserve respect' and behave in ways that honor your own dignity",
+        "description": "I maintain my self-respect and treat myself and others well regardless of how I've been treated.",
+        "benefit": "Builds inner strength and commands respect by demonstrating your inherent worth"
+      },
+      {
+        "roleModel": "Frederick Douglass",
+        "method": "Set high standards for yourself and work consistently toward them regardless of others' opinions",
+        "description": "I maintain my self-respect and work to improve myself even when others try to keep me down.",
+        "benefit": "Builds inner strength and commands respect while inspiring others to believe in their potential"
+      }
+    ],
+    "Courageously Principled": [
+      {
+        "roleModel": "Abraham Lincoln",
+        "method": "Ask 'What do I believe is truly right?' and act on it even when others disagree",
+        "description": "I stand up for what's right even when it's unpopular, difficult, or personally costly to me.",
+        "benefit": "Builds respect and creates positive change by demonstrating that principles matter more than convenience"
+      }
+    ],
+    "Unifyingly Healing": [
+      {
+        "roleModel": "Abraham Lincoln",
+        "method": "Ask 'How can we move forward together?' instead of 'How can I prove I'm right?'",
+        "description": "I look for ways to bring people together and heal divisions rather than making conflicts worse.",
+        "benefit": "Creates lasting solutions and better relationships by focusing on shared values and common ground"
+      }
+    ],
+    "Compassionately Strong": [
+      {
+        "roleModel": "Abraham Lincoln",
+        "method": "Ask 'What needs to be done?' and 'How can I do this with the least harm to good people?'",
+        "description": "I make tough decisions when necessary but always consider how they affect real people's lives.",
+        "benefit": "Earns respect and creates better outcomes by combining firmness with genuine care for others"
+      }
+    ],
+    "Quietly Courageous": [
+      {
+        "roleModel": "Rosa Parks",
+        "method": "When you see something wrong, ask 'What small action can I take?' and do it with dignity",
+        "description": "I stand up for what's right without making a big show about it or seeking attention for myself.",
+        "benefit": "Creates real change through consistent action rather than just talking about problems"
+      }
+    ],
+    "Dignifiedly Persistent": [
+      {
+        "roleModel": "Rosa Parks",
+        "method": "Remind yourself of your values and keep taking small steps forward every day",
+        "description": "I keep working for what I believe in even when progress is slow or people treat me badly.",
+        "benefit": "Achieves lasting change by staying committed to principles over time rather than giving up"
+      }
+    ],
+    "Community-Minded": [
+      {
+        "roleModel": "Rosa Parks",
+        "method": "Before making important decisions, ask 'How will this affect my community?'",
+        "description": "I think about how my actions affect others and work for the good of everyone, not just myself.",
+        "benefit": "Creates stronger communities and movements by putting collective needs above personal interests"
+      }
+    ],
+    "Prepared and Ready": [
+      {
+        "roleModel": "Rosa Parks",
+        "method": "Think ahead about challenges you might face and prepare your response in advance",
+        "description": "I get ready ahead of time for challenges I might face so I can respond with strength and wisdom.",
+        "benefit": "Handles difficult situations better by thinking through challenges before they happen"
+      }
+    ],
+    "Respectfully Firm": [
+      {
+        "roleModel": "Rosa Parks",
+        "method": "Stay polite and respectful while clearly stating your position and refusing to compromise your values",
+        "description": "I treat everyone with dignity while still standing strong for my principles and values.",
+        "benefit": "Wins respect and creates change by combining kindness with unwavering commitment to what's right"
+      }
+    ],
+    "Educationally Liberated": [
+      {
+        "roleModel": "Frederick Douglass",
+        "method": "Read something challenging every day and actively seek out learning opportunities",
+        "description": "I believe learning and knowledge are the keys to freedom and I never stop trying to learn new things.",
+        "benefit": "Continuously expands opportunities and abilities by developing knowledge and skills"
+      }
+    ],
+    "Eloquently Truthful": [
+      {
+        "roleModel": "Frederick Douglass",
+        "method": "Practice expressing your important beliefs clearly and persuasively through speaking and writing",
+        "description": "I speak and write powerfully about important issues because I know words can change minds and hearts.",
+        "benefit": "Creates positive change by communicating truth in ways that move and inspire others"
+      }
+    ],
+    "Courageously Speaking": [
+      {
+        "roleModel": "Frederick Douglass",
+        "method": "When you see injustice, ask 'What needs to be said?' and find a way to say it respectfully but firmly",
+        "description": "I use my voice to stand up for what's right even when it's dangerous or unpopular to do so.",
+        "benefit": "Creates positive change by speaking truth that others are afraid to say"
+      },
+      {
+        "roleModel": "Winston Churchill",
+        "method": "Before speaking, ask 'What does everyone need to know?' and say it clearly, even if it's hard",
+        "description": "I speak up about important truths even when people don't want to hear them or it makes me unpopular.",
+        "benefit": "Warns people about real dangers and rallies them to action when it really matters"
+      }
+    ],
+    "Strategically Persistent": [
+      {
+        "roleModel": "Frederick Douglass",
+        "method": "Focus on long-term progress and celebrate small victories while staying committed to your larger goals",
+        "description": "I keep working toward justice and freedom even when progress is slow or setbacks occur.",
+        "benefit": "Achieves lasting change by maintaining long-term commitment rather than giving up when things get difficult"
+      }
+    ],
+    "Courageously Growing": [
+      {
+        "roleModel": "Eleanor Roosevelt",
+        "method": "When you feel afraid of something important, ask 'What would happen if I tried anyway?' and take one small step",
+        "description": "I push myself to do things that scare me because I know that's how I become stronger and more capable.",
+        "benefit": "Builds confidence and abilities by facing fears rather than avoiding challenges"
+      }
+    ],
+    "Compassionately Serving": [
+      {
+        "roleModel": "Eleanor Roosevelt",
+        "method": "Ask yourself 'How can I use my abilities to help someone who needs it?' and take action regularly",
+        "description": "I look for ways to help others, especially those who are struggling or don't have the same advantages I do.",
+        "benefit": "Creates meaning and purpose while making a positive difference in the world"
+      }
+    ],
+    "Diplomatically Building": [
+      {
+        "roleModel": "Eleanor Roosevelt",
+        "method": "When facing disagreement, ask 'What do we both care about?' and start building from there",
+        "description": "I try to find common ground with people who disagree with me instead of just arguing or giving up.",
+        "benefit": "Accomplishes more by building coalitions and working together rather than fighting alone"
+      }
+    ],
+    "Globally Learning": [
+      {
+        "roleModel": "Eleanor Roosevelt",
+        "method": "Regularly read, watch, or listen to perspectives from different cultures and backgrounds than your own",
+        "description": "I try to understand different cultures and perspectives because I know my view isn't the only one that matters.",
+        "benefit": "Makes better decisions and builds better relationships by understanding diverse viewpoints"
+      }
+    ],
+    "Principled Standing": [
+      {
+        "roleModel": "Eleanor Roosevelt",
+        "method": "When facing an important issue, ask 'What do I believe is right?' and act on it despite opposition",
+        "description": "I stand up for what I believe is right even when it's unpopular or people criticize me for it.",
+        "benefit": "Creates positive change by having the courage to advocate for important principles"
+      }
+    ],
+    "Nonviolently Resisting": [
+      {
+        "roleModel": "Mahatma Gandhi",
+        "method": "When facing unfairness, ask 'How can I resist this wrong without becoming wrong myself?'",
+        "description": "I stand up to unfairness and injustice, but I do it without hurting anyone or being mean back to them.",
+        "benefit": "Creates real change while keeping your moral strength and often winning over opponents"
+      }
+    ],
+    "Truth-Seeking": [
+      {
+        "roleModel": "Mahatma Gandhi",
+        "method": "Before speaking or acting, ask 'What is really true here?' and choose truth over comfort",
+        "description": "I always try to find and tell the truth, even when it's hard or gets me in trouble.",
+        "benefit": "Builds trust and credibility that becomes powerful for creating lasting change"
+      }
+    ],
+    "Self-Sacrificing": [
+      {
+        "roleModel": "Mahatma Gandhi",
+        "method": "When making decisions, ask 'What am I willing to give up to make this right?'",
+        "description": "I'm willing to give up things that are comfortable or easy for me if it helps other people or does what's right.",
+        "benefit": "Inspires others and shows you really mean what you say about your values"
+      }
+    ],
+    "Simply Living": [
+      {
+        "roleModel": "Mahatma Gandhi",
+        "method": "Regularly ask 'Do I really need this?' and give away things that don't serve your mission",
+        "description": "I try to live with only what I really need so I can focus on what matters most and understand how regular people live.",
+        "benefit": "Reduces distractions and connects you with people from all backgrounds"
+      }
+    ],
+    "Unifyingly Leading": [
+      {
+        "roleModel": "Mahatma Gandhi",
+        "method": "In any conflict, ask 'What do we all care about?' and build from there",
+        "description": "I try to bring different groups of people together instead of making them choose sides or fight each other.",
+        "benefit": "Creates stronger movements by including everyone and reduces the enemies you have to face"
+      }
+    ],
+    "Never Surrendering": [
+      {
+        "roleModel": "Winston Churchill",
+        "method": "When facing defeat, ask 'What would happen if we don't keep fighting?' and find one more way to try",
+        "description": "I keep fighting for what's right even when things look hopeless and everyone else wants to give up.",
+        "benefit": "Overcomes impossible odds and inspires others to keep going when they would otherwise quit"
+      }
+    ],
+    "Strategically Thinking": [
+      {
+        "roleModel": "Winston Churchill",
+        "method": "For any decision, ask 'What will this lead to?' and 'What would happen if we do nothing?'",
+        "description": "I look at the big picture and think several steps ahead instead of just reacting to what's happening right now.",
+        "benefit": "Makes better decisions by seeing patterns and consequences others miss"
+      }
+    ],
+    "Historically Learning": [
+      {
+        "roleModel": "Winston Churchill",
+        "method": "When facing a challenge, ask 'Has anything like this happened before?' and learn from it",
+        "description": "I study what happened in the past to understand what's happening now and make better choices.",
+        "benefit": "Avoids repeating past mistakes and recognizes patterns that help predict outcomes"
+      }
+    ],
+    "Resiliently Bouncing": [
+      {
+        "roleModel": "Winston Churchill",
+        "method": "After any setback, ask 'What can I learn from this?' and 'How can I use this to get stronger?'",
+        "description": "I come back stronger after failures and defeats instead of letting them stop me or make me bitter.",
+        "benefit": "Turns setbacks into comebacks and eventually achieves goals despite obstacles"
+      }
+    ],
+    "Strenuously Living": [
+      {
+        "roleModel": "Theodore Roosevelt",
+        "method": "When facing a choice, ask 'Which option will make me stronger?' and choose that one",
+        "description": "I choose challenges that make me stronger instead of taking the easy way that keeps me comfortable but weak.",
+        "benefit": "Builds real strength and character while accomplishing things that matter for the long term"
+      }
+    ],
+    "Conserving Nature": [
+      {
+        "roleModel": "Theodore Roosevelt",
+        "method": "Before using natural resources, ask 'How can I leave this better than I found it?'",
+        "description": "I protect the environment and natural resources because they belong to future generations, not just me.",
+        "benefit": "Preserves beauty and resources for your children while connecting you to something bigger than yourself"
+      }
+    ],
+    "Progressively Reforming": [
+      {
+        "roleModel": "Theodore Roosevelt",
+        "method": "When you see unfairness, ask 'How can this be made more fair?' and take action to fix it",
+        "description": "I work to make systems fairer and better for regular people, not just the rich and powerful.",
+        "benefit": "Creates a society where everyone has a fair chance to succeed through their own efforts"
+      }
+    ],
+    "Vigorously Acting": [
+      {
+        "roleModel": "Theodore Roosevelt",
+        "method": "For any goal, ask 'What can I do today to move this forward?' and do it",
+        "description": "I turn my ideas into action quickly instead of just talking about what should be done.",
+        "benefit": "Actually accomplishes goals instead of just dreaming about them or complaining about problems"
+      }
+    ],
+    "Courageously Standing": [
+      {
+        "roleModel": "Theodore Roosevelt",
+        "method": "When facing a moral choice, ask 'What's the right thing to do?' and do it regardless of cost",
+        "description": "I stand up for what's right even when it's difficult, unpopular, or costs me something.",
+        "benefit": "Creates real positive change and earns the respect of people who matter most"
+      }
+    ],
+    "Nonviolently Loving": [
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "method": "When someone treats you badly, ask 'How can I show them love?' and do that instead of revenge",
+        "description": "I respond to hatred and unfairness with love and kindness, which is much harder but more powerful than fighting back.",
+        "benefit": "Changes people's hearts and minds instead of just making them angrier or more stubborn"
+      }
+    ],
+    "Dreamingly Leading": [
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "method": "When facing problems, ask 'What would this look like if it was working perfectly?' and share that vision",
+        "description": "I paint a picture of how much better things could be so people can see it and want to work toward it together.",
+        "benefit": "Inspires people to work for positive change by helping them imagine a better future"
+      }
+    ],
+    "Justly Standing": [
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "method": "When you see unfairness, ask 'What would happen if everyone stayed quiet?' then speak up",
+        "description": "I speak up against unfairness and work to make things more equal, even when it's dangerous or unpopular.",
+        "benefit": "Creates real change by addressing problems that others are afraid to talk about"
+      }
+    ],
+    "Unifyingly Building": [
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "method": "In any group conflict, ask 'What do we all want?' and help people focus on common goals",
+        "description": "I bring different groups of people together instead of letting them stay separated or fight each other.",
+        "benefit": "Creates stronger communities where everyone can contribute and benefit from working together"
+      }
+    ],
+    "Faithfully Persevering": [
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "method": "When progress seems slow, ask 'What small step can I take today?' and trust that small steps add up",
+        "description": "I keep working for what's right even when progress is slow and I can't see the results yet.",
+        "benefit": "Achieves long-term change by not giving up when things get difficult or discouraging"
+      }
+    ],
+    "Unconditionally Loving": [
+      {
+        "roleModel": "Jesus",
+        "method": "Ask 'How can I show love to this person?' even when they're difficult or unkind",
+        "description": "I love people regardless of how they treat me or whether they deserve it.",
+        "benefit": "Creates deep healing and transformation in relationships by removing conditions and barriers"
+      }
+    ],
+    "Sacrificially Serving": [
+      {
+        "roleModel": "Jesus",
+        "method": "Look for one way each day to help someone without them knowing it was you",
+        "description": "I put others' needs before my own comfort and look for ways to help without expecting anything back.",
+        "benefit": "Builds meaningful relationships and creates positive change by focusing on others' welfare"
+      }
+    ],
+    "Mercifully Forgiving": [
+      {
+        "roleModel": "Jesus",
+        "method": "When someone hurts you, pray for them or wish them well instead of plotting payback",
+        "description": "I forgive people who hurt me and choose to respond with kindness instead of revenge.",
+        "benefit": "Frees yourself from anger and bitterness while giving others a chance to change and grow"
+      }
+    ],
+    "Truthfully Compassionate": [
+      {
+        "roleModel": "Jesus",
+        "method": "Before addressing problems, ask 'How can I say this in a way that shows I care about them?'",
+        "description": "I speak honestly about problems while showing love and understanding for the person.",
+        "benefit": "Helps people change and grow by combining truth with safety and encouragement"
+      }
+    ],
+    "Spiritually Centered": [
+      {
+        "roleModel": "Jesus",
+        "method": "Start each day with a few minutes of prayer, meditation, or quiet reflection on your purpose",
+        "description": "I take time for prayer, meditation, or quiet reflection to stay connected to what matters most.",
+        "benefit": "Maintains inner peace and wisdom by staying connected to deeper purpose and divine guidance"
+      }
+    ],
+    "Mentally Disciplined": [
+      {
+        "roleModel": "Patanjali",
+        "method": "Take 5 minutes daily to sit quietly and observe your thoughts without getting caught up in them",
+        "description": "I practice controlling my thoughts and reactions instead of letting my mind run wild with worry or anger.",
+        "benefit": "Develops inner peace and clarity by gaining mastery over mental patterns and emotional reactions"
+      }
+    ],
+    "Systematically Practicing": [
+      {
+        "roleModel": "Patanjali",
+        "method": "Choose one small practice (like 5 minutes of meditation) and do it every day at the same time",
+        "description": "I follow a regular routine of healthy habits and spiritual practices to gradually improve myself.",
+        "benefit": "Creates steady progress and transformation through consistent daily actions rather than hoping for quick fixes"
+      }
+    ],
+    "Ethically Grounded": [
+      {
+        "roleModel": "Patanjali",
+        "method": "Before big decisions, ask 'What would be the most honest and ethical choice here?'",
+        "description": "I base my decisions on what's right and truthful, even when it's harder or less convenient.",
+        "benefit": "Builds strong character and inner peace by aligning actions with deeper values and principles"
+      }
+    ],
+    "Wisely Detached": [
+      {
+        "roleModel": "Patanjali",
+        "method": "Do your best work, then accept whatever happens with grace and look for the lesson",
+        "description": "I care about outcomes but don't let my happiness depend on getting exactly what I want.",
+        "benefit": "Reduces stress and suffering by finding peace regardless of whether things go according to plan"
+      }
+    ],
+    "Compassionately Aware": [
+      {
+        "roleModel": "Patanjali",
+        "method": "Notice your thoughts and feelings throughout the day with curiosity: 'Isn't that interesting...'",
+        "description": "I pay attention to what's happening inside me and around me with kindness rather than judgment.",
+        "benefit": "Develops wisdom and emotional intelligence by understanding patterns without harsh self-criticism"
+      }
+    ]
+  },
+  "allActivities": [
+    {
+      "roleModel": "Marie Curie",
+      "attribute": "Barrier-Breaking Determined",
+      "description": "I prove my worth through excellent work rather than complaining about unfair treatment.",
+      "benefit": "Opens doors and changes minds by demonstrating capability rather than just arguing for rights",
+      "oppositeOf": "Getting discouraged by discrimination or expecting others to give you opportunities",
+      "method": "Focus on being undeniably excellent at your work while quietly breaking down barriers",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Leonardo da Vinci",
+      "attribute": "Beautifully Functional",
+      "description": "I believe that things should work perfectly and look beautiful at the same time.",
+      "benefit": "Creates solutions that are both highly effective and emotionally satisfying",
+      "oppositeOf": "Focusing only on how something works or only on how it looks",
+      "method": "Always ask 'How can I make this work better AND look more beautiful?'",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Marcus Aurelius",
+      "attribute": "Calmly Rational",
+      "description": "I think clearly about problems instead of letting my emotions make decisions for me.",
+      "benefit": "Makes better decisions by using logic rather than being driven by temporary feelings",
+      "oppositeOf": "Reacting immediately based on anger, fear, or other strong emotions",
+      "method": "Take three deep breaths and ask 'What are the facts here?' before responding",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Benjamin Franklin",
+      "attribute": "Civically Contributing",
+      "description": "I look for ways to make my community better, not just focus on my own success and happiness.",
+      "benefit": "Creates positive impact while building relationships and a sense of meaningful purpose",
+      "oppositeOf": "Only caring about your own success or ignoring how you can help others",
+      "method": "Choose one way to regularly contribute to your community or help solve problems bigger than yourself",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Rosa Parks",
+      "attribute": "Community-Minded",
+      "description": "I think about how my actions affect others and work for the good of everyone, not just myself.",
+      "benefit": "Creates stronger communities and movements by putting collective needs above personal interests",
+      "oppositeOf": "Only thinking about yourself or expecting others to solve problems without helping",
+      "method": "Before making important decisions, ask 'How will this affect my community?'",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Patanjali",
+      "attribute": "Compassionately Aware",
+      "description": "I pay attention to what's happening inside me and around me with kindness rather than judgment.",
+      "benefit": "Develops wisdom and emotional intelligence by understanding patterns without harsh self-criticism",
+      "oppositeOf": "Going through life on autopilot or beating yourself up when you notice mistakes",
+      "method": "Notice your thoughts and feelings throughout the day with curiosity: 'Isn't that interesting...'",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Eleanor Roosevelt",
+      "attribute": "Compassionately Serving",
+      "description": "I look for ways to help others, especially those who are struggling or don't have the same advantages I do.",
+      "benefit": "Creates meaning and purpose while making a positive difference in the world",
+      "oppositeOf": "Only focusing on your own needs or ignoring opportunities to help others",
+      "method": "Ask yourself 'How can I use my abilities to help someone who needs it?' and take action regularly",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Abraham Lincoln",
+      "attribute": "Compassionately Strong",
+      "description": "I make tough decisions when necessary but always consider how they affect real people's lives.",
+      "benefit": "Earns respect and creates better outcomes by combining firmness with genuine care for others",
+      "oppositeOf": "Being either too soft to make hard decisions or too harsh to consider others' feelings",
+      "method": "Ask 'What needs to be done?' and 'How can I do this with the least harm to good people?'",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Compassionately Wise",
+      "description": "I respond to difficult people and situations with understanding rather than anger or judgment.",
+      "benefit": "Builds better relationships and reduces conflict by seeing the human side of every situation",
+      "oppositeOf": "Reacting with anger, blame, or trying to get revenge when others hurt you",
+      "method": "Ask 'What pain might be causing this person to act this way?' before responding",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Theodore Roosevelt",
+      "attribute": "Conserving Nature",
+      "description": "I protect the environment and natural resources because they belong to future generations, not just me.",
+      "benefit": "Preserves beauty and resources for your children while connecting you to something bigger than yourself",
+      "oppositeOf": "Using up natural resources without thinking about tomorrow or treating nature like garbage",
+      "method": "Before using natural resources, ask 'How can I leave this better than I found it?'",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Socrates",
+      "attribute": "Courageously Authentic",
+      "description": "I stay true to my values and speak up for what's right even when others disagree or criticize me.",
+      "benefit": "Lives with integrity and self-respect while inspiring others to be more authentic",
+      "oppositeOf": "Changing your beliefs or behavior just to fit in or avoid conflict",
+      "method": "Ask 'What do I really believe is right?' and act on it regardless of social pressure",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Joan of Arc",
+      "attribute": "Courageously Faithful",
+      "description": "I act on my deepest beliefs even when everyone thinks I'm wrong or crazy.",
+      "benefit": "Accomplishes things others think impossible by staying true to inner convictions",
+      "oppositeOf": "Giving up on important goals because others don't believe in you or support you",
+      "method": "Ask 'What do I know is right?' and act on it despite criticism or doubt from others",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Eleanor Roosevelt",
+      "attribute": "Courageously Growing",
+      "description": "I push myself to do things that scare me because I know that's how I become stronger and more capable.",
+      "benefit": "Builds confidence and abilities by facing fears rather than avoiding challenges",
+      "oppositeOf": "Staying in your comfort zone or letting fear stop you from trying new things",
+      "method": "When you feel afraid of something important, ask 'What would happen if I tried anyway?' and take one small step",
+      "category": "Emotional Regulation"
+    },
+    {
+      "roleModel": "Abraham Lincoln",
+      "attribute": "Courageously Principled",
+      "description": "I stand up for what's right even when it's unpopular, difficult, or personally costly to me.",
+      "benefit": "Builds respect and creates positive change by demonstrating that principles matter more than convenience",
+      "oppositeOf": "Going along with the crowd or changing your beliefs to avoid conflict or gain advantage",
+      "method": "Ask 'What do I believe is truly right?' and act on it even when others disagree",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Frederick Douglass",
+      "attribute": "Courageously Speaking",
+      "description": "I use my voice to stand up for what's right even when it's dangerous or unpopular to do so.",
+      "benefit": "Creates positive change by speaking truth that others are afraid to say",
+      "oppositeOf": "Staying quiet about important issues because you're worried about what others will think",
+      "method": "When you see injustice, ask 'What needs to be said?' and find a way to say it respectfully but firmly",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Winston Churchill",
+      "attribute": "Courageously Speaking",
+      "description": "I speak up about important truths even when people don't want to hear them or it makes me unpopular.",
+      "benefit": "Warns people about real dangers and rallies them to action when it really matters",
+      "oppositeOf": "Only saying what people want to hear or staying quiet when you should speak up",
+      "method": "Before speaking, ask 'What does everyone need to know?' and say it clearly, even if it's hard",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Theodore Roosevelt",
+      "attribute": "Courageously Standing",
+      "description": "I stand up for what's right even when it's difficult, unpopular, or costs me something.",
+      "benefit": "Creates real positive change and earns the respect of people who matter most",
+      "oppositeOf": "Only doing what's popular or easy, or staying quiet when you should speak up",
+      "method": "When facing a moral choice, ask 'What's the right thing to do?' and do it regardless of cost",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Maya Angelou",
+      "attribute": "Courageously Truthful",
+      "description": "I share my real experiences, including painful ones, to help others feel less alone and more hopeful.",
+      "benefit": "Helps others heal by showing that difficult experiences can be survived and transformed into wisdom",
+      "oppositeOf": "Hiding your struggles or pretending everything is always fine to maintain an image",
+      "method": "Share something real about your challenges when others are facing similar difficulties",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Leonardo da Vinci",
+      "attribute": "Creatively Connecting",
+      "description": "I combine ideas from different areas to create something new that nobody has thought of before.",
+      "benefit": "Creates breakthrough innovations by mixing knowledge from different fields",
+      "oppositeOf": "Keeping different subjects separate or only thinking inside one specialty",
+      "method": "Ask 'What if I combined this idea with something from a completely different area?'",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Benjamin Franklin",
+      "attribute": "Curiously Scientific",
+      "description": "I test my ideas in small ways before committing, and I'm willing to change my mind when I learn new things.",
+      "benefit": "Avoids big mistakes by testing ideas first and continuously improves by learning from experience",
+      "oppositeOf": "Sticking with ideas just because you like them or making big decisions without testing",
+      "method": "Try small experiments to test important ideas before making major commitments",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Isaac Newton",
+      "attribute": "Deeply Focused",
+      "description": "I concentrate completely on one problem for hours or days until I understand it thoroughly.",
+      "benefit": "Achieves breakthroughs that require sustained mental effort and deep thinking",
+      "oppositeOf": "Constantly switching between tasks or getting distracted by surface-level information",
+      "method": "Choose one important problem and think about it continuously until clarity emerges",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Demanding",
+      "description": "I push people to do their absolute best work because I believe everyone can achieve more than they think possible.",
+      "benefit": "Inspires teams to create their greatest work and reach new levels of excellence",
+      "oppositeOf": "Accepting people's first attempt or letting them stay in their comfort zone",
+      "method": "Ask 'What would happen if we tried to make this 10x better?' and actually try it",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Design-Obsessed",
+      "description": "I believe beautiful design isn't just decoration - it's how something works and feels to use.",
+      "benefit": "Creates products that are not just functional but emotionally meaningful and delightful",
+      "oppositeOf": "Focusing only on features and functionality without caring about user experience",
+      "method": "Ask 'How does this make someone feel?' and redesign until the feeling is magical",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Socrates",
+      "attribute": "Dialogically Connecting",
+      "description": "I have real conversations where we explore ideas together instead of just trying to win arguments.",
+      "benefit": "Learns from others and builds better relationships through genuine understanding",
+      "oppositeOf": "Arguing to prove you're right or talking at people instead of with them",
+      "method": "Ask genuine questions to understand others' perspectives before sharing your own views",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Rosa Parks",
+      "attribute": "Dignifiedly Persistent",
+      "description": "I keep working for what I believe in even when progress is slow or people treat me badly.",
+      "benefit": "Achieves lasting change by staying committed to principles over time rather than giving up",
+      "oppositeOf": "Giving up when things get difficult or letting others' treatment change your behavior",
+      "method": "Remind yourself of your values and keep taking small steps forward every day",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Nelson Mandela",
+      "attribute": "Dignifiedly Resilient",
+      "description": "I maintain my self-respect and treat others respectfully even when they treat me unfairly or badly.",
+      "benefit": "Keeps your integrity intact while inspiring others and potentially changing their hearts and minds",
+      "oppositeOf": "Getting bitter, seeking revenge, or treating others poorly because they hurt you",
+      "method": "When mistreated, ask 'How can I respond in a way that maintains my dignity and their humanity?'",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Maya Angelou",
+      "attribute": "Dignifiedly Rising",
+      "description": "I maintain my self-respect and treat myself and others well regardless of how I've been treated.",
+      "benefit": "Builds inner strength and commands respect by demonstrating your inherent worth",
+      "oppositeOf": "Letting others' poor treatment make you think less of yourself or treat others badly",
+      "method": "Remind yourself 'I deserve respect' and behave in ways that honor your own dignity",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Frederick Douglass",
+      "attribute": "Dignifiedly Rising",
+      "description": "I maintain my self-respect and work to improve myself even when others try to keep me down.",
+      "benefit": "Builds inner strength and commands respect while inspiring others to believe in their potential",
+      "oppositeOf": "Accepting others' low expectations or letting circumstances determine your self-worth",
+      "method": "Set high standards for yourself and work consistently toward them regardless of others' opinions",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Eleanor Roosevelt",
+      "attribute": "Diplomatically Building",
+      "description": "I try to find common ground with people who disagree with me instead of just arguing or giving up.",
+      "benefit": "Accomplishes more by building coalitions and working together rather than fighting alone",
+      "oppositeOf": "Either avoiding conflict completely or turning every disagreement into a battle",
+      "method": "When facing disagreement, ask 'What do we both care about?' and start building from there",
+      "category": "Creativity & Innovation"
+    },
+    {
+      "roleModel": "Benjamin Franklin",
+      "attribute": "Diplomatically Wise",
+      "description": "I find ways for everyone to win instead of trying to prove I'm right or beat others.",
+      "benefit": "Builds better relationships and gets better results by making others feel heard and valued",
+      "oppositeOf": "Arguing to win or making decisions without considering how others feel",
+      "method": "Listen first to understand what others really want, then find solutions that work for everyone",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Dreamingly Leading",
+      "description": "I paint a picture of how much better things could be so people can see it and want to work toward it together.",
+      "benefit": "Inspires people to work for positive change by helping them imagine a better future",
+      "oppositeOf": "Only complaining about what's wrong without showing people what could be right",
+      "method": "When facing problems, ask 'What would this look like if it was working perfectly?' and share that vision",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Marcus Aurelius",
+      "attribute": "Dutifully Serving",
+      "description": "I think about what's best for everyone, not just myself, when making important choices.",
+      "benefit": "Creates positive impact and earns respect by considering the bigger picture",
+      "oppositeOf": "Only thinking about your own interests or ignoring how your actions affect others",
+      "method": "Ask 'How will this affect other people?' and 'What serves the greater good?'",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Nelson Mandela",
+      "attribute": "Educationally Growing",
+      "description": "I believe learning and education are the most powerful ways to create positive change in my life and world.",
+      "benefit": "Continuously improves abilities and understanding, making you more effective at solving problems",
+      "oppositeOf": "Thinking you already know enough or that education isn't important for changing your situation",
+      "method": "Read, learn, or develop skills regularly with the goal of serving others better",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Frederick Douglass",
+      "attribute": "Educationally Liberated",
+      "description": "I believe learning and knowledge are the keys to freedom and I never stop trying to learn new things.",
+      "benefit": "Continuously expands opportunities and abilities by developing knowledge and skills",
+      "oppositeOf": "Thinking you've learned enough or that education isn't important for your situation",
+      "method": "Read something challenging every day and actively seek out learning opportunities",
+      "category": "Learning & Growth"
+    },
+    {
+      "roleModel": "Maya Angelou",
+      "attribute": "Eloquently Expressive",
+      "description": "I choose my words carefully because I know they have the power to heal or hurt others.",
+      "benefit": "Communicates more effectively and creates positive impact through thoughtful language",
+      "oppositeOf": "Speaking carelessly without thinking about how words affect others",
+      "method": "Before speaking, ask 'Will these words help or hurt?' and choose language that uplifts",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Frederick Douglass",
+      "attribute": "Eloquently Truthful",
+      "description": "I speak and write powerfully about important issues because I know words can change minds and hearts.",
+      "benefit": "Creates positive change by communicating truth in ways that move and inspire others",
+      "oppositeOf": "Staying silent about injustice or speaking without preparing your message carefully",
+      "method": "Practice expressing your important beliefs clearly and persuasively through speaking and writing",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Leonardo da Vinci",
+      "attribute": "Endlessly Curious",
+      "description": "I ask questions about everything I see and want to understand how and why things work the way they do.",
+      "benefit": "Discovers connections and innovations that others miss by investigating everything deeply",
+      "oppositeOf": "Accepting things as they are without questioning or exploring further",
+      "method": "Ask 'How does this work?' and 'What if I tried this differently?' about everyday things",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Patanjali",
+      "attribute": "Ethically Grounded",
+      "description": "I base my decisions on what's right and truthful, even when it's harder or less convenient.",
+      "benefit": "Builds strong character and inner peace by aligning actions with deeper values and principles",
+      "oppositeOf": "Making decisions based only on what's easy, profitable, or what everyone else is doing",
+      "method": "Before big decisions, ask 'What would be the most honest and ethical choice here?'",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Isaac Newton",
+      "attribute": "Evidence-Based",
+      "description": "I only believe what I can prove through observation, measurement, and mathematical reasoning.",
+      "benefit": "Makes decisions based on solid facts rather than opinions or wishful thinking",
+      "oppositeOf": "Accepting ideas because they sound good or because others believe them",
+      "method": "Ask 'What evidence supports this?' and test ideas through systematic observation",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Faithfully Persevering",
+      "description": "I keep working for what's right even when progress is slow and I can't see the results yet.",
+      "benefit": "Achieves long-term change by not giving up when things get difficult or discouraging",
+      "oppositeOf": "Quitting when you don't see immediate results or when the work gets hard and scary",
+      "method": "When progress seems slow, ask 'What small step can I take today?' and trust that small steps add up",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Joan of Arc",
+      "attribute": "Fearlessly Leading",
+      "description": "I go first into difficult situations to show others it can be done, even when I'm scared.",
+      "benefit": "Inspires others to be brave and follow by demonstrating courage through action",
+      "oppositeOf": "Asking others to do things you're not willing to do yourself",
+      "method": "When something needs to be done, volunteer to go first and show others how it's done",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Focused",
+      "description": "I say no to almost everything so I can say yes to the most important things. Focus means elimination.",
+      "benefit": "Achieves breakthrough results by putting all energy into what matters most",
+      "oppositeOf": "Trying to do everything at once and spreading yourself too thin",
+      "method": "List 10 priorities, then cross out 7. Only work on the remaining 3.",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Eleanor Roosevelt",
+      "attribute": "Globally Learning",
+      "description": "I try to understand different cultures and perspectives because I know my view isn't the only one that matters.",
+      "benefit": "Makes better decisions and builds better relationships by understanding diverse viewpoints",
+      "oppositeOf": "Assuming your culture or perspective is the only right way to see things",
+      "method": "Regularly read, watch, or listen to perspectives from different cultures and backgrounds than your own",
+      "category": "Learning & Growth"
+    },
+    {
+      "roleModel": "Maya Angelou",
+      "attribute": "Gracefully Resilient",
+      "description": "I bounce back from setbacks while maintaining my dignity and using what I learned to help others.",
+      "benefit": "Recovers from difficulties stronger than before while inspiring others to do the same",
+      "oppositeOf": "Giving up after setbacks or becoming bitter and angry about past hurts",
+      "method": "Ask 'What can I learn from this?' and 'How can this experience help someone else?'",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Winston Churchill",
+      "attribute": "Historically Learning",
+      "description": "I study what happened in the past to understand what's happening now and make better choices.",
+      "benefit": "Avoids repeating past mistakes and recognizes patterns that help predict outcomes",
+      "oppositeOf": "Ignoring history and thinking current problems are completely new and different",
+      "method": "When facing a challenge, ask 'Has anything like this happened before?' and learn from it",
+      "category": "Learning & Growth"
+    },
+    {
+      "roleModel": "Albert Einstein",
+      "attribute": "Humanely Responsible",
+      "description": "I think about how my work affects all people and try to use knowledge to make the world better.",
+      "benefit": "Creates positive impact by considering the bigger picture and moral implications",
+      "oppositeOf": "Only caring about personal success or ignoring how your actions affect others",
+      "method": "Ask 'How will this help or hurt humanity?' before making important decisions",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Marie Curie",
+      "attribute": "Humbly Dedicated",
+      "description": "I focus on the work itself rather than seeking recognition or comparing myself to others.",
+      "benefit": "Stays motivated by internal satisfaction rather than external validation or competition",
+      "oppositeOf": "Working mainly for praise, awards, or to prove you're better than others",
+      "method": "Ask 'Is this moving my mission forward?' rather than 'Will this get me recognition?'",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Socrates",
+      "attribute": "Humbly Learning",
+      "description": "I admit when I don't know something and see it as an opportunity to learn rather than something embarrassing.",
+      "benefit": "Keeps learning and growing instead of pretending to know everything and missing opportunities",
+      "oppositeOf": "Pretending to know things you don't or being embarrassed to ask questions",
+      "method": "Say 'I don't know, but I'd like to learn' when you encounter something unfamiliar",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Abraham Lincoln",
+      "attribute": "Humbly Learning",
+      "description": "I keep reading, listening, and changing my mind when I discover I was wrong about something.",
+      "benefit": "Continuously improves understanding and decision-making by staying open to new information",
+      "oppositeOf": "Thinking you already know everything or refusing to change your mind when presented with new facts",
+      "method": "Read regularly from diverse sources and ask 'What might I be wrong about?'",
+      "category": "Learning & Growth"
+    },
+    {
+      "roleModel": "Joan of Arc",
+      "attribute": "Humbly Serving",
+      "description": "I remember that my abilities and opportunities are meant to help others, not just myself.",
+      "benefit": "Creates lasting positive impact by using talents and resources for the greater good",
+      "oppositeOf": "Using your abilities and opportunities only for personal gain or recognition",
+      "method": "Regularly ask 'How can I use what I have to help others?' and take action on the answer",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Nelson Mandela",
+      "attribute": "Humbly Serving",
+      "description": "I use my position and abilities to help others succeed rather than just advancing myself.",
+      "benefit": "Creates positive impact while earning respect and building a meaningful legacy",
+      "oppositeOf": "Only thinking about your own success or advancement without helping others",
+      "method": "Ask 'How can I use my abilities to help others grow?' in every role you have",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Albert Einstein",
+      "attribute": "Imaginatively Curious",
+      "description": "I think in pictures and ask 'What if?' questions that help me understand how things really work.",
+      "benefit": "Discovers creative solutions by looking at problems from completely new angles",
+      "oppositeOf": "Only thinking logically or accepting how things have always been done",
+      "method": "Visualize problems as mental movies and play with impossible scenarios to find insights",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Albert Einstein",
+      "attribute": "Independently Thinking",
+      "description": "I question what everyone believes is true and think for myself, even when others disagree.",
+      "benefit": "Finds truth and solutions that others miss by not following the crowd",
+      "oppositeOf": "Just accepting what authorities say or doing things because 'that's how it's always been done'",
+      "method": "Ask 'What if the opposite were true?' and think through problems from scratch",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Isaac Newton",
+      "attribute": "Intellectually Humble",
+      "description": "I know that what I understand is tiny compared to all there is to know about the universe.",
+      "benefit": "Stays curious and keeps learning instead of thinking you already know everything",
+      "oppositeOf": "Believing you're smarter than others or that you have nothing left to learn",
+      "method": "Remember that every answer reveals new questions to explore and understand",
+      "category": "Learning & Growth"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Justly Standing",
+      "description": "I speak up against unfairness and work to make things more equal, even when it's dangerous or unpopular.",
+      "benefit": "Creates real change by addressing problems that others are afraid to talk about",
+      "oppositeOf": "Staying quiet about unfairness because it's easier or you're afraid of getting in trouble",
+      "method": "When you see unfairness, ask 'What would happen if everyone stayed quiet?' then speak up",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Patanjali",
+      "attribute": "Mentally Disciplined",
+      "description": "I practice controlling my thoughts and reactions instead of letting my mind run wild with worry or anger.",
+      "benefit": "Develops inner peace and clarity by gaining mastery over mental patterns and emotional reactions",
+      "oppositeOf": "Letting your thoughts and emotions control you or getting swept away by mental drama",
+      "method": "Take 5 minutes daily to sit quietly and observe your thoughts without getting caught up in them",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Jesus",
+      "attribute": "Mercifully Forgiving",
+      "description": "I forgive people who hurt me and choose to respond with kindness instead of revenge.",
+      "benefit": "Frees yourself from anger and bitterness while giving others a chance to change and grow",
+      "oppositeOf": "Holding grudges, seeking revenge, or refusing to forgive until others apologize first",
+      "method": "When someone hurts you, pray for them or wish them well instead of plotting payback",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Mindfully Present",
+      "description": "I pay complete attention to this moment, noticing my thoughts and feelings without getting lost in them.",
+      "benefit": "Reduces stress and anxiety by staying focused on what's actually happening right now",
+      "oppositeOf": "Constantly worrying about the future or dwelling on past problems",
+      "method": "Notice when your mind wanders and gently bring attention back to your breath",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Winston Churchill",
+      "attribute": "Never Surrendering",
+      "description": "I keep fighting for what's right even when things look hopeless and everyone else wants to give up.",
+      "benefit": "Overcomes impossible odds and inspires others to keep going when they would otherwise quit",
+      "oppositeOf": "Giving up at the first sign of serious difficulty or when things look bad",
+      "method": "When facing defeat, ask 'What would happen if we don't keep fighting?' and find one more way to try",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Nonviolently Loving",
+      "description": "I respond to hatred and unfairness with love and kindness, which is much harder but more powerful than fighting back.",
+      "benefit": "Changes people's hearts and minds instead of just making them angrier or more stubborn",
+      "oppositeOf": "Hating people back when they're mean to you or treating enemies like they're not human",
+      "method": "When someone treats you badly, ask 'How can I show them love?' and do that instead of revenge",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Mahatma Gandhi",
+      "attribute": "Nonviolently Resisting",
+      "description": "I stand up to unfairness and injustice, but I do it without hurting anyone or being mean back to them.",
+      "benefit": "Creates real change while keeping your moral strength and often winning over opponents",
+      "oppositeOf": "Either fighting back with violence or just accepting injustice quietly",
+      "method": "When facing unfairness, ask 'How can I resist this wrong without becoming wrong myself?'",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Isaac Newton",
+      "attribute": "Patient Perfectionist",
+      "description": "I work on problems for years, refining my understanding until I get them exactly right.",
+      "benefit": "Creates lasting solutions and discoveries that stand the test of time",
+      "oppositeOf": "Rushing to quick answers or settling for approximate solutions",
+      "method": "Work steadily on important problems, testing and refining until the solution is complete",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Nelson Mandela",
+      "attribute": "Patiently Strategic",
+      "description": "I'm willing to wait and work gradually toward big goals instead of expecting instant results.",
+      "benefit": "Achieves lasting change by building strong foundations rather than quick fixes that don't last",
+      "oppositeOf": "Giving up when change is slow or expecting everything to happen immediately",
+      "method": "Focus on progress over perfection and celebrate small steps toward bigger goals",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Abraham Lincoln",
+      "attribute": "Patiently Strategic",
+      "description": "I work toward big goals gradually and wait for the right moment to act instead of rushing.",
+      "benefit": "Achieves lasting change by building support and choosing the best timing for important actions",
+      "oppositeOf": "Acting impulsively or giving up when change doesn't happen immediately",
+      "method": "Keep working toward your goal while watching for the right opportunity to make your move",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Patiently Teaching",
+      "description": "I help others learn by meeting them where they are and explaining things in ways they can understand.",
+      "benefit": "Helps people grow and change through understanding rather than pressure or criticism",
+      "oppositeOf": "Getting frustrated when others don't understand or change as quickly as you want",
+      "method": "Listen first to understand their perspective, then share insights that connect to their experience",
+      "category": "Learning & Growth"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Peacefully Detached",
+      "description": "I care about outcomes but don't let my happiness depend on getting exactly what I want.",
+      "benefit": "Stays emotionally balanced whether things go well or poorly",
+      "oppositeOf": "Getting extremely upset when things don't go according to your plans",
+      "method": "Do your best, then accept whatever happens with grace and learn from it",
+      "category": "Learning & Growth"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Perfectionist",
+      "description": "I care deeply about every tiny detail. I believe if something is worth doing, it's worth doing perfectly.",
+      "benefit": "Creates products and experiences that truly delight people and stand out from the competition",
+      "oppositeOf": "Being okay with 'good enough' or settling for mediocre results",
+      "method": "Ask 'How can this be 10x better?' before calling anything finished",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Albert Einstein",
+      "attribute": "Playfully Creative",
+      "description": "I mix ideas from different areas and play with concepts like a child plays with toys.",
+      "benefit": "Combines knowledge in unexpected ways to create breakthrough innovations",
+      "oppositeOf": "Keeping different subjects separate or thinking there's only one right way to solve problems",
+      "method": "Take ideas from one area and ask 'How might this apply to something completely different?'",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Benjamin Franklin",
+      "attribute": "Practically Useful",
+      "description": "I focus on learning and doing things that actually help solve real problems for myself and others.",
+      "benefit": "Builds valuable skills and creates solutions that make a real difference in people's lives",
+      "oppositeOf": "Learning or doing things just because they seem impressive or interesting",
+      "method": "Before starting something new, ask 'How will this actually help me or others?'",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Marie Curie",
+      "attribute": "Precisely Methodical",
+      "description": "I measure twice, cut once, and document everything so I can learn from both successes and failures.",
+      "benefit": "Makes steady progress by building on previous work rather than constantly starting over",
+      "oppositeOf": "Working carelessly or failing to track what works and what doesn't",
+      "method": "Keep detailed records of your experiments, decisions, and results for future reference",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Leonardo da Vinci",
+      "attribute": "Precisely Observant",
+      "description": "I look very carefully at details that most people overlook and draw what I see to understand it better.",
+      "benefit": "Understands problems and opportunities more completely by noticing important details",
+      "oppositeOf": "Looking quickly or superficially without paying attention to important details",
+      "method": "Spend time really looking at things and sketch what you observe to see it clearly",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Rosa Parks",
+      "attribute": "Prepared and Ready",
+      "description": "I get ready ahead of time for challenges I might face so I can respond with strength and wisdom.",
+      "benefit": "Handles difficult situations better by thinking through challenges before they happen",
+      "oppositeOf": "Just hoping things will work out or being caught off guard by predictable problems",
+      "method": "Think ahead about challenges you might face and prepare your response in advance",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Eleanor Roosevelt",
+      "attribute": "Principled Standing",
+      "description": "I stand up for what I believe is right even when it's unpopular or people criticize me for it.",
+      "benefit": "Creates positive change by having the courage to advocate for important principles",
+      "oppositeOf": "Changing your beliefs to fit in or staying silent when you should speak up",
+      "method": "When facing an important issue, ask 'What do I believe is right?' and act on it despite opposition",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Theodore Roosevelt",
+      "attribute": "Progressively Reforming",
+      "description": "I work to make systems fairer and better for regular people, not just the rich and powerful.",
+      "benefit": "Creates a society where everyone has a fair chance to succeed through their own efforts",
+      "oppositeOf": "Accepting unfair systems or only caring about what benefits you personally",
+      "method": "When you see unfairness, ask 'How can this be made more fair?' and take action to fix it",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Joan of Arc",
+      "attribute": "Purely Principled",
+      "description": "I stick to my moral standards even when it would be easier or more profitable to compromise.",
+      "benefit": "Earns deep respect and trust by being someone others can count on to do the right thing",
+      "oppositeOf": "Changing your standards when it's convenient or when everyone else is doing something wrong",
+      "method": "Decide your core values ahead of time and stick to them even when it costs you something",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Socrates",
+      "attribute": "Questioningly Curious",
+      "description": "I ask 'How do I know this is true?' about important beliefs instead of just accepting what everyone says.",
+      "benefit": "Discovers truth and avoids mistakes by thinking critically instead of following the crowd",
+      "oppositeOf": "Accepting ideas without questioning them or believing something just because it's popular",
+      "method": "When someone claims something important, ask 'What evidence supports this?' and 'How do you know?'",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Rosa Parks",
+      "attribute": "Quietly Courageous",
+      "description": "I stand up for what's right without making a big show about it or seeking attention for myself.",
+      "benefit": "Creates real change through consistent action rather than just talking about problems",
+      "oppositeOf": "Either staying silent when you should speak up or making everything about getting attention",
+      "method": "When you see something wrong, ask 'What small action can I take?' and do it with dignity",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Nelson Mandela",
+      "attribute": "Reconcilingly Forgiving",
+      "description": "I choose to forgive and work with former enemies to build something better together.",
+      "benefit": "Heals relationships and creates lasting solutions instead of ongoing cycles of conflict",
+      "oppositeOf": "Holding grudges or seeking revenge against people who have wronged you",
+      "method": "Ask 'What would healing look like?' instead of 'How can I get them back?'",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Marcus Aurelius",
+      "attribute": "Reflectively Learning",
+      "description": "I think about my actions at the end of each day to learn from mistakes and celebrate growth.",
+      "benefit": "Continuously improves by learning from experience rather than repeating mistakes",
+      "oppositeOf": "Going through life on autopilot without examining your choices and their results",
+      "method": "Spend 10 minutes each evening asking 'What did I do well today?' and 'What can I improve?'",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Winston Churchill",
+      "attribute": "Resiliently Bouncing",
+      "description": "I come back stronger after failures and defeats instead of letting them stop me or make me bitter.",
+      "benefit": "Turns setbacks into comebacks and eventually achieves goals despite obstacles",
+      "oppositeOf": "Letting failures crush your spirit or giving up after disappointments",
+      "method": "After any setback, ask 'What can I learn from this?' and 'How can I use this to get stronger?'",
+      "category": "Learning & Growth"
+    },
+    {
+      "roleModel": "Rosa Parks",
+      "attribute": "Respectfully Firm",
+      "description": "I treat everyone with dignity while still standing strong for my principles and values.",
+      "benefit": "Wins respect and creates change by combining kindness with unwavering commitment to what's right",
+      "oppositeOf": "Being either too aggressive or too passive when dealing with people who disagree with you",
+      "method": "Stay polite and respectful while clearly stating your position and refusing to compromise your values",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Marie Curie",
+      "attribute": "Sacrificially Focused",
+      "description": "I'm willing to give up comfort and convenience to pursue what truly matters to me.",
+      "benefit": "Achieves meaningful goals by investing time and energy where it counts most",
+      "oppositeOf": "Wanting success but not willing to give up anything comfortable or easy",
+      "method": "Identify what you truly value most and be willing to say no to other things",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Jesus",
+      "attribute": "Sacrificially Serving",
+      "description": "I put others' needs before my own comfort and look for ways to help without expecting anything back.",
+      "benefit": "Builds meaningful relationships and creates positive change by focusing on others' welfare",
+      "oppositeOf": "Only helping others when it's convenient or when you get something in return",
+      "method": "Look for one way each day to help someone without them knowing it was you",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Mahatma Gandhi",
+      "attribute": "Self-Sacrificing",
+      "description": "I'm willing to give up things that are comfortable or easy for me if it helps other people or does what's right.",
+      "benefit": "Inspires others and shows you really mean what you say about your values",
+      "oppositeOf": "Only supporting causes when it's convenient or doesn't cost you anything",
+      "method": "When making decisions, ask 'What am I willing to give up to make this right?'",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Simply Content",
+      "description": "I find joy in basic pleasures and don't need expensive things or constant excitement to be happy.",
+      "benefit": "Feels grateful and satisfied with life instead of always wanting more",
+      "oppositeOf": "Always needing the next purchase, achievement, or experience to feel good",
+      "method": "Notice and appreciate simple pleasures like sunshine, good food, or friendly conversation",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Mahatma Gandhi",
+      "attribute": "Simply Living",
+      "description": "I try to live with only what I really need so I can focus on what matters most and understand how regular people live.",
+      "benefit": "Reduces distractions and connects you with people from all backgrounds",
+      "oppositeOf": "Collecting lots of stuff or living in luxury while others struggle",
+      "method": "Regularly ask 'Do I really need this?' and give away things that don't serve your mission",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Jesus",
+      "attribute": "Spiritually Centered",
+      "description": "I take time for prayer, meditation, or quiet reflection to stay connected to what matters most.",
+      "benefit": "Maintains inner peace and wisdom by staying connected to deeper purpose and divine guidance",
+      "oppositeOf": "Getting so busy with daily tasks that you lose touch with your deeper values and purpose",
+      "method": "Start each day with a few minutes of prayer, meditation, or quiet reflection on your purpose",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Joan of Arc",
+      "attribute": "Spiritually Guided",
+      "description": "I take time to pray, meditate, or reflect quietly to find wisdom for important decisions.",
+      "benefit": "Makes better choices by connecting with deeper wisdom and purpose beyond just logical thinking",
+      "oppositeOf": "Making important decisions based only on what seems practical without considering deeper meaning",
+      "method": "Before big decisions, spend time in prayer, meditation, or quiet reflection to seek guidance",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Frederick Douglass",
+      "attribute": "Strategically Persistent",
+      "description": "I keep working toward justice and freedom even when progress is slow or setbacks occur.",
+      "benefit": "Achieves lasting change by maintaining long-term commitment rather than giving up when things get difficult",
+      "oppositeOf": "Expecting instant results or quitting when you face obstacles or criticism",
+      "method": "Focus on long-term progress and celebrate small victories while staying committed to your larger goals",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Winston Churchill",
+      "attribute": "Strategically Thinking",
+      "description": "I look at the big picture and think several steps ahead instead of just reacting to what's happening right now.",
+      "benefit": "Makes better decisions by seeing patterns and consequences others miss",
+      "oppositeOf": "Only reacting to immediate problems without thinking about what comes next",
+      "method": "For any decision, ask 'What will this lead to?' and 'What would happen if we do nothing?'",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Theodore Roosevelt",
+      "attribute": "Strenuously Living",
+      "description": "I choose challenges that make me stronger instead of taking the easy way that keeps me comfortable but weak.",
+      "benefit": "Builds real strength and character while accomplishing things that matter for the long term",
+      "oppositeOf": "Always picking the easiest option or avoiding anything that requires real effort",
+      "method": "When facing a choice, ask 'Which option will make me stronger?' and choose that one",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Benjamin Franklin",
+      "attribute": "Systematically Improving",
+      "description": "I track my habits and goals every day to make sure I'm actually getting better at the things that matter.",
+      "benefit": "Makes real progress on important goals instead of just hoping things will get better",
+      "oppositeOf": "Setting goals but never tracking progress or trying to improve without a clear plan",
+      "method": "Choose 3-5 important habits and track them daily on a simple chart or app",
+      "category": "Daily Practices"
+    },
+    {
+      "roleModel": "Leonardo da Vinci",
+      "attribute": "Systematically Learning",
+      "description": "I keep detailed notes and practice every day to get better at understanding and creating.",
+      "benefit": "Builds deep expertise over time through consistent practice and careful documentation",
+      "oppositeOf": "Learning randomly or not keeping track of what you've discovered",
+      "method": "Keep a learning notebook and practice your most important skills every single day",
+      "category": "Daily Practices"
+    },
+    {
+      "roleModel": "Isaac Newton",
+      "attribute": "Systematically Methodical",
+      "description": "I approach every problem step-by-step, building from basic principles to complex understanding.",
+      "benefit": "Solves complex problems that seem impossible by breaking them into manageable pieces",
+      "oppositeOf": "Jumping to conclusions or trying to solve advanced problems without understanding basics",
+      "method": "Start with fundamentals, document everything, and build knowledge brick by brick",
+      "category": "Creativity & Innovation"
+    },
+    {
+      "roleModel": "Marie Curie",
+      "attribute": "Systematically Persistent",
+      "description": "I work steadily toward my goals every day, keeping detailed records and never giving up on important work.",
+      "benefit": "Achieves breakthrough results through consistent effort rather than depending on luck or talent alone",
+      "oppositeOf": "Working in bursts of motivation or quitting when things get difficult",
+      "method": "Break big goals into daily tasks and track progress in a dedicated notebook",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Patanjali",
+      "attribute": "Systematically Practicing",
+      "description": "I follow a regular routine of healthy habits and spiritual practices to gradually improve myself.",
+      "benefit": "Creates steady progress and transformation through consistent daily actions rather than hoping for quick fixes",
+      "oppositeOf": "Expecting instant results or giving up when you don't see immediate changes",
+      "method": "Choose one small practice (like 5 minutes of meditation) and do it every day at the same time",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Mahatma Gandhi",
+      "attribute": "Truth-Seeking",
+      "description": "I always try to find and tell the truth, even when it's hard or gets me in trouble.",
+      "benefit": "Builds trust and credibility that becomes powerful for creating lasting change",
+      "oppositeOf": "Telling people what they want to hear or hiding uncomfortable truths",
+      "method": "Before speaking or acting, ask 'What is really true here?' and choose truth over comfort",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Jesus",
+      "attribute": "Truthfully Compassionate",
+      "description": "I speak honestly about problems while showing love and understanding for the person.",
+      "benefit": "Helps people change and grow by combining truth with safety and encouragement",
+      "oppositeOf": "Either avoiding difficult conversations or speaking harshly without care for feelings",
+      "method": "Before addressing problems, ask 'How can I say this in a way that shows I care about them?'",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Jesus",
+      "attribute": "Unconditionally Loving",
+      "description": "I love people regardless of how they treat me or whether they deserve it.",
+      "benefit": "Creates deep healing and transformation in relationships by removing conditions and barriers",
+      "oppositeOf": "Only being kind to people who are nice to you or who can benefit you",
+      "method": "Ask 'How can I show love to this person?' even when they're difficult or unkind",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Unifyingly Building",
+      "description": "I bring different groups of people together instead of letting them stay separated or fight each other.",
+      "benefit": "Creates stronger communities where everyone can contribute and benefit from working together",
+      "oppositeOf": "Keeping people separated by differences or making some groups feel better by putting others down",
+      "method": "In any group conflict, ask 'What do we all want?' and help people focus on common goals",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Abraham Lincoln",
+      "attribute": "Unifyingly Healing",
+      "description": "I look for ways to bring people together and heal divisions rather than making conflicts worse.",
+      "benefit": "Creates lasting solutions and better relationships by focusing on shared values and common ground",
+      "oppositeOf": "Trying to win arguments or punish people instead of solving problems together",
+      "method": "Ask 'How can we move forward together?' instead of 'How can I prove I'm right?'",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Mahatma Gandhi",
+      "attribute": "Unifyingly Leading",
+      "description": "I try to bring different groups of people together instead of making them choose sides or fight each other.",
+      "benefit": "Creates stronger movements by including everyone and reduces the enemies you have to face",
+      "oppositeOf": "Creating 'us versus them' thinking or only working with people exactly like you",
+      "method": "In any conflict, ask 'What do we all care about?' and build from there",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Theodore Roosevelt",
+      "attribute": "Vigorously Acting",
+      "description": "I turn my ideas into action quickly instead of just talking about what should be done.",
+      "benefit": "Actually accomplishes goals instead of just dreaming about them or complaining about problems",
+      "oppositeOf": "Talking a lot about what should happen but never actually doing anything about it",
+      "method": "For any goal, ask 'What can I do today to move this forward?' and do it",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Marcus Aurelius",
+      "attribute": "Virtuously Guided",
+      "description": "I make decisions based on what's right and good, not just what's easy or profitable for me.",
+      "benefit": "Builds strong character and self-respect while creating positive impact on others",
+      "oppositeOf": "Making choices based only on personal gain or taking the easy way out",
+      "method": "Before deciding, ask 'What would a person of good character do in this situation?'",
+      "category": "Mindfulness & Meditation"
+    },
+    {
+      "roleModel": "Socrates",
+      "attribute": "Virtuously Principled",
+      "description": "I do what's right even when it's difficult, unpopular, or costs me something personally.",
+      "benefit": "Builds strong character and self-respect while creating positive impact on others",
+      "oppositeOf": "Compromising your values for convenience, popularity, or personal gain",
+      "method": "Ask 'What would a person of good character do?' and follow through even when it's hard",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Visionary",
+      "description": "I see possibilities that don't exist yet and imagine products people don't know they want.",
+      "benefit": "Creates revolutionary breakthroughs instead of just incremental improvements",
+      "oppositeOf": "Only improving what already exists instead of imagining completely new possibilities",
+      "method": "Ask 'What would the perfect solution look like?' and work backwards",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Marcus Aurelius",
+      "attribute": "Wisely Accepting",
+      "description": "I focus my energy only on things I can actually change and accept everything else with peace.",
+      "benefit": "Reduces stress and frustration by putting effort where it can actually make a difference",
+      "oppositeOf": "Worrying about things beyond your control or fighting against unchangeable circumstances",
+      "method": "Ask 'Can I actually control this?' and only spend energy on things where the answer is yes",
+      "category": "Personal Development"
+    },
+    {
+      "roleModel": "Patanjali",
+      "attribute": "Wisely Detached",
+      "description": "I care about outcomes but don't let my happiness depend on getting exactly what I want.",
+      "benefit": "Reduces stress and suffering by finding peace regardless of whether things go according to plan",
+      "oppositeOf": "Getting extremely upset or devastated when things don't work out the way you expected",
+      "method": "Do your best work, then accept whatever happens with grace and look for the lesson",
+      "category": "Productivity & Decision Making"
+    },
+    {
+      "roleModel": "Maya Angelou",
+      "attribute": "Wisely Teaching",
+      "description": "I share what I've learned from my experiences to help others avoid mistakes and find their strength.",
+      "benefit": "Multiplies positive impact by helping others learn from your experiences and wisdom",
+      "oppositeOf": "Keeping your lessons to yourself or assuming others don't want to learn from you",
+      "method": "When someone faces a challenge you've overcome, share what you learned and how you grew",
+      "category": "Relationships & Social"
+    },
+    {
+      "roleModel": "Albert Einstein",
+      "attribute": "Wonderfully Simple",
+      "description": "I look for the simplest explanation that explains the most things, believing the universe is elegant.",
+      "benefit": "Finds clear, understandable solutions instead of making things more complicated than necessary",
+      "oppositeOf": "Making things complex or assuming that complicated explanations are smarter",
+      "method": "Keep asking 'How can I explain this more simply?' until a child could understand it",
+      "category": "Learning & Growth"
+    }
+  ],
+  "dailyTimelineExamples": [
+    {
+      "timeOfDay": "Morning (6:00-9:00 AM)",
+      "description": "Start your day by embodying your Lightwalker™ traits",
+      "suggestedActivities": [
+        {
+          "attribute": "Systematically Methodical",
+          "roleModel": "Isaac Newton",
+          "method": "Start with fundamentals, document everything, and build knowledge brick by brick"
+        },
+        {
+          "attribute": "Patiently Teaching",
+          "roleModel": "Buddha",
+          "method": "Listen first to understand their perspective, then share insights that connect to their experience"
+        },
+        {
+          "attribute": "Systematically Persistent",
+          "roleModel": "Marie Curie",
+          "method": "Break big goals into daily tasks and track progress in a dedicated notebook"
+        },
+        {
+          "attribute": "Systematically Improving",
+          "roleModel": "Benjamin Franklin",
+          "method": "Choose 3-5 important habits and track them daily on a simple chart or app"
+        }
+      ]
+    },
+    {
+      "timeOfDay": "Midday/Work (9:00 AM-5:00 PM)",
+      "description": "Apply your traits during work and daily challenges",
+      "suggestedActivities": [
+        {
+          "attribute": "Focused",
+          "roleModel": "Steve Jobs",
+          "method": "List 10 priorities, then cross out 7. Only work on the remaining 3."
+        },
+        {
+          "attribute": "Visionary",
+          "roleModel": "Steve Jobs",
+          "method": "Ask 'What would the perfect solution look like?' and work backwards"
+        },
+        {
+          "attribute": "Deeply Focused",
+          "roleModel": "Isaac Newton",
+          "method": "Choose one important problem and think about it continuously until clarity emerges"
+        },
+        {
+          "attribute": "Patient Perfectionist",
+          "roleModel": "Isaac Newton",
+          "method": "Work steadily on important problems, testing and refining until the solution is complete"
+        }
+      ]
+    },
+    {
+      "timeOfDay": "Social Interactions",
+      "description": "Practice your traits in relationships and social situations",
+      "suggestedActivities": [
+        {
+          "attribute": "Design-Obsessed",
+          "roleModel": "Steve Jobs",
+          "method": "Ask 'How does this make someone feel?' and redesign until the feeling is magical"
+        },
+        {
+          "attribute": "Simply Content",
+          "roleModel": "Buddha",
+          "method": "Notice and appreciate simple pleasures like sunshine, good food, or friendly conversation"
+        },
+        {
+          "attribute": "Dutifully Serving",
+          "roleModel": "Marcus Aurelius",
+          "method": "Ask 'How will this affect other people?' and 'What serves the greater good?'"
+        },
+        {
+          "attribute": "Practically Useful",
+          "roleModel": "Benjamin Franklin",
+          "method": "Before starting something new, ask 'How will this actually help me or others?'"
+        }
+      ]
+    },
+    {
+      "timeOfDay": "Evening (6:00-10:00 PM)",
+      "description": "Reflect on your growth and prepare for tomorrow",
+      "suggestedActivities": [
+        {
+          "attribute": "Simply Content",
+          "roleModel": "Buddha",
+          "method": "Notice and appreciate simple pleasures like sunshine, good food, or friendly conversation"
+        },
+        {
+          "attribute": "Endlessly Curious",
+          "roleModel": "Leonardo da Vinci",
+          "method": "Ask 'How does this work?' and 'What if I tried this differently?' about everyday things"
+        },
+        {
+          "attribute": "Precisely Observant",
+          "roleModel": "Leonardo da Vinci",
+          "method": "Spend time really looking at things and sketch what you observe to see it clearly"
+        },
+        {
+          "attribute": "Systematically Learning",
+          "roleModel": "Leonardo da Vinci",
+          "method": "Keep a learning notebook and practice your most important skills every single day"
+        }
+      ]
+    }
+  ],
+  "categoryBreakdown": {
+    "Mindfulness & Meditation": {
+      "count": 13,
+      "activities": [
+        {
+          "roleModel": "Marie Curie",
+          "attribute": "Barrier-Breaking Determined",
+          "method": "Focus on being undeniably excellent at your work while quietly breaking down barriers"
+        },
+        {
+          "roleModel": "Marcus Aurelius",
+          "attribute": "Calmly Rational",
+          "method": "Take three deep breaths and ask 'What are the facts here?' before responding"
+        },
+        {
+          "roleModel": "Patanjali",
+          "attribute": "Compassionately Aware",
+          "method": "Notice your thoughts and feelings throughout the day with curiosity: 'Isn't that interesting...'"
+        },
+        {
+          "roleModel": "Albert Einstein",
+          "attribute": "Independently Thinking",
+          "method": "Ask 'What if the opposite were true?' and think through problems from scratch"
+        },
+        {
+          "roleModel": "Martin Luther King Jr.",
+          "attribute": "Justly Standing",
+          "method": "When you see unfairness, ask 'What would happen if everyone stayed quiet?' then speak up"
+        },
+        {
+          "roleModel": "Patanjali",
+          "attribute": "Mentally Disciplined",
+          "method": "Take 5 minutes daily to sit quietly and observe your thoughts without getting caught up in them"
+        },
+        {
+          "roleModel": "Buddha",
+          "attribute": "Mindfully Present",
+          "method": "Notice when your mind wanders and gently bring attention back to your breath"
+        },
+        {
+          "roleModel": "Eleanor Roosevelt",
+          "attribute": "Principled Standing",
+          "method": "When facing an important issue, ask 'What do I believe is right?' and act on it despite opposition"
+        },
+        {
+          "roleModel": "Rosa Parks",
+          "attribute": "Respectfully Firm",
+          "method": "Stay polite and respectful while clearly stating your position and refusing to compromise your values"
+        },
+        {
+          "roleModel": "Jesus",
+          "attribute": "Spiritually Centered",
+          "method": "Start each day with a few minutes of prayer, meditation, or quiet reflection on your purpose"
+        },
+        {
+          "roleModel": "Joan of Arc",
+          "attribute": "Spiritually Guided",
+          "method": "Before big decisions, spend time in prayer, meditation, or quiet reflection to seek guidance"
+        },
+        {
+          "roleModel": "Patanjali",
+          "attribute": "Systematically Practicing",
+          "method": "Choose one small practice (like 5 minutes of meditation) and do it every day at the same time"
+        },
+        {
+          "roleModel": "Marcus Aurelius",
+          "attribute": "Virtuously Guided",
+          "method": "Before deciding, ask 'What would a person of good character do in this situation?'"
+        }
+      ]
+    },
+    "Productivity & Decision Making": {
+      "count": 20,
+      "activities": [
+        {
+          "roleModel": "Leonardo da Vinci",
+          "attribute": "Beautifully Functional",
+          "method": "Always ask 'How can I make this work better AND look more beautiful?'"
+        },
+        {
+          "roleModel": "Rosa Parks",
+          "attribute": "Community-Minded",
+          "method": "Before making important decisions, ask 'How will this affect my community?'"
+        },
+        {
+          "roleModel": "Frederick Douglass",
+          "attribute": "Dignifiedly Rising",
+          "method": "Set high standards for yourself and work consistently toward them regardless of others' opinions"
+        },
+        {
+          "roleModel": "Benjamin Franklin",
+          "attribute": "Diplomatically Wise",
+          "method": "Listen first to understand what others really want, then find solutions that work for everyone"
+        },
+        {
+          "roleModel": "Martin Luther King Jr.",
+          "attribute": "Dreamingly Leading",
+          "method": "When facing problems, ask 'What would this look like if it was working perfectly?' and share that vision"
+        },
+        {
+          "roleModel": "Leonardo da Vinci",
+          "attribute": "Endlessly Curious",
+          "method": "Ask 'How does this work?' and 'What if I tried this differently?' about everyday things"
+        },
+        {
+          "roleModel": "Patanjali",
+          "attribute": "Ethically Grounded",
+          "method": "Before big decisions, ask 'What would be the most honest and ethical choice here?'"
+        },
+        {
+          "roleModel": "Steve Jobs",
+          "attribute": "Focused",
+          "method": "List 10 priorities, then cross out 7. Only work on the remaining 3."
+        },
+        {
+          "roleModel": "Albert Einstein",
+          "attribute": "Humanely Responsible",
+          "method": "Ask 'How will this help or hurt humanity?' before making important decisions"
+        },
+        {
+          "roleModel": "Isaac Newton",
+          "attribute": "Patient Perfectionist",
+          "method": "Work steadily on important problems, testing and refining until the solution is complete"
+        },
+        {
+          "roleModel": "Nelson Mandela",
+          "attribute": "Patiently Strategic",
+          "method": "Focus on progress over perfection and celebrate small steps toward bigger goals"
+        },
+        {
+          "roleModel": "Abraham Lincoln",
+          "attribute": "Patiently Strategic",
+          "method": "Keep working toward your goal while watching for the right opportunity to make your move"
+        },
+        {
+          "roleModel": "Marie Curie",
+          "attribute": "Precisely Methodical",
+          "method": "Keep detailed records of your experiments, decisions, and results for future reference"
+        },
+        {
+          "roleModel": "Mahatma Gandhi",
+          "attribute": "Self-Sacrificing",
+          "method": "When making decisions, ask 'What am I willing to give up to make this right?'"
+        },
+        {
+          "roleModel": "Frederick Douglass",
+          "attribute": "Strategically Persistent",
+          "method": "Focus on long-term progress and celebrate small victories while staying committed to your larger goals"
+        },
+        {
+          "roleModel": "Winston Churchill",
+          "attribute": "Strategically Thinking",
+          "method": "For any decision, ask 'What will this lead to?' and 'What would happen if we do nothing?'"
+        },
+        {
+          "roleModel": "Marie Curie",
+          "attribute": "Systematically Persistent",
+          "method": "Break big goals into daily tasks and track progress in a dedicated notebook"
+        },
+        {
+          "roleModel": "Martin Luther King Jr.",
+          "attribute": "Unifyingly Building",
+          "method": "In any group conflict, ask 'What do we all want?' and help people focus on common goals"
+        },
+        {
+          "roleModel": "Steve Jobs",
+          "attribute": "Visionary",
+          "method": "Ask 'What would the perfect solution look like?' and work backwards"
+        },
+        {
+          "roleModel": "Patanjali",
+          "attribute": "Wisely Detached",
+          "method": "Do your best work, then accept whatever happens with grace and look for the lesson"
+        }
+      ]
+    },
+    "Personal Development": {
+      "count": 35,
+      "activities": [
+        {
+          "roleModel": "Benjamin Franklin",
+          "attribute": "Civically Contributing",
+          "method": "Choose one way to regularly contribute to your community or help solve problems bigger than yourself"
+        },
+        {
+          "roleModel": "Buddha",
+          "attribute": "Compassionately Wise",
+          "method": "Ask 'What pain might be causing this person to act this way?' before responding"
+        },
+        {
+          "roleModel": "Theodore Roosevelt",
+          "attribute": "Conserving Nature",
+          "method": "Before using natural resources, ask 'How can I leave this better than I found it?'"
+        },
+        {
+          "roleModel": "Socrates",
+          "attribute": "Courageously Authentic",
+          "method": "Ask 'What do I really believe is right?' and act on it regardless of social pressure"
+        },
+        {
+          "roleModel": "Theodore Roosevelt",
+          "attribute": "Courageously Standing",
+          "method": "When facing a moral choice, ask 'What's the right thing to do?' and do it regardless of cost"
+        },
+        {
+          "roleModel": "Leonardo da Vinci",
+          "attribute": "Creatively Connecting",
+          "method": "Ask 'What if I combined this idea with something from a completely different area?'"
+        },
+        {
+          "roleModel": "Benjamin Franklin",
+          "attribute": "Curiously Scientific",
+          "method": "Try small experiments to test important ideas before making major commitments"
+        },
+        {
+          "roleModel": "Isaac Newton",
+          "attribute": "Deeply Focused",
+          "method": "Choose one important problem and think about it continuously until clarity emerges"
+        },
+        {
+          "roleModel": "Steve Jobs",
+          "attribute": "Demanding",
+          "method": "Ask 'What would happen if we tried to make this 10x better?' and actually try it"
+        },
+        {
+          "roleModel": "Rosa Parks",
+          "attribute": "Dignifiedly Persistent",
+          "method": "Remind yourself of your values and keep taking small steps forward every day"
+        },
+        {
+          "roleModel": "Nelson Mandela",
+          "attribute": "Dignifiedly Resilient",
+          "method": "When mistreated, ask 'How can I respond in a way that maintains my dignity and their humanity?'"
+        },
+        {
+          "roleModel": "Maya Angelou",
+          "attribute": "Dignifiedly Rising",
+          "method": "Remind yourself 'I deserve respect' and behave in ways that honor your own dignity"
+        },
+        {
+          "roleModel": "Isaac Newton",
+          "attribute": "Evidence-Based",
+          "method": "Ask 'What evidence supports this?' and test ideas through systematic observation"
+        },
+        {
+          "roleModel": "Martin Luther King Jr.",
+          "attribute": "Faithfully Persevering",
+          "method": "When progress seems slow, ask 'What small step can I take today?' and trust that small steps add up"
+        },
+        {
+          "roleModel": "Marie Curie",
+          "attribute": "Humbly Dedicated",
+          "method": "Ask 'Is this moving my mission forward?' rather than 'Will this get me recognition?'"
+        },
+        {
+          "roleModel": "Albert Einstein",
+          "attribute": "Imaginatively Curious",
+          "method": "Visualize problems as mental movies and play with impossible scenarios to find insights"
+        },
+        {
+          "roleModel": "Winston Churchill",
+          "attribute": "Never Surrendering",
+          "method": "When facing defeat, ask 'What would happen if we don't keep fighting?' and find one more way to try"
+        },
+        {
+          "roleModel": "Mahatma Gandhi",
+          "attribute": "Nonviolently Resisting",
+          "method": "When facing unfairness, ask 'How can I resist this wrong without becoming wrong myself?'"
+        },
+        {
+          "roleModel": "Steve Jobs",
+          "attribute": "Perfectionist",
+          "method": "Ask 'How can this be 10x better?' before calling anything finished"
+        },
+        {
+          "roleModel": "Albert Einstein",
+          "attribute": "Playfully Creative",
+          "method": "Take ideas from one area and ask 'How might this apply to something completely different?'"
+        },
+        {
+          "roleModel": "Leonardo da Vinci",
+          "attribute": "Precisely Observant",
+          "method": "Spend time really looking at things and sketch what you observe to see it clearly"
+        },
+        {
+          "roleModel": "Rosa Parks",
+          "attribute": "Prepared and Ready",
+          "method": "Think ahead about challenges you might face and prepare your response in advance"
+        },
+        {
+          "roleModel": "Theodore Roosevelt",
+          "attribute": "Progressively Reforming",
+          "method": "When you see unfairness, ask 'How can this be made more fair?' and take action to fix it"
+        },
+        {
+          "roleModel": "Joan of Arc",
+          "attribute": "Purely Principled",
+          "method": "Decide your core values ahead of time and stick to them even when it costs you something"
+        },
+        {
+          "roleModel": "Rosa Parks",
+          "attribute": "Quietly Courageous",
+          "method": "When you see something wrong, ask 'What small action can I take?' and do it with dignity"
+        },
+        {
+          "roleModel": "Nelson Mandela",
+          "attribute": "Reconcilingly Forgiving",
+          "method": "Ask 'What would healing look like?' instead of 'How can I get them back?'"
+        },
+        {
+          "roleModel": "Marcus Aurelius",
+          "attribute": "Reflectively Learning",
+          "method": "Spend 10 minutes each evening asking 'What did I do well today?' and 'What can I improve?'"
+        },
+        {
+          "roleModel": "Mahatma Gandhi",
+          "attribute": "Simply Living",
+          "method": "Regularly ask 'Do I really need this?' and give away things that don't serve your mission"
+        },
+        {
+          "roleModel": "Theodore Roosevelt",
+          "attribute": "Strenuously Living",
+          "method": "When facing a choice, ask 'Which option will make me stronger?' and choose that one"
+        },
+        {
+          "roleModel": "Jesus",
+          "attribute": "Unconditionally Loving",
+          "method": "Ask 'How can I show love to this person?' even when they're difficult or unkind"
+        },
+        {
+          "roleModel": "Abraham Lincoln",
+          "attribute": "Unifyingly Healing",
+          "method": "Ask 'How can we move forward together?' instead of 'How can I prove I'm right?'"
+        },
+        {
+          "roleModel": "Mahatma Gandhi",
+          "attribute": "Unifyingly Leading",
+          "method": "In any conflict, ask 'What do we all care about?' and build from there"
+        },
+        {
+          "roleModel": "Theodore Roosevelt",
+          "attribute": "Vigorously Acting",
+          "method": "For any goal, ask 'What can I do today to move this forward?' and do it"
+        },
+        {
+          "roleModel": "Socrates",
+          "attribute": "Virtuously Principled",
+          "method": "Ask 'What would a person of good character do?' and follow through even when it's hard"
+        },
+        {
+          "roleModel": "Marcus Aurelius",
+          "attribute": "Wisely Accepting",
+          "method": "Ask 'Can I actually control this?' and only spend energy on things where the answer is yes"
+        }
+      ]
+    },
+    "Relationships & Social": {
+      "count": 19,
+      "activities": [
+        {
+          "roleModel": "Eleanor Roosevelt",
+          "attribute": "Compassionately Serving",
+          "method": "Ask yourself 'How can I use my abilities to help someone who needs it?' and take action regularly"
+        },
+        {
+          "roleModel": "Abraham Lincoln",
+          "attribute": "Compassionately Strong",
+          "method": "Ask 'What needs to be done?' and 'How can I do this with the least harm to good people?'"
+        },
+        {
+          "roleModel": "Joan of Arc",
+          "attribute": "Courageously Faithful",
+          "method": "Ask 'What do I know is right?' and act on it despite criticism or doubt from others"
+        },
+        {
+          "roleModel": "Abraham Lincoln",
+          "attribute": "Courageously Principled",
+          "method": "Ask 'What do I believe is truly right?' and act on it even when others disagree"
+        },
+        {
+          "roleModel": "Maya Angelou",
+          "attribute": "Courageously Truthful",
+          "method": "Share something real about your challenges when others are facing similar difficulties"
+        },
+        {
+          "roleModel": "Steve Jobs",
+          "attribute": "Design-Obsessed",
+          "method": "Ask 'How does this make someone feel?' and redesign until the feeling is magical"
+        },
+        {
+          "roleModel": "Socrates",
+          "attribute": "Dialogically Connecting",
+          "method": "Ask genuine questions to understand others' perspectives before sharing your own views"
+        },
+        {
+          "roleModel": "Marcus Aurelius",
+          "attribute": "Dutifully Serving",
+          "method": "Ask 'How will this affect other people?' and 'What serves the greater good?'"
+        },
+        {
+          "roleModel": "Nelson Mandela",
+          "attribute": "Educationally Growing",
+          "method": "Read, learn, or develop skills regularly with the goal of serving others better"
+        },
+        {
+          "roleModel": "Joan of Arc",
+          "attribute": "Fearlessly Leading",
+          "method": "When something needs to be done, volunteer to go first and show others how it's done"
+        },
+        {
+          "roleModel": "Maya Angelou",
+          "attribute": "Gracefully Resilient",
+          "method": "Ask 'What can I learn from this?' and 'How can this experience help someone else?'"
+        },
+        {
+          "roleModel": "Joan of Arc",
+          "attribute": "Humbly Serving",
+          "method": "Regularly ask 'How can I use what I have to help others?' and take action on the answer"
+        },
+        {
+          "roleModel": "Nelson Mandela",
+          "attribute": "Humbly Serving",
+          "method": "Ask 'How can I use my abilities to help others grow?' in every role you have"
+        },
+        {
+          "roleModel": "Jesus",
+          "attribute": "Mercifully Forgiving",
+          "method": "When someone hurts you, pray for them or wish them well instead of plotting payback"
+        },
+        {
+          "roleModel": "Martin Luther King Jr.",
+          "attribute": "Nonviolently Loving",
+          "method": "When someone treats you badly, ask 'How can I show them love?' and do that instead of revenge"
+        },
+        {
+          "roleModel": "Benjamin Franklin",
+          "attribute": "Practically Useful",
+          "method": "Before starting something new, ask 'How will this actually help me or others?'"
+        },
+        {
+          "roleModel": "Socrates",
+          "attribute": "Questioningly Curious",
+          "method": "When someone claims something important, ask 'What evidence supports this?' and 'How do you know?'"
+        },
+        {
+          "roleModel": "Jesus",
+          "attribute": "Sacrificially Serving",
+          "method": "Look for one way each day to help someone without them knowing it was you"
+        },
+        {
+          "roleModel": "Maya Angelou",
+          "attribute": "Wisely Teaching",
+          "method": "When someone faces a challenge you've overcome, share what you learned and how you grew"
+        }
+      ]
+    },
+    "Emotional Regulation": {
+      "count": 1,
+      "activities": [
+        {
+          "roleModel": "Eleanor Roosevelt",
+          "attribute": "Courageously Growing",
+          "method": "When you feel afraid of something important, ask 'What would happen if I tried anyway?' and take one small step"
+        }
+      ]
+    },
+    "Communication": {
+      "count": 9,
+      "activities": [
+        {
+          "roleModel": "Frederick Douglass",
+          "attribute": "Courageously Speaking",
+          "method": "When you see injustice, ask 'What needs to be said?' and find a way to say it respectfully but firmly"
+        },
+        {
+          "roleModel": "Winston Churchill",
+          "attribute": "Courageously Speaking",
+          "method": "Before speaking, ask 'What does everyone need to know?' and say it clearly, even if it's hard"
+        },
+        {
+          "roleModel": "Maya Angelou",
+          "attribute": "Eloquently Expressive",
+          "method": "Before speaking, ask 'Will these words help or hurt?' and choose language that uplifts"
+        },
+        {
+          "roleModel": "Frederick Douglass",
+          "attribute": "Eloquently Truthful",
+          "method": "Practice expressing your important beliefs clearly and persuasively through speaking and writing"
+        },
+        {
+          "roleModel": "Socrates",
+          "attribute": "Humbly Learning",
+          "method": "Say 'I don't know, but I'd like to learn' when you encounter something unfamiliar"
+        },
+        {
+          "roleModel": "Marie Curie",
+          "attribute": "Sacrificially Focused",
+          "method": "Identify what you truly value most and be willing to say no to other things"
+        },
+        {
+          "roleModel": "Buddha",
+          "attribute": "Simply Content",
+          "method": "Notice and appreciate simple pleasures like sunshine, good food, or friendly conversation"
+        },
+        {
+          "roleModel": "Mahatma Gandhi",
+          "attribute": "Truth-Seeking",
+          "method": "Before speaking or acting, ask 'What is really true here?' and choose truth over comfort"
+        },
+        {
+          "roleModel": "Jesus",
+          "attribute": "Truthfully Compassionate",
+          "method": "Before addressing problems, ask 'How can I say this in a way that shows I care about them?'"
+        }
+      ]
+    },
+    "Creativity & Innovation": {
+      "count": 2,
+      "activities": [
+        {
+          "roleModel": "Eleanor Roosevelt",
+          "attribute": "Diplomatically Building",
+          "method": "When facing disagreement, ask 'What do we both care about?' and start building from there"
+        },
+        {
+          "roleModel": "Isaac Newton",
+          "attribute": "Systematically Methodical",
+          "method": "Start with fundamentals, document everything, and build knowledge brick by brick"
+        }
+      ]
+    },
+    "Learning & Growth": {
+      "count": 9,
+      "activities": [
+        {
+          "roleModel": "Frederick Douglass",
+          "attribute": "Educationally Liberated",
+          "method": "Read something challenging every day and actively seek out learning opportunities"
+        },
+        {
+          "roleModel": "Eleanor Roosevelt",
+          "attribute": "Globally Learning",
+          "method": "Regularly read, watch, or listen to perspectives from different cultures and backgrounds than your own"
+        },
+        {
+          "roleModel": "Winston Churchill",
+          "attribute": "Historically Learning",
+          "method": "When facing a challenge, ask 'Has anything like this happened before?' and learn from it"
+        },
+        {
+          "roleModel": "Abraham Lincoln",
+          "attribute": "Humbly Learning",
+          "method": "Read regularly from diverse sources and ask 'What might I be wrong about?'"
+        },
+        {
+          "roleModel": "Isaac Newton",
+          "attribute": "Intellectually Humble",
+          "method": "Remember that every answer reveals new questions to explore and understand"
+        },
+        {
+          "roleModel": "Buddha",
+          "attribute": "Patiently Teaching",
+          "method": "Listen first to understand their perspective, then share insights that connect to their experience"
+        },
+        {
+          "roleModel": "Buddha",
+          "attribute": "Peacefully Detached",
+          "method": "Do your best, then accept whatever happens with grace and learn from it"
+        },
+        {
+          "roleModel": "Winston Churchill",
+          "attribute": "Resiliently Bouncing",
+          "method": "After any setback, ask 'What can I learn from this?' and 'How can I use this to get stronger?'"
+        },
+        {
+          "roleModel": "Albert Einstein",
+          "attribute": "Wonderfully Simple",
+          "method": "Keep asking 'How can I explain this more simply?' until a child could understand it"
+        }
+      ]
+    },
+    "Daily Practices": {
+      "count": 2,
+      "activities": [
+        {
+          "roleModel": "Benjamin Franklin",
+          "attribute": "Systematically Improving",
+          "method": "Choose 3-5 important habits and track them daily on a simple chart or app"
+        },
+        {
+          "roleModel": "Leonardo da Vinci",
+          "attribute": "Systematically Learning",
+          "method": "Keep a learning notebook and practice your most important skills every single day"
+        }
+      ]
+    }
+  },
+  "usageRecommendations": {
+    "dailyPractice": {
+      "title": "Daily Practice Recommendations",
+      "suggestions": [
+        "Present users with 3-5 activities based on their selected traits each morning",
+        "Rotate activities to prevent habituation while reinforcing core behaviors",
+        "Allow users to mark activities as 'completed' for progress tracking",
+        "Provide contextual activities based on time of day or user's situation"
+      ]
+    },
+    "personalization": {
+      "title": "Personalization Strategy",
+      "suggestions": [
+        "Learn which activities users complete most often",
+        "Suggest similar activities from other role models with the same trait",
+        "Adapt difficulty based on user's consistency and feedback",
+        "Create personalized activity combinations based on user's trait selection"
+      ]
+    },
+    "situationalGuidance": {
+      "title": "Situational Activity Suggestions",
+      "suggestions": [
+        "When user reports stress: offer mindfulness and emotional regulation activities",
+        "Before important meetings/decisions: suggest decision-making and focus activities",
+        "During conflicts: provide relationship and communication activities",
+        "End of day: encourage reflection and gratitude activities"
+      ]
+    }
+  }
+}

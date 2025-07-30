@@ -1,0 +1,441 @@
+{
+  "summary": {
+    "totalActivities": 36,
+    "totalAttributes": 12,
+    "totalRoleModels": 3,
+    "extractedAt": "2025-07-29T20:32:47.040Z"
+  },
+  "activitiesByAttribute": {
+    "Compassionate": [
+      {
+        "roleModel": "Buddha",
+        "activity": "I pause before reacting to anyone and try to understand what pain they might be carrying"
+      },
+      {
+        "roleModel": "Buddha",
+        "activity": "I actively look for one thing I can appreciate about each person I meet today"
+      },
+      {
+        "roleModel": "Buddha",
+        "activity": "When someone is difficult, I silently wish for their happiness and peace"
+      }
+    ],
+    "Mindful": [
+      {
+        "roleModel": "Buddha",
+        "activity": "I take three conscious breaths before starting any new activity"
+      },
+      {
+        "roleModel": "Buddha",
+        "activity": "I notice when my mind wanders and gently return attention to the present"
+      },
+      {
+        "roleModel": "Buddha",
+        "activity": "I eat one meal today in complete silence, focusing on each bite"
+      }
+    ],
+    "Patient": [
+      {
+        "roleModel": "Buddha",
+        "activity": "When I feel rushed, I deliberately slow down my movements and breathing"
+      },
+      {
+        "roleModel": "Buddha",
+        "activity": "I practice waiting without checking my phone or fidgeting"
+      },
+      {
+        "roleModel": "Buddha",
+        "activity": "I remind myself that everything unfolds in its proper time"
+      }
+    ],
+    "Wise": [
+      {
+        "roleModel": "Buddha",
+        "activity": "I sit quietly for 10 minutes and observe my thoughts without judgment"
+      },
+      {
+        "roleModel": "Buddha",
+        "activity": "Before making decisions, I ask: 'Will this cause harm or bring peace?'"
+      },
+      {
+        "roleModel": "Buddha",
+        "activity": "I share wisdom only when asked, never when trying to prove myself"
+      }
+    ],
+    "Focused": [
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I eliminate all distractions and work on only one important thing at a time"
+      },
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I say 'no' to good opportunities so I can say 'yes' to great ones"
+      },
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I start each day by identifying the single most important task"
+      }
+    ],
+    "Perfectionist": [
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I review my work multiple times, always asking 'How can this be better?'"
+      },
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I pay attention to details others might overlook or dismiss"
+      },
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I'm willing to start over if the result isn't excellent"
+      }
+    ],
+    "Innovative": [
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I challenge assumptions by asking 'What if we did this completely differently?'"
+      },
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I study user problems deeply before jumping to solutions"
+      },
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I combine ideas from different fields to create something new"
+      }
+    ],
+    "Intuitive": [
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I trust my gut feeling about what feels right, even without data"
+      },
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I pay attention to my first impressions and reactions"
+      },
+      {
+        "roleModel": "Steve Jobs",
+        "activity": "I make space for quiet thinking to hear my inner wisdom"
+      }
+    ],
+    "Courageous": [
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I speak up for what's right, even when my voice shakes"
+      },
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I take action despite fear, knowing the cause is greater than my comfort"
+      },
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I stand with others who are vulnerable or facing injustice"
+      }
+    ],
+    "Hopeful": [
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I focus on the progress made, not just the distance left to travel"
+      },
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I speak about possibilities and potential, not just problems"
+      },
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I remind myself and others that change is possible"
+      }
+    ],
+    "Loving": [
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I respond to hatred with love, knowing it's more powerful"
+      },
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I see the humanity in everyone, even those who oppose me"
+      },
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I choose words that heal rather than harm"
+      }
+    ],
+    "Persistent": [
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I continue working toward my goals despite setbacks"
+      },
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I break large challenges into smaller, manageable steps"
+      },
+      {
+        "roleModel": "Martin Luther King Jr.",
+        "activity": "I celebrate small victories while keeping the bigger vision alive"
+      }
+    ]
+  },
+  "allActivities": [
+    {
+      "roleModel": "Buddha",
+      "attribute": "Compassionate",
+      "activity": "I pause before reacting to anyone and try to understand what pain they might be carrying",
+      "category": "Emotional Regulation"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Compassionate",
+      "activity": "I actively look for one thing I can appreciate about each person I meet today",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Compassionate",
+      "activity": "When someone is difficult, I silently wish for their happiness and peace",
+      "category": "Relationships"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Courageous",
+      "activity": "I speak up for what's right, even when my voice shakes",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Courageous",
+      "activity": "I take action despite fear, knowing the cause is greater than my comfort",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Courageous",
+      "activity": "I stand with others who are vulnerable or facing injustice",
+      "category": "Relationships"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Focused",
+      "activity": "I eliminate all distractions and work on only one important thing at a time",
+      "category": "Productivity"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Focused",
+      "activity": "I say 'no' to good opportunities so I can say 'yes' to great ones",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Focused",
+      "activity": "I start each day by identifying the single most important task",
+      "category": "Productivity"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Hopeful",
+      "activity": "I focus on the progress made, not just the distance left to travel",
+      "category": "Productivity"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Hopeful",
+      "activity": "I speak about possibilities and potential, not just problems",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Hopeful",
+      "activity": "I remind myself and others that change is possible",
+      "category": "Relationships"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Innovative",
+      "activity": "I challenge assumptions by asking 'What if we did this completely differently?'",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Innovative",
+      "activity": "I study user problems deeply before jumping to solutions",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Innovative",
+      "activity": "I combine ideas from different fields to create something new",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Intuitive",
+      "activity": "I trust my gut feeling about what feels right, even without data",
+      "category": "Emotional Regulation"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Intuitive",
+      "activity": "I pay attention to my first impressions and reactions",
+      "category": "Emotional Regulation"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Intuitive",
+      "activity": "I make space for quiet thinking to hear my inner wisdom",
+      "category": "Mindfulness"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Loving",
+      "activity": "I respond to hatred with love, knowing it's more powerful",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Loving",
+      "activity": "I see the humanity in everyone, even those who oppose me",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Loving",
+      "activity": "I choose words that heal rather than harm",
+      "category": "Communication"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Mindful",
+      "activity": "I take three conscious breaths before starting any new activity",
+      "category": "Mindfulness"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Mindful",
+      "activity": "I notice when my mind wanders and gently return attention to the present",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Mindful",
+      "activity": "I eat one meal today in complete silence, focusing on each bite",
+      "category": "Productivity"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Patient",
+      "activity": "When I feel rushed, I deliberately slow down my movements and breathing",
+      "category": "Mindfulness"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Patient",
+      "activity": "I practice waiting without checking my phone or fidgeting",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Patient",
+      "activity": "I remind myself that everything unfolds in its proper time",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Perfectionist",
+      "activity": "I review my work multiple times, always asking 'How can this be better?'",
+      "category": "Productivity"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Perfectionist",
+      "activity": "I pay attention to details others might overlook or dismiss",
+      "category": "Relationships"
+    },
+    {
+      "roleModel": "Steve Jobs",
+      "attribute": "Perfectionist",
+      "activity": "I'm willing to start over if the result isn't excellent",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Persistent",
+      "activity": "I continue working toward my goals despite setbacks",
+      "category": "Productivity"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Persistent",
+      "activity": "I break large challenges into smaller, manageable steps",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Martin Luther King Jr.",
+      "attribute": "Persistent",
+      "activity": "I celebrate small victories while keeping the bigger vision alive",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Wise",
+      "activity": "I sit quietly for 10 minutes and observe my thoughts without judgment",
+      "category": "Mindfulness"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Wise",
+      "activity": "Before making decisions, I ask: 'Will this cause harm or bring peace?'",
+      "category": "Personal Growth"
+    },
+    {
+      "roleModel": "Buddha",
+      "attribute": "Wise",
+      "activity": "I share wisdom only when asked, never when trying to prove myself",
+      "category": "Personal Growth"
+    }
+  ],
+  "dailyTimelineExamples": [
+    {
+      "timeOfDay": "Morning",
+      "suggestedActivities": [
+        {
+          "roleModel": "Buddha",
+          "activity": "I take three conscious breaths before starting any new activity"
+        },
+        {
+          "roleModel": "Steve Jobs",
+          "activity": "I start each day by identifying the single most important task"
+        },
+        {
+          "roleModel": "Steve Jobs",
+          "activity": "I'm willing to start over if the result isn't excellent"
+        }
+      ]
+    },
+    {
+      "timeOfDay": "Midday/Work",
+      "suggestedActivities": [
+        {
+          "roleModel": "Buddha",
+          "activity": "I eat one meal today in complete silence, focusing on each bite"
+        },
+        {
+          "roleModel": "Buddha",
+          "activity": "Before making decisions, I ask: 'Will this cause harm or bring peace?'"
+        },
+        {
+          "roleModel": "Steve Jobs",
+          "activity": "I eliminate all distractions and work on only one important thing at a time"
+        }
+      ]
+    },
+    {
+      "timeOfDay": "Evening",
+      "suggestedActivities": [
+        {
+          "roleModel": "Steve Jobs",
+          "activity": "I review my work multiple times, always asking 'How can this be better?'"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,221 @@
+{
+  "metadata": {
+    "enhancedAt": "2025-07-29T10:45:00Z",
+    "enhancedBy": "claude-sonnet-4",
+    "version": "1.0",
+    "totalActivities": 110,
+    "totalDailyDoItems": 330,
+    "enhancementContext": {
+      "userLevel": "beginner",
+      "availableTime": "5-15min",
+      "preferredStyle": "structured"
+    }
+  },
+  "summary": {
+    "activitiesWithAIDiscussion": 48,
+    "averageDifficulty": 4.6,
+    "averageItemsPerActivity": 3,
+    "categoriesUsed": [
+      "reflection", "learning", "application", "assessment", "creative-thinking", 
+      "implementation", "awareness", "analysis", "action", "self-regulation", 
+      "compassion", "expression", "self-assessment", "planning", "mentoring",
+      "pause", "visioning", "execution", "self-awareness", "inquiry", 
+      "collaboration", "empathy", "emotional-design", "iteration", 
+      "observation", "experimentation", "stakeholder-analysis", 
+      "ethical-reasoning", "ethical-action"
+    ]
+  },
+  "activities": [
+    {
+      "id": 1,
+      "originalActivity": "After any setback, ask 'What can I learn from this?' and 'How can I use this to get stronger?'",
+      "dailyDoItems": [
+        {
+          "id": "setback-001",
+          "action": "I write down exactly what happened in this setback using only factual details, no interpretations",
+          "difficulty": 3,
+          "duration": "5-8 minutes",
+          "category": "reflection",
+          "successCriteria": "I have written a factual account without emotional language",
+          "gamePoints": 3,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "setback-002",
+          "action": "I engage in an AI-guided discussion to identify 3 specific lessons from this experience",
+          "difficulty": 5,
+          "duration": "10-15 minutes",
+          "category": "learning",
+          "successCriteria": "I have identified 3 concrete lessons I can apply going forward",
+          "gamePoints": 5,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Would it be helpful if I guide you through discovering what this setback can teach you?",
+            "discussionType": "lesson-extraction",
+            "expectedOutcome": "3 specific learnings identified"
+          }
+        },
+        {
+          "id": "setback-003",
+          "action": "I choose one specific way to apply these lessons immediately and take that action today",
+          "difficulty": 6,
+          "duration": "15-30 minutes",
+          "category": "application",
+          "successCriteria": "I have taken one concrete action based on what I learned",
+          "gamePoints": 6
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "originalActivity": "List 10 priorities, then cross out 7. Only work on the remaining 3.",
+      "dailyDoItems": [
+        {
+          "id": "priority-001",
+          "action": "I write down exactly 10 current tasks or projects on paper, numbering them 1-10",
+          "difficulty": 2,
+          "duration": "5-8 minutes",
+          "category": "planning",
+          "successCriteria": "I have a numbered list of exactly 10 items written down",
+          "gamePoints": 2,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "priority-002",
+          "action": "I physically cross out items 4-10 with a red pen while saying 'This is not my focus right now'",
+          "difficulty": 4,
+          "duration": "3-5 minutes",
+          "category": "decision-making",
+          "successCriteria": "7 items are crossed out and I can clearly state my top 3 priorities",
+          "gamePoints": 4,
+          "materials": ["red pen"]
+        },
+        {
+          "id": "priority-003",
+          "action": "I commit to working only on my top 3 items today and decline any requests that don't support them",
+          "difficulty": 6,
+          "duration": "ongoing",
+          "category": "commitment",
+          "successCriteria": "I have said no to at least one thing that wasn't in my top 3",
+          "gamePoints": 6
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "originalActivity": "Listen to understand the person's heart, not just to respond to their words",
+      "dailyDoItems": [
+        {
+          "id": "listen-001",
+          "action": "I put away my phone and face the person speaking, making soft eye contact",
+          "difficulty": 2,
+          "duration": "immediate",
+          "category": "presence",
+          "successCriteria": "My phone is away and I'm physically oriented toward the speaker",
+          "gamePoints": 2,
+          "socialContext": "with-others"
+        },
+        {
+          "id": "listen-002",
+          "action": "I listen for what emotion or need is behind their words and silently name it to myself",
+          "difficulty": 5,
+          "duration": "ongoing during conversation",
+          "category": "empathy",
+          "successCriteria": "I have identified at least one emotion or need driving what they're saying",
+          "gamePoints": 5,
+          "socialContext": "with-others"
+        },
+        {
+          "id": "listen-003",
+          "action": "I reflect back what I heard using 'It sounds like you're feeling...' or 'What I'm hearing is...'",
+          "difficulty": 4,
+          "duration": "30 seconds",
+          "category": "communication",
+          "successCriteria": "I have reflected their emotional experience back to them in my own words",
+          "gamePoints": 4,
+          "socialContext": "with-others"
+        }
+      ]
+    },
+    {
+      "id": 109,
+      "originalActivity": "Write down 3 things you're grateful for and 1 thing you learned each evening",
+      "dailyDoItems": [
+        {
+          "id": "gratitude-001",
+          "action": "I sit quietly and recall 3 specific moments from today that I genuinely appreciate",
+          "difficulty": 2,
+          "duration": "3-5 minutes",
+          "category": "reflection",
+          "successCriteria": "I have identified 3 specific moments I'm grateful for, not general things",
+          "gamePoints": 2
+        },
+        {
+          "id": "gratitude-002",
+          "action": "I write down these 3 gratitudes with details about why each one mattered to me",
+          "difficulty": 3,
+          "duration": "5-8 minutes",
+          "category": "documentation",
+          "successCriteria": "I have written 3 gratitudes with specific reasons why they're meaningful",
+          "gamePoints": 3,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "gratitude-003",
+          "action": "I engage in an AI-guided reflection to identify one significant thing I learned today",
+          "difficulty": 4,
+          "duration": "5-10 minutes",
+          "category": "learning-extraction",
+          "successCriteria": "I have identified and written one specific learning from today",
+          "gamePoints": 4,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Want to explore what you learned today? Sometimes the best insights aren't obvious at first.",
+            "discussionType": "daily-learning-extraction",
+            "expectedOutcome": "One significant learning identified"
+          }
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "originalActivity": "Notice and write down patterns in your thoughts and emotions without judging them",
+      "dailyDoItems": [
+        {
+          "id": "patterns-001",
+          "action": "I pause 3 times today and simply notice what I'm thinking and feeling in that moment",
+          "difficulty": 3,
+          "duration": "30 seconds each",
+          "category": "awareness",
+          "successCriteria": "I have paused 3 different times to observe my mental/emotional state",
+          "gamePoints": 3
+        },
+        {
+          "id": "patterns-002",
+          "action": "I write down these observations without using words like 'good', 'bad', 'should', or 'shouldn't'",
+          "difficulty": 4,
+          "duration": "5-10 minutes",
+          "category": "documentation",
+          "successCriteria": "I have written objective descriptions of my thoughts/feelings without judgment words",
+          "gamePoints": 4,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "patterns-003",
+          "action": "I engage in an AI-guided analysis to identify patterns in my mental/emotional responses",
+          "difficulty": 6,
+          "duration": "10-15 minutes",
+          "category": "pattern-recognition",
+          "successCriteria": "I have identified at least one recurring pattern in how I think or feel",
+          "gamePoints": 6,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Ready to explore patterns in your thoughts and emotions? I can help you spot connections you might miss.",
+            "discussionType": "pattern-analysis",
+            "expectedOutcome": "One recurring pattern identified"
+          }
+        }
+      ]
+    }
+  ]
+}

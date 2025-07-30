@@ -56,9 +56,14 @@
 - **Image URLs**: Generated from commonName with space→hyphen, period removal
 
 **Important Commands**:
-- `npm run dev` - Start development server (port 3001)
+- `npm run build` - Build production version (ALWAYS use this instead of dev)
 - `npx ts-node scripts/seed-role-models.ts` - Seed role models
 - Always run in Lightwalker subdirectory with proper dependencies
+
+**🚨 CRITICAL DEVELOPMENT RULE:**
+- **NEVER use `npm run dev`** - Only use `npm run build` for testing
+- **ALWAYS ask before pushing to git** - Batch multiple changes together
+- **ALWAYS ask before deploying to Vercel** - Remember the 100/day limit
 
 **🚨 CRITICAL DEPLOYMENT LIMITATION:**
 - **Vercel Free Tier**: Only 100 deployments per day

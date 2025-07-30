@@ -370,6 +370,9 @@ model RoleModel {
   // LEGACY FIELDS - Keep during migration
   enhancedAttributes    String?  @map("enhanced_attributes") // Will be migrated to Trait table
   
+  // DAILY-DO ENHANCEMENT SYSTEM
+  dailyDoEnhanced       Json?    @map("daily_do_enhanced") // Claude-enhanced concrete activities
+  
   // Source & Quality
   primarySources        String   @map("primary_sources")
   historicalSources     String   @map("historical_sources")

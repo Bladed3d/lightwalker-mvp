@@ -5,7 +5,13 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "WebFetch(domain:lightwalker-mvp.vercel.app)"
+      "WebFetch(domain:lightwalker-mvp.vercel.app)",
+      "Bash(node:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx tsx:*)"
     ],
     "deny": []
   }

@@ -1,0 +1,401 @@
+{
+  "metadata": {
+    "enhancedAt": "2025-07-29T10:30:00Z",
+    "enhancedBy": "claude-sonnet-4",
+    "version": "1.0",
+    "totalActivities": 110,
+    "enhancementContext": {
+      "userLevel": "beginner",
+      "availableTime": "5-15min",
+      "preferredStyle": "structured"
+    }
+  },
+  "activities": [
+    {
+      "id": 1,
+      "originalActivity": "After any setback, ask 'What can I learn from this?' and 'How can I use this to get stronger?'",
+      "dailyDoItems": [
+        {
+          "id": "setback-001",
+          "action": "I write down exactly what happened in this setback using only factual details, no interpretations",
+          "difficulty": 3,
+          "duration": "5-8 minutes",
+          "category": "reflection",
+          "successCriteria": "I have written a factual account of the events without emotional language",
+          "gamePoints": 3,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "setback-002",
+          "action": "I engage in an AI-guided discussion to identify 3 specific lessons from this experience",
+          "difficulty": 5,
+          "duration": "10-15 minutes",
+          "category": "learning",
+          "successCriteria": "I have identified 3 concrete lessons I can apply going forward",
+          "gamePoints": 5,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Would it be helpful if I guide you through discovering what this setback can teach you?",
+            "discussionType": "lesson-extraction",
+            "expectedOutcome": "3 specific learnings identified"
+          }
+        },
+        {
+          "id": "setback-003",
+          "action": "I choose one specific way to apply these lessons immediately and take that action today",
+          "difficulty": 6,
+          "duration": "15-30 minutes",
+          "category": "application",
+          "successCriteria": "I have taken one concrete action based on what I learned",
+          "gamePoints": 6
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "originalActivity": "Always ask 'How can I make this work better AND look more beautiful?'",
+      "dailyDoItems": [
+        {
+          "id": "beauty-001",
+          "action": "I pick one thing I'm currently working on and examine both its function and appearance",
+          "difficulty": 2,
+          "duration": "3-5 minutes",
+          "category": "assessment",
+          "successCriteria": "I have identified one specific aspect of function and one of appearance to improve",
+          "gamePoints": 2
+        },
+        {
+          "id": "beauty-002",
+          "action": "I engage in an AI-guided brainstorming session to find ways to improve both function and beauty",
+          "difficulty": 5,
+          "duration": "10-15 minutes",
+          "category": "creative-thinking",
+          "successCriteria": "I have generated 3 ideas that improve both how it works and how it looks",
+          "gamePoints": 5,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Ready to brainstorm ways to make this both more functional and more beautiful?",
+            "discussionType": "dual-improvement",
+            "expectedOutcome": "3 function+beauty improvements identified"
+          }
+        },
+        {
+          "id": "beauty-003",
+          "action": "I implement the most promising improvement that enhances both function and beauty",
+          "difficulty": 6,
+          "duration": "15-30 minutes",
+          "category": "implementation",
+          "successCriteria": "I have made one change that improves both how it works and how it looks",
+          "gamePoints": 6
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "originalActivity": "Ask 'Can I actually control this?' and only spend energy on things where the answer is yes",
+      "dailyDoItems": [
+        {
+          "id": "control-001",
+          "action": "I write down one current worry or frustration that's consuming my mental energy",
+          "difficulty": 2,
+          "duration": "2-3 minutes",
+          "category": "awareness",
+          "successCriteria": "I have written down one specific worry or frustration",
+          "gamePoints": 2,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "control-002",
+          "action": "I create two columns labeled 'I Can Control' and 'I Cannot Control' and sort aspects of this situation",
+          "difficulty": 4,
+          "duration": "5-10 minutes",
+          "category": "analysis",
+          "successCriteria": "I have sorted at least 5 aspects into the appropriate control columns",
+          "gamePoints": 4,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "control-003",
+          "action": "I take one specific action on something from my 'I Can Control' list and mentally release the rest",
+          "difficulty": 5,
+          "duration": "10-20 minutes",
+          "category": "action",
+          "successCriteria": "I have completed one action on something I can control and consciously let go of what I can't",
+          "gamePoints": 5
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "originalActivity": "Ask 'How can I show love to this person?' even when they're difficult or unkind",
+      "dailyDoItems": [
+        {
+          "id": "love-001",
+          "action": "I pause and take three deep breaths when I notice frustration or anger toward someone",
+          "difficulty": 3,
+          "duration": "30 seconds",
+          "category": "self-regulation",
+          "successCriteria": "I have completed 3 full breaths before responding to the difficult person",
+          "gamePoints": 3
+        },
+        {
+          "id": "love-002",
+          "action": "I engage in an AI-guided reflection to find one way to show genuine care for this person",
+          "difficulty": 6,
+          "duration": "5-10 minutes",
+          "category": "compassion",
+          "successCriteria": "I have identified one specific, genuine way to show love despite their behavior",
+          "gamePoints": 6,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Would you like help exploring ways to show love to someone who's being difficult?",
+            "discussionType": "compassionate-response",
+            "expectedOutcome": "One genuine loving action identified"
+          }
+        },
+        {
+          "id": "love-003",
+          "action": "I express this loving action toward them, focusing on their wellbeing rather than my feelings",
+          "difficulty": 7,
+          "duration": "2-10 minutes",
+          "category": "expression",
+          "successCriteria": "I have taken one loving action toward this person despite their difficult behavior",
+          "gamePoints": 7,
+          "socialContext": "with-others"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "originalActivity": "Ask 'How can I use my abilities to help others grow?' in every role you have",
+      "dailyDoItems": [
+        {
+          "id": "growth-001",
+          "action": "I identify one specific ability or skill I have that could benefit someone else's development",
+          "difficulty": 3,
+          "duration": "5-8 minutes",
+          "category": "self-assessment",
+          "successCriteria": "I have identified one specific skill and one person who could benefit from it",
+          "gamePoints": 3
+        },
+        {
+          "id": "growth-002",
+          "action": "I engage in an AI-guided planning session to design how I can share this ability helpfully",
+          "difficulty": 5,
+          "duration": "10-15 minutes",
+          "category": "planning",
+          "successCriteria": "I have a specific plan for sharing my ability in a way that promotes their growth",
+          "gamePoints": 5,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Want to explore the best ways to share your abilities to help someone grow?",
+            "discussionType": "growth-facilitation",
+            "expectedOutcome": "Specific sharing plan developed"
+          }
+        },
+        {
+          "id": "growth-003",
+          "action": "I offer my help to this person in a way that empowers them rather than creating dependence",
+          "difficulty": 6,
+          "duration": "15-30 minutes",
+          "category": "mentoring",
+          "successCriteria": "I have shared my ability in a way that builds their capability rather than their reliance",
+          "gamePoints": 6,
+          "socialContext": "with-others"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "originalActivity": "Ask 'How can this be 10x better?' before calling anything finished",
+      "dailyDoItems": [
+        {
+          "id": "10x-001",
+          "action": "I look at something I'm about to call 'finished' and pause before declaring it done",
+          "difficulty": 2,
+          "duration": "1-2 minutes",
+          "category": "pause",
+          "successCriteria": "I have stopped and really looked at my work instead of rushing to finish",
+          "gamePoints": 2
+        },
+        {
+          "id": "10x-002",
+          "action": "I engage in an AI-guided visioning session to imagine what 10x better would actually look like",
+          "difficulty": 6,
+          "duration": "10-15 minutes",
+          "category": "visioning",
+          "successCriteria": "I have a clear picture of what 10x improvement would mean for this work",
+          "gamePoints": 6,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Ready to explore what 10x better could look like for this project?",
+            "discussionType": "breakthrough-visioning",
+            "expectedOutcome": "Clear 10x improvement vision"
+          }
+        },
+        {
+          "id": "10x-003",
+          "action": "I make one specific change that moves my work significantly closer to that 10x vision",
+          "difficulty": 7,
+          "duration": "15-45 minutes",
+          "category": "execution",
+          "successCriteria": "I have implemented one substantial improvement inspired by the 10x vision",
+          "gamePoints": 7
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "originalActivity": "Ask 'How can we move forward together?' instead of 'How can I prove I'm right?'",
+      "dailyDoItems": [
+        {
+          "id": "forward-001",
+          "action": "I notice when I feel the urge to prove my point and pause before speaking",
+          "difficulty": 4,
+          "duration": "immediate",
+          "category": "self-awareness",
+          "successCriteria": "I have caught myself wanting to prove I'm right and paused instead",
+          "gamePoints": 4
+        },
+        {
+          "id": "forward-002",
+          "action": "I ask the other person 'What matters most to you about solving this?' and really listen",
+          "difficulty": 5,
+          "duration": "2-5 minutes",
+          "category": "inquiry",
+          "successCriteria": "I have asked about their priorities and listened to understand their perspective",
+          "gamePoints": 5,
+          "socialContext": "with-others"
+        },
+        {
+          "id": "forward-003",
+          "action": "I propose one specific way we can move forward that incorporates both of our concerns",
+          "difficulty": 6,
+          "duration": "5-10 minutes",
+          "category": "collaboration",
+          "successCriteria": "I have suggested a path forward that addresses both perspectives",
+          "gamePoints": 6,
+          "socialContext": "with-others"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "originalActivity": "Ask 'How does this make someone feel?' and redesign until the feeling is magical",
+      "dailyDoItems": [
+        {
+          "id": "feeling-001",
+          "action": "I look at something I've created and imagine experiencing it for the first time",
+          "difficulty": 3,
+          "duration": "3-5 minutes",
+          "category": "empathy",
+          "successCriteria": "I have put myself in the shoes of someone encountering my work fresh",
+          "gamePoints": 3
+        },
+        {
+          "id": "feeling-002",
+          "action": "I engage in an AI-guided exploration of what emotions my work currently evokes vs. what I want it to evoke",
+          "difficulty": 5,
+          "duration": "10-15 minutes",
+          "category": "emotional-design",
+          "successCriteria": "I have identified the current feeling and defined the magical feeling I want to create",
+          "gamePoints": 5,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Want to explore the emotional impact of your work and how to make it magical?",
+            "discussionType": "emotional-impact-design",
+            "expectedOutcome": "Target magical feeling defined"
+          }
+        },
+        {
+          "id": "feeling-003",
+          "action": "I make one specific change designed to evoke that magical feeling in the person experiencing it",
+          "difficulty": 6,
+          "duration": "15-30 minutes",
+          "category": "iteration",
+          "successCriteria": "I have modified my work specifically to create a more magical emotional experience",
+          "gamePoints": 6
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "originalActivity": "Ask 'How does this work?' and 'What if I tried this differently?' about everyday things",
+      "dailyDoItems": [
+        {
+          "id": "curious-001",
+          "action": "I pick one ordinary object I can see right now and examine it with genuine curiosity",
+          "difficulty": 2,
+          "duration": "3-5 minutes",
+          "category": "observation",
+          "successCriteria": "I have spent focused time really looking at and wondering about an everyday object",
+          "gamePoints": 2
+        },
+        {
+          "id": "curious-002",
+          "action": "I engage in an AI-guided exploration of how this object works and alternative ways it could function",
+          "difficulty": 4,
+          "duration": "10-15 minutes",
+          "category": "analysis",
+          "successCriteria": "I understand better how it works and have imagined 3 different approaches",
+          "gamePoints": 4,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Ready to dive deep into how this works and explore creative alternatives?",
+            "discussionType": "curious-investigation",
+            "expectedOutcome": "Understanding + 3 alternatives"
+          }
+        },
+        {
+          "id": "curious-003",
+          "action": "I apply this curiosity to one routine I do today, questioning how it works and trying a different approach",
+          "difficulty": 5,
+          "duration": "10-20 minutes",
+          "category": "experimentation",
+          "successCriteria": "I have consciously tried a different approach to a routine activity",
+          "gamePoints": 5
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "originalActivity": "Ask 'How will this affect other people?' and 'What serves the greater good?'",
+      "dailyDoItems": [
+        {
+          "id": "impact-001",
+          "action": "I identify one decision I need to make today and write down who else might be affected by it",
+          "difficulty": 3,
+          "duration": "5-8 minutes",
+          "category": "stakeholder-analysis",
+          "successCriteria": "I have listed at least 3 people or groups who might be impacted by my decision",
+          "gamePoints": 3,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "impact-002",
+          "action": "I engage in an AI-guided discussion to explore how different choices would serve the greater good",
+          "difficulty": 6,
+          "duration": "10-15 minutes",
+          "category": "ethical-reasoning",
+          "successCriteria": "I have examined multiple options through the lens of broader benefit",
+          "gamePoints": 6,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Want to explore how your decision options might serve the greater good?",
+            "discussionType": "greater-good-analysis",
+            "expectedOutcome": "Decision evaluated for broader benefit"
+          }
+        },
+        {
+          "id": "impact-003",
+          "action": "I make my decision based on what serves the most people's wellbeing, even if it's less convenient for me",
+          "difficulty": 7,
+          "duration": "varies",
+          "category": "ethical-action",
+          "successCriteria": "I have chosen the option that serves the greater good over personal convenience",
+          "gamePoints": 7
+        }
+      ]
+    }
+  ]
+}

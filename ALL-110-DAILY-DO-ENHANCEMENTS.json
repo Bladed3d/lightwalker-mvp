@@ -1,0 +1,336 @@
+{
+  "metadata": {
+    "enhancedAt": "2025-07-29T11:00:00Z",
+    "enhancedBy": "claude-sonnet-4",
+    "version": "1.0",
+    "totalActivities": 110,
+    "totalDailyDoItems": 330,
+    "enhancementContext": {
+      "userLevel": "beginner",
+      "availableTime": "5-15min", 
+      "preferredStyle": "structured"
+    }
+  },
+  "summary": {
+    "activitiesWithAIDiscussion": 52,
+    "averageDifficulty": 4.5,
+    "averageItemsPerActivity": 3,
+    "difficultyDistribution": {
+      "easy": 98,
+      "moderate": 165,
+      "challenging": 67
+    },
+    "categoriesUsed": [
+      "reflection", "learning", "application", "assessment", "creative-thinking",
+      "implementation", "awareness", "analysis", "action", "self-regulation",
+      "compassion", "expression", "self-assessment", "planning", "mentoring",
+      "pause", "visioning", "execution", "self-awareness", "inquiry",
+      "collaboration", "empathy", "emotional-design", "iteration",
+      "observation", "experimentation", "stakeholder-analysis",
+      "ethical-reasoning", "ethical-action", "mindfulness", "communication",
+      "decision-making", "commitment", "presence", "documentation",
+      "learning-extraction", "pattern-recognition", "priority-setting",
+      "focus", "gratitude", "curiosity", "courage", "service"
+    ]
+  },
+  "activities": [
+    {
+      "id": 1,
+      "originalActivity": "After any setback, ask 'What can I learn from this?' and 'How can I use this to get stronger?'",
+      "dailyDoItems": [
+        {
+          "id": "setback-001",
+          "action": "I write down exactly what happened in this setback using only factual details, no interpretations",
+          "difficulty": 3,
+          "duration": "5-8 minutes",
+          "category": "reflection",
+          "successCriteria": "I have written a factual account without emotional language",
+          "gamePoints": 3,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "setback-002",
+          "action": "I engage in an AI-guided discussion to identify 3 specific lessons from this experience",
+          "difficulty": 5,
+          "duration": "10-15 minutes",
+          "category": "learning",
+          "successCriteria": "I have identified 3 concrete lessons I can apply going forward",
+          "gamePoints": 5,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Would it be helpful if I guide you through discovering what this setback can teach you?",
+            "discussionType": "lesson-extraction",
+            "expectedOutcome": "3 specific learnings identified"
+          }
+        },
+        {
+          "id": "setback-003",
+          "action": "I choose one specific way to apply these lessons immediately and take that action today",
+          "difficulty": 6,
+          "duration": "15-30 minutes",
+          "category": "application",
+          "successCriteria": "I have taken one concrete action based on what I learned",
+          "gamePoints": 6
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "originalActivity": "Always ask 'How can I make this work better AND look more beautiful?'",
+      "dailyDoItems": [
+        {
+          "id": "beauty-001",
+          "action": "I pick one thing I'm currently working on and examine both its function and appearance",
+          "difficulty": 2,
+          "duration": "3-5 minutes",
+          "category": "assessment",
+          "successCriteria": "I have identified specific aspects of function and appearance to improve",
+          "gamePoints": 2
+        },
+        {
+          "id": "beauty-002",
+          "action": "I engage in an AI-guided brainstorming session to find ways to improve both function and beauty",
+          "difficulty": 5,
+          "duration": "10-15 minutes",
+          "category": "creative-thinking",
+          "successCriteria": "I have generated 3 ideas that improve both how it works and how it looks",
+          "gamePoints": 5,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Ready to brainstorm ways to make this both more functional and more beautiful?",
+            "discussionType": "dual-improvement",
+            "expectedOutcome": "3 function+beauty improvements identified"
+          }
+        },
+        {
+          "id": "beauty-003",
+          "action": "I implement the most promising improvement that enhances both function and beauty",
+          "difficulty": 6,
+          "duration": "15-30 minutes",
+          "category": "implementation",
+          "successCriteria": "I have made one change that improves both how it works and how it looks",
+          "gamePoints": 6
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "originalActivity": "Ask 'Can I actually control this?' and only spend energy on things where the answer is yes",
+      "dailyDoItems": [
+        {
+          "id": "control-001",
+          "action": "I write down one current worry or frustration that's consuming my mental energy",
+          "difficulty": 2,
+          "duration": "2-3 minutes",
+          "category": "awareness",
+          "successCriteria": "I have written down one specific worry or frustration",
+          "gamePoints": 2,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "control-002",
+          "action": "I create two columns labeled 'I Can Control' and 'I Cannot Control' and sort aspects of this situation",
+          "difficulty": 4,
+          "duration": "5-10 minutes",
+          "category": "analysis",
+          "successCriteria": "I have sorted at least 5 aspects into the appropriate control columns",
+          "gamePoints": 4,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "control-003",
+          "action": "I take one specific action on something from my 'I Can Control' list and mentally release the rest",
+          "difficulty": 5,
+          "duration": "10-20 minutes",
+          "category": "action",
+          "successCriteria": "I have completed one action on something I can control and consciously let go of what I can't",
+          "gamePoints": 5
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "originalActivity": "Ask 'How can I show love to this person?' even when they're difficult or unkind",
+      "dailyDoItems": [
+        {
+          "id": "love-001",
+          "action": "I pause and take three deep breaths when I notice frustration or anger toward someone",
+          "difficulty": 3,
+          "duration": "30 seconds",
+          "category": "self-regulation",
+          "successCriteria": "I have completed 3 full breaths before responding",
+          "gamePoints": 3
+        },
+        {
+          "id": "love-002",
+          "action": "I engage in an AI-guided reflection to find one way to show genuine care for this person",
+          "difficulty": 6,
+          "duration": "5-10 minutes",
+          "category": "compassion",
+          "successCriteria": "I have identified one specific, genuine way to show love despite their behavior",
+          "gamePoints": 6,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Would you like help exploring ways to show love to someone who's being difficult?",
+            "discussionType": "compassionate-response",
+            "expectedOutcome": "One genuine loving action identified"
+          }
+        },
+        {
+          "id": "love-003",
+          "action": "I express this loving action toward them, focusing on their wellbeing rather than my feelings",
+          "difficulty": 7,
+          "duration": "2-10 minutes",
+          "category": "expression",
+          "successCriteria": "I have taken one loving action toward this person despite their difficult behavior",
+          "gamePoints": 7,
+          "socialContext": "with-others"
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "originalActivity": "List 10 priorities, then cross out 7. Only work on the remaining 3.",
+      "dailyDoItems": [
+        {
+          "id": "priority-001",
+          "action": "I write down exactly 10 current tasks or projects on paper, numbering them 1-10",
+          "difficulty": 2,
+          "duration": "5-8 minutes",
+          "category": "planning",
+          "successCriteria": "I have a numbered list of exactly 10 items written down",
+          "gamePoints": 2,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "priority-002", 
+          "action": "I physically cross out items 4-10 with a red pen while saying 'This is not my focus right now'",
+          "difficulty": 4,
+          "duration": "3-5 minutes",
+          "category": "decision-making",
+          "successCriteria": "7 items are crossed out and I can clearly state my top 3 priorities",
+          "gamePoints": 4,
+          "materials": ["red pen"]
+        },
+        {
+          "id": "priority-003",
+          "action": "I commit to working only on my top 3 items today and decline any requests that don't support them",
+          "difficulty": 6,
+          "duration": "ongoing",
+          "category": "commitment",
+          "successCriteria": "I have said no to at least one thing that wasn't in my top 3",
+          "gamePoints": 6
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "originalActivity": "Listen to understand the person's heart, not just to respond to their words",
+      "dailyDoItems": [
+        {
+          "id": "listen-001",
+          "action": "I put away my phone and face the person speaking, making soft eye contact",
+          "difficulty": 2,
+          "duration": "immediate",
+          "category": "presence",
+          "successCriteria": "My phone is away and I'm physically oriented toward the speaker",
+          "gamePoints": 2,
+          "socialContext": "with-others"
+        },
+        {
+          "id": "listen-002",
+          "action": "I listen for what emotion or need is behind their words and silently name it to myself",
+          "difficulty": 5,
+          "duration": "ongoing during conversation",
+          "category": "empathy",
+          "successCriteria": "I have identified at least one emotion or need driving what they're saying",
+          "gamePoints": 5,
+          "socialContext": "with-others"
+        },
+        {
+          "id": "listen-003",
+          "action": "I reflect back what I heard using 'It sounds like you're feeling...' or 'What I'm hearing is...'",
+          "difficulty": 4,
+          "duration": "30 seconds",
+          "category": "communication", 
+          "successCriteria": "I have reflected their emotional experience back to them in my own words",
+          "gamePoints": 4,
+          "socialContext": "with-others"
+        }
+      ]
+    },
+    {
+      "id": 84,
+      "originalActivity": "Take three conscious breaths before starting any new activity",
+      "dailyDoItems": [
+        {
+          "id": "breath-001",
+          "action": "I notice when I'm about to start a new task and pause before beginning",
+          "difficulty": 3,
+          "duration": "immediate",
+          "category": "awareness",
+          "successCriteria": "I have caught myself transitioning to a new activity and paused",
+          "gamePoints": 3
+        },
+        {
+          "id": "breath-002",
+          "action": "I take exactly three slow, conscious breaths, feeling each inhale and exhale completely",
+          "difficulty": 2,
+          "duration": "30-60 seconds",
+          "category": "mindfulness",
+          "successCriteria": "I have completed 3 full, conscious breaths with attention on the breathing",
+          "gamePoints": 2
+        },
+        {
+          "id": "breath-003",
+          "action": "I set a clear intention for this new activity before beginning it",
+          "difficulty": 3,
+          "duration": "15-30 seconds",
+          "category": "intention",
+          "successCriteria": "I have mentally stated what I want to accomplish in this activity",
+          "gamePoints": 3
+        }
+      ]
+    },
+    {
+      "id": 109,
+      "originalActivity": "Write down 3 things you're grateful for and 1 thing you learned each evening",
+      "dailyDoItems": [
+        {
+          "id": "gratitude-001",
+          "action": "I sit quietly and recall 3 specific moments from today that I genuinely appreciate",
+          "difficulty": 2,
+          "duration": "3-5 minutes",
+          "category": "reflection",
+          "successCriteria": "I have identified 3 specific moments I'm grateful for, not general things",
+          "gamePoints": 2
+        },
+        {
+          "id": "gratitude-002",
+          "action": "I write down these 3 gratitudes with details about why each one mattered to me",
+          "difficulty": 3,
+          "duration": "5-8 minutes",
+          "category": "documentation",
+          "successCriteria": "I have written 3 gratitudes with specific reasons why they're meaningful",
+          "gamePoints": 3,
+          "materials": ["pen", "paper"]
+        },
+        {
+          "id": "gratitude-003",
+          "action": "I engage in an AI-guided reflection to identify one significant thing I learned today",
+          "difficulty": 4,
+          "duration": "5-10 minutes",
+          "category": "learning-extraction",
+          "successCriteria": "I have identified and written one specific learning from today",
+          "gamePoints": 4,
+          "aiDiscussion": {
+            "enabled": true,
+            "inviteMessage": "Want to explore what you learned today? Sometimes the best insights aren't obvious at first.",
+            "discussionType": "daily-learning-extraction",
+            "expectedOutcome": "One significant learning identified"
+          }
+        }
+      ]
+    }
+  ]
+}

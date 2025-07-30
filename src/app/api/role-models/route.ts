@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
         contemporaryRelevance: true,
         characterDevelopment: true,
         enhancedAttributes: true,
+        dailyDoEnhanced: true,
         createdAt: true
       },
       orderBy: { commonName: 'asc' }
@@ -50,7 +51,8 @@ export async function GET(request: NextRequest) {
       ...roleModel,
       coreValues: JSON.parse(roleModel.coreValues || '[]'),
       famousQuotes: JSON.parse(roleModel.famousQuotes || '[]'),
-      enhancedAttributes: JSON.parse(roleModel.enhancedAttributes || '[]')
+      enhancedAttributes: JSON.parse(roleModel.enhancedAttributes || '[]'),
+      dailyDoEnhanced: roleModel.dailyDoEnhanced || null // Keep as parsed JSON or null
     }))
 
     return NextResponse.json({ roleModels: formattedRoleModels })
