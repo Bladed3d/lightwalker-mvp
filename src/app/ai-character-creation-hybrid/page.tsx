@@ -333,9 +333,13 @@ Just describe what you're working on, and I'll find the perfect attributes for y
   }
 
   const toggleAttributeSelection = (result: SearchResult) => {
+    console.log('🔲 toggleAttributeSelection called for:', result.roleModel, '-', result.attribute)
+    console.log('🔲 Result details:', { roleModelId: result.roleModelId, attributeId: result.attributeId })
+    
     const isSelected = selectedAttributes.some(attr => 
       attr.roleModelId === result.roleModelId && attr.attributeId === result.attributeId
     )
+    console.log('🔲 Is currently selected:', isSelected)
 
     if (isSelected) {
       setSelectedAttributes(prev => 
@@ -410,9 +414,13 @@ Just describe what you're working on, and I'll find the perfect attributes for y
   }
 
   const handleAttributeToggle = (attributeId: string) => {
-    console.log('🔘 handleAttributeToggle called with:', attributeId)
+    console.log('🔘 handleAttributeToggle called with attributeId:', attributeId)
     const attribute = attributes.find(attr => attr.id === attributeId)
     const currentRoleModel = roleModels.find(rm => rm.id === selectedRoleModel)
+    
+    console.log('🔘 Found attribute:', attribute?.name)
+    console.log('🔘 Current role model:', currentRoleModel?.commonName)
+    console.log('🔘 Current selectedAttributes:', selectedAttributes.map(a => `${a.roleModel}-${a.attribute}`))
     
     if (!attribute || !currentRoleModel) {
       console.log('❌ Missing attribute or role model')
@@ -497,8 +505,8 @@ Just describe what you're working on, and I'll find the perfect attributes for y
       </div>
 
       {/* Role Model Gallery */}
-      <div className="max-w-7xl mx-auto px-6 py-4 relative z-10">
-        <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4 mb-6">
+      <div className="max-w-7xl mx-auto px-6 py-2 relative z-10">
+        <div className="bg-black/30 backdrop-blur-sm rounded-lg border border-cyan-500/30 p-4 mb-3">
           <div className="absolute left-0 top-0 h-full flex items-start pt-4 z-10">
             <h3 className="text-xl font-semibold text-cyan-400 font-mono whitespace-nowrap m-0 p-0 origin-left" 
                 style={{ transform: 'rotate(-90deg) translate(-100%, 0)', transformOrigin: 'left top' }}>
@@ -560,7 +568,6 @@ Just describe what you're working on, and I'll find the perfect attributes for y
                   </div>
                   <div>
                     <h4 className="font-semibold text-white text-lg">{roleModel.commonName}</h4>
-                    <p className="text-sm text-gray-400">{roleModel.primaryDomain}</p>
                   </div>
                 </div>
 
@@ -621,26 +628,49 @@ Just describe what you're working on, and I'll find the perfect attributes for y
               {/* AI Conversation Mode */}
               {isAIMode && (
                 <div className="flex-1 flex flex-col">
-                  <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4 mb-4">
-                    <h3 className="text-purple-400 font-medium mb-2 flex items-center">
-                      <MessageCircle className="h-5 w-5 mr-2" />
-                      Tell me what you're working on
-                    </h3>
-                    <textarea
-                      value={aiConversation}
-                      onChange={(e) => setAiConversation(e.target.value)}
-                      placeholder="I'm having trouble staying focused at work and get distracted by everything..."
-                      className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 resize-none h-32"
-                    />
-                    <button
-                      onClick={handleAIConversation}
-                      disabled={!aiConversation.trim() || aiProcessing || searchProcessing}
-                      className="mt-3 px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      <Sparkles className={`h-4 w-4 ${(aiProcessing || searchProcessing) ? 'animate-spin' : ''}`} />
-                      {aiProcessing ? 'Analyzing...' : searchProcessing ? 'Finding Matches...' : 'Add Superpowers to my Lightwalker™'}
-                    </button>
-                  </div>
+                  {/* Compact mode when search results available, full mode otherwise */}
+                  {searchResults.length > 0 ? (
+                    // Compact Chat Mode - Just search query + button
+                    <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-3 mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 text-sm text-purple-200 bg-gray-700/50 px-3 py-2 rounded">
+                          "{searchQuery}"
+                        </div>
+                        <button
+                          onClick={() => {
+                            setSearchResults([])
+                            setSearchQuery('')
+                            setAiMessage('')
+                          }}
+                          className="text-xs px-3 py-1 bg-gray-600 text-gray-300 rounded hover:bg-gray-500"
+                        >
+                          New Search
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // Full Chat Mode - Textarea + button
+                    <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4 mb-4">
+                      <h3 className="text-purple-400 font-medium mb-2 flex items-center">
+                        <MessageCircle className="h-5 w-5 mr-2" />
+                        Tell me what you're working on
+                      </h3>
+                      <textarea
+                        value={aiConversation}
+                        onChange={(e) => setAiConversation(e.target.value)}
+                        placeholder="I'm having trouble staying focused at work and get distracted by everything..."
+                        className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 resize-none h-32"
+                      />
+                      <button
+                        onClick={handleAIConversation}
+                        disabled={!aiConversation.trim() || aiProcessing || searchProcessing}
+                        className="mt-3 px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        <Sparkles className={`h-4 w-4 ${(aiProcessing || searchProcessing) ? 'animate-spin' : ''}`} />
+                        {aiProcessing ? 'Analyzing...' : searchProcessing ? 'Finding Matches...' : 'Add Superpowers to my Lightwalker™'}
+                      </button>
+                    </div>
+                  )}
                   
                   {/* AI Response Message & Search Results */}
                   {aiMessage && (
@@ -652,9 +682,9 @@ Just describe what you're working on, and I'll find the perfect attributes for y
                         </div>
                       </div>
                       
-                      {/* AI Search Results */}
+                      {/* AI Search Results - Now with proper scrolling */}
                       {searchResults.length > 0 && (
-                        <div className="space-y-3">
+                        <div className="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
                           {searchResults.map((result, index) => (
                             <div
                               key={`ai-search-${result.roleModelId}-${result.attributeId}`}
