@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import LightwalkerTimeline0 from '@/components/test/lightwalker-timeline-0';
 
 export default function TestComponentsPage() {
   return (
@@ -9,18 +8,15 @@ export default function TestComponentsPage() {
         <h1 className="text-3xl font-bold mb-8 text-center">Component Testing Area</h1>
         
         <div className="space-y-8">
-          {/* Timeline Component 0 */}
+          {/* Test components will be imported here when ready */}
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-semibold mb-4">Timeline Version 0</h2>
-            <div className="border-2 border-dashed border-gray-300 p-4 rounded">
-              <LightwalkerTimeline0 />
+            <h2 className="text-2xl font-semibold mb-4">Timeline Components</h2>
+            <div className="border-2 border-dashed border-gray-300 p-4 rounded text-center">
+              <p className="text-gray-500">
+                Timeline components are in development.<br/>
+                The <code>src/components/test/</code> folder is excluded from git until ready.
+              </p>
             </div>
-          </div>
-
-          {/* Other timeline components temporarily disabled for build */}
-          <div className="bg-gray-100 rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-500">Other Timeline Versions</h2>
-            <p className="text-gray-600">Timeline components 1 and 3 temporarily disabled for TypeScript build.</p>
           </div>
         </div>
 
