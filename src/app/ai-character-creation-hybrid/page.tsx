@@ -234,6 +234,19 @@ Just describe what you're working on, and I'll find the perfect attributes for y
         setHighlightedAttribute(topResult.attributeId)
         setSelectedRoleModel(topResult.roleModelId)
         console.log('✅ Set highlightedRoleModel to:', topResult.roleModelId)
+        
+        // Auto-scroll to highlighted role model
+        setTimeout(() => {
+          const roleModelElement = document.querySelector(`[data-role-model-id="${topResult.roleModelId}"]`)
+          if (roleModelElement) {
+            roleModelElement.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'nearest', 
+              inline: 'center' 
+            })
+            console.log('📍 Scrolled to role model:', topResult.roleModel)
+          }
+        }, 100)
       }, 10)
     }
   }
@@ -371,6 +384,19 @@ Just describe what you're working on, and I'll find the perfect attributes for y
     // Update highlighted role model to match the selected attribute
     setHighlightedRoleModel(currentRoleModel.id)
     console.log('🎯 Updated highlighted role model to:', currentRoleModel.commonName)
+    
+    // Auto-scroll to the highlighted role model
+    setTimeout(() => {
+      const roleModelElement = document.querySelector(`[data-role-model-id="${currentRoleModel.id}"]`)
+      if (roleModelElement) {
+        roleModelElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'nearest', 
+          inline: 'center' 
+        })
+        console.log('📍 Scrolled to role model from attribute selection:', currentRoleModel.commonName)
+      }
+    }, 100)
   }
 
   const getUniqueRoleModels = () => {
@@ -426,10 +452,11 @@ Just describe what you're working on, and I'll find the perfect attributes for y
             </h3>
           </div>
           
-          <div className="flex space-x-4 overflow-x-auto pb-2 custom-scrollbar ml-8">
+          <div className="flex space-x-4 overflow-x-auto pb-2 pt-3 custom-scrollbar ml-8">
             {roleModels.map((roleModel) => (
               <div
                 key={roleModel.id}
+                data-role-model-id={roleModel.id}
                 className={`min-w-[280px] relative p-4 rounded-lg border cursor-pointer transition-all duration-500 hover:scale-102 ${
                   selectedRoleModel === roleModel.id
                     ? 'bg-gradient-to-r from-cyan-900/50 to-purple-900/50 border-cyan-400 shadow-lg'
@@ -482,7 +509,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
 
                 {/* AI Highlight Badge */}
                 {highlightedRoleModel === roleModel.id && (
-                  <div className="absolute -top-2 -right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-bounce">
+                  <div className="absolute -top-1 -right-1 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-bounce z-50 shadow-lg">
                     AI Pick!
                   </div>
                 )}
