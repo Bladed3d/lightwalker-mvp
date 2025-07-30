@@ -44,36 +44,25 @@ export async function POST(request: NextRequest) {
       method: attr.method?.substring(0, 100) || ''
     }))
 
-    const prompt = `You are an expert at understanding user intent and matching it to personality attributes.
+    // Create a simple mapping for AI to understand
+    const simpleAttributes = attributeSummary.slice(0, 30).map((attr, i) => ({
+      id: i + 1,
+      roleModel: attr.roleModel,
+      attribute: attr.attribute,
+      description: attr.description
+    }))
+    
+    const prompt = `User wants: "${searchQuery}"
 
-USER SEARCH: "${searchQuery}"
-
-AVAILABLE ATTRIBUTES:
-${attributeSummary.map((attr) => 
-  `${attr.index}. ${attr.roleModel} (ID: ${attr.roleModelId}) - ${attr.attribute} (ID: ${attr.attributeId}): ${attr.description}`
+Attributes:
+${simpleAttributes.map(attr => 
+  `${attr.id}. ${attr.roleModel} - ${attr.attribute}: ${attr.description}`
 ).join('\n')}
 
-TASK: Find the 5 most relevant attributes that match what the user is looking for. Consider:
-- Semantic meaning (not just exact words)
-- User intent and goals
-- Related concepts and synonyms
-- Practical applications
+Return JSON with IDs of top 3 matches:
+[{"id": 1, "score": 95}, {"id": 5, "score": 85}]
 
-IMPORTANT: Use the exact roleModelId and attributeId from the available attributes list below.
-
-Return ONLY a JSON array of matches with this exact format:
-[
-  {
-    "roleModel": "exact role model name",
-    "roleModelId": "exact roleModelId from available attributes", 
-    "attribute": "exact attribute name",
-    "attributeId": "exact attributeId from available attributes",
-    "relevanceScore": 95,
-    "reasoning": "brief explanation why this matches"
-  }
-]
-
-Score from 1-100 based on relevance. Only include scores 70+.`
+Only 70+ scores.`
 
     const response = await fetch(OPENROUTER_BASE_URL, {
       method: 'POST',
@@ -116,21 +105,33 @@ Score from 1-100 based on relevance. Only include scores 70+.`
     try {
       // Clean the response to extract just the JSON array
       const jsonMatch = aiResponse.match(/\[[\s\S]*\]/)
+      let aiMatches = []
+      
       if (jsonMatch) {
-        matches = JSON.parse(jsonMatch[0])
+        aiMatches = JSON.parse(jsonMatch[0])
       } else {
-        matches = JSON.parse(aiResponse)
+        aiMatches = JSON.parse(aiResponse)
       }
 
-      // Validate and clean matches
-      matches = matches
-        .filter((match: any) => 
-          match.roleModel && 
-          match.attribute && 
-          match.relevanceScore >= 70
-        )
+      // Convert AI matches back to full attribute data
+      matches = aiMatches
+        .filter((match: any) => match.id && match.score >= 70)
+        .map((match: any) => {
+          const attr = attributeSummary[match.id - 1] // Convert back to 0-based index
+          if (!attr) return null
+          
+          return {
+            roleModel: attr.roleModel,
+            roleModelId: attr.roleModelId,
+            attribute: attr.attribute,
+            attributeId: attr.attributeId,
+            relevanceScore: match.score,
+            reasoning: `Matched for ${searchQuery}`
+          }
+        })
+        .filter(Boolean)
         .sort((a: any, b: any) => b.relevanceScore - a.relevanceScore)
-        .slice(0, 5) // Top 5 matches
+        .slice(0, 5)
 
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError)

@@ -142,77 +142,37 @@ Just describe what you're working on, and I'll find the perfect attributes for y
 
     console.log('📊 Prepared', availableAttributes.length, 'attributes for search')
 
-    try {
-      console.log('🤖 Attempting AI semantic search...')
-      // Use AI semantic search
-      const response = await fetch('/api/ai-semantic-search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          searchQuery: query,
-          availableAttributes
-        })
-      })
-
-      console.log('📡 AI search response status:', response.status)
-      const data = await response.json()
-      console.log('🎯 AI search response data:', data)
-
-      if (data.success && data.matches.length > 0) {
-        console.log('✅ AI search successful, found', data.matches.length, 'matches')
-        
-        // Convert AI matches to SearchResult format
-        const aiResults: SearchResult[] = data.matches.map((match: any) => ({
-          roleModel: match.roleModel,
-          roleModelId: match.roleModelId,
-          attribute: match.attribute,
-          attributeId: match.attributeId,
-          originalMethod: availableAttributes.find(attr => 
-            attr.roleModelId === match.roleModelId && attr.attributeId === match.attributeId
-          )?.method || '',
-          dailyDoItems: availableAttributes.find(attr => 
-            attr.roleModelId === match.roleModelId && attr.attributeId === match.attributeId
-          )?.dailyDoItems || null,
-          relevanceScore: match.relevanceScore,
-          selected: selectedAttributes.some(sel => 
-            sel.roleModelId === match.roleModelId && sel.attributeId === match.attributeId
-          )
-        }))
-
-        console.log('🎭 Setting search results:', aiResults)
-        setSearchResults(aiResults)
-        
-        // Auto-highlight top AI result
-        if (aiResults.length > 0) {
-          const topResult = aiResults[0]
-          console.log('🎯 Highlighting top result:', topResult.roleModel, '-', topResult.attribute)
-          setHighlightedRoleModel(topResult.roleModelId)
-          setHighlightedAttribute(topResult.attributeId)
-          setSelectedRoleModel(topResult.roleModelId)
-        }
-        
-        setSearchProcessing(false)
-        return
-      } else {
-        console.log('⚠️ AI search returned no matches or failed:', data)
-      }
-    } catch (error) {
-      console.error('❌ AI semantic search failed, falling back to basic search:', error)
-    }
-
-    // Fallback to basic search if AI fails
-    console.log('🔄 Falling back to basic search...')
+    // Skip AI semantic search - go directly to basic search with extracted keywords
+    console.log('🔍 Using keyword-based search (no AI database scan)')
     performBasicSearch(query)
     setSearchProcessing(false)
   }
 
   const performBasicSearch = (query: string) => {
+    console.log('🔍 Basic search with query:', query)
     const results: SearchResult[] = []
     const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 2)
     
-    if (searchTerms.length === 0) {
+    // Add common synonyms for better matching
+    const expandedTerms = new Set(searchTerms)
+    searchTerms.forEach(term => {
+      const synonyms: Record<string, string[]> = {
+        'focus': ['focus', 'focused', 'concentration', 'attention', 'strategic'],
+        'calm': ['calm', 'peace', 'peaceful', 'tranquil', 'serene'],
+        'creative': ['creative', 'creativity', 'innovative', 'imagination'],
+        'leadership': ['leadership', 'leader', 'leading', 'inspire', 'influence'],
+        'patience': ['patience', 'patient', 'calm', 'perseverance']
+      }
+      
+      if (synonyms[term]) {
+        synonyms[term].forEach(synonym => expandedTerms.add(synonym))
+      }
+    })
+    
+    const finalTerms = Array.from(expandedTerms)
+    console.log('🎯 Expanded search terms:', finalTerms)
+    
+    if (finalTerms.length === 0) {
       setSearchResults([])
       return
     }
@@ -221,7 +181,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
       roleModel.enhancedAttributes?.forEach(attribute => {
         let relevanceScore = 0
         
-        const searchText = `${attribute.name} ${attribute.description} ${attribute.method}`.toLowerCase()
+        const attributeText = `${attribute.name} ${attribute.description} ${attribute.method}`.toLowerCase()
         
         const dailyDoItems = roleModel.dailyDoEnhanced?.attributes?.find(
           (attr: any) => attr.attributeId === attribute.name.toLowerCase().replace(/\s+/g, '-')
@@ -230,12 +190,22 @@ Just describe what you're working on, and I'll find the perfect attributes for y
         const dailyDoText = dailyDoItems ? 
           dailyDoItems.map((item: any) => `${item.action} ${item.category}`).join(' ').toLowerCase() : ''
         
-        searchTerms.forEach(term => {
-          if (searchText.includes(term)) {
+        finalTerms.forEach(term => {
+          // Higher score for attribute name matches
+          if (attribute.name.toLowerCase().includes(term)) {
+            relevanceScore += 20
+          }
+          // Medium score for description matches  
+          if (attribute.description?.toLowerCase().includes(term)) {
+            relevanceScore += 15
+          }
+          // Lower score for method matches
+          if (attribute.method?.toLowerCase().includes(term)) {
             relevanceScore += 10
           }
+          // Daily-do matches
           if (dailyDoText.includes(term)) {
-            relevanceScore += 5
+            relevanceScore += 8
           }
         })
 
@@ -257,11 +227,14 @@ Just describe what you're working on, and I'll find the perfect attributes for y
     })
 
     results.sort((a, b) => b.relevanceScore - a.relevanceScore)
-    setSearchResults(results.slice(0, 8))
+    const topResults = results.slice(0, 8)
+    console.log('🎭 Found', topResults.length, 'search results:', topResults.map(r => `${r.roleModel}-${r.attribute}`))
+    setSearchResults(topResults)
     
     // Auto-highlight top result
-    if (results.length > 0) {
-      const topResult = results[0]
+    if (topResults.length > 0) {
+      const topResult = topResults[0]
+      console.log('🎯 Highlighting top result:', topResult.roleModel, '-', topResult.attribute)
       setHighlightedRoleModel(topResult.roleModelId)
       setHighlightedAttribute(topResult.attributeId)
       setSelectedRoleModel(topResult.roleModelId)
@@ -294,7 +267,9 @@ Just describe what you're working on, and I'll find the perfect attributes for y
         setAiMessage(data.aiMessage)
         
         if (data.keywords.length > 0) {
-          setSearchQuery(data.keywords.join(' '))
+          const keywords = data.keywords.join(' ')
+          console.log('🎯 AI extracted keywords:', keywords)
+          setSearchQuery(keywords)
           // Keep AI mode active - don't switch to manual
         }
         
