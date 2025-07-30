@@ -641,6 +641,9 @@ Just describe what you're working on, and I'll find the perfect attributes for y
                             setSearchResults([])
                             setSearchQuery('')
                             setAiMessage('')
+                            setAiConversation('')
+                            setHighlightedRoleModel('')
+                            setHighlightedAttribute('')
                           }}
                           className="text-xs px-3 py-1 bg-gray-600 text-gray-300 rounded hover:bg-gray-500"
                         >

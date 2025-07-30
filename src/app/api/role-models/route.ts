@@ -74,6 +74,21 @@ export async function GET(request: NextRequest) {
         archetype: 'wisdom-keeper' 
       }
       
+      // Safe JSON parsing with fallbacks  
+      const safeParseJSON = (jsonValue: any, fallback: any = []) => {
+        if (!jsonValue) return fallback
+        if (typeof jsonValue === 'string') {
+          try {
+            return JSON.parse(jsonValue)
+          } catch (e) {
+            console.error(`JSON parse error for ${roleModel.commonName}:`, e)
+            return fallback
+          }
+        }
+        // If already parsed/object, return as-is
+        return jsonValue
+      }
+
       return {
         ...roleModel,
         imageUrl: `/role-models/${imageFileName}`,
@@ -81,10 +96,10 @@ export async function GET(request: NextRequest) {
         archetype: defaultColors.archetype,
         primaryColor: defaultColors.primaryColor,
         secondaryColor: defaultColors.secondaryColor,
-        coreValues: JSON.parse(roleModel.coreValues || '[]'),
-        famousQuotes: JSON.parse(roleModel.famousQuotes || '[]'),
-        enhancedAttributes: JSON.parse(roleModel.enhancedAttributes || '[]'),
-        dailyDoEnhanced: roleModel.dailyDoEnhanced || null // Keep as parsed JSON or null
+        coreValues: safeParseJSON(roleModel.coreValues, []),
+        famousQuotes: safeParseJSON(roleModel.famousQuotes, []),
+        enhancedAttributes: safeParseJSON(roleModel.enhancedAttributes, []),
+        dailyDoEnhanced: safeParseJSON(roleModel.dailyDoEnhanced, null)
       }
     })
 
