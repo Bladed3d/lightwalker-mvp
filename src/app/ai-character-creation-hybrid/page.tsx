@@ -75,9 +75,12 @@ Just describe what you're working on, and I'll find the perfect attributes for y
   }, [])
 
   useEffect(() => {
+    console.log('🔄 useEffect triggered - searchQuery:', searchQuery, 'length:', searchQuery.length)
     if (searchQuery.length > 2) {
+      console.log('✅ Triggering performSearch with:', searchQuery)
       performSearch(searchQuery) // Now async but no need to await in useEffect
     } else {
+      console.log('❌ searchQuery too short, clearing results')
       setSearchResults([])
       setHighlightedRoleModel('')
       setHighlightedAttribute('')
@@ -136,101 +139,65 @@ Just describe what you're working on, and I'll find the perfect attributes for y
     setSearchProcessing(false)
   }
 
-  const performBasicSearch = (query: string) => {
-    console.log('🔍 Basic search with query:', query)
-    const results: SearchResult[] = []
-    const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 2)
+  const performBasicSearch = async (query: string) => {
+    console.log('🔍 Semantic search with query:', query)
     
-    // Add common synonyms for better matching
-    const expandedTerms = new Set(searchTerms)
-    searchTerms.forEach(term => {
-      const synonyms: Record<string, string[]> = {
-        'focus': ['focus', 'focused', 'concentration', 'attention', 'strategic'],
-        'calm': ['calm', 'peace', 'peaceful', 'tranquil', 'serene'],
-        'creative': ['creative', 'creativity', 'innovative', 'imagination'],
-        'leadership': ['leadership', 'leader', 'leading', 'inspire', 'influence'],
-        'patience': ['patience', 'patient', 'calm', 'perseverance']
-      }
+    try {
+      const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 2)
       
-      if (synonyms[term]) {
-        synonyms[term].forEach(synonym => expandedTerms.add(synonym))
-      }
-    })
-    
-    const finalTerms = Array.from(expandedTerms)
-    console.log('🎯 Expanded search terms:', finalTerms)
-    
-    if (finalTerms.length === 0) {
-      setSearchResults([])
-      return
-    }
-
-    roleModels.forEach(roleModel => {
-      roleModel.enhancedAttributes?.forEach(attribute => {
-        let relevanceScore = 0
-        
-        const attributeText = `${attribute.name} ${attribute.description} ${attribute.method}`.toLowerCase()
-        
-        const dailyDoItems = roleModel.dailyDoEnhanced?.attributes?.find(
-          (attr: any) => attr.attributeId === attribute.name.toLowerCase().replace(/\s+/g, '-')
-        )?.dailyDoItems
-        
-        const dailyDoText = dailyDoItems ? 
-          dailyDoItems.map((item: any) => `${item.action} ${item.category}`).join(' ').toLowerCase() : ''
-        
-        finalTerms.forEach(term => {
-          // Higher score for attribute name matches
-          if (attribute.name.toLowerCase().includes(term)) {
-            relevanceScore += 20
-          }
-          // Medium score for description matches  
-          if (attribute.description?.toLowerCase().includes(term)) {
-            relevanceScore += 15
-          }
-          // Lower score for method matches
-          if (attribute.method?.toLowerCase().includes(term)) {
-            relevanceScore += 10
-          }
-          // Daily-do matches
-          if (dailyDoText.includes(term)) {
-            relevanceScore += 8
-          }
+      const response = await fetch('/api/semantic-search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keywords: searchTerms,
+          searchQuery: query
         })
-
-        if (relevanceScore > 0) {
-          results.push({
-            roleModel: roleModel.commonName,
-            roleModelId: roleModel.id,
-            attribute: attribute.name,
-            attributeId: attribute.id,
-            originalMethod: attribute.method,
-            dailyDoItems: dailyDoItems || null,
-            relevanceScore,
-            selected: selectedAttributes.some(sel => 
-              sel.roleModelId === roleModel.id && sel.attributeId === attribute.id
-            )
-          })
-        }
       })
-    })
 
-    results.sort((a, b) => b.relevanceScore - a.relevanceScore)
-    const topResults = results.slice(0, 8)
-    console.log('🎭 Found', topResults.length, 'search results:', topResults.map(r => `${r.roleModel}-${r.attribute}`))
-    setSearchResults(topResults)
-    
+      const data = await response.json()
+      
+      if (data.success && data.results) {
+        // Convert semantic search results to UI format
+        const formattedResults = data.results.map((result: any) => ({
+          ...result,
+          selected: selectedAttributes.some(sel => 
+            sel.roleModelId === result.roleModelId && sel.attributeId === result.attributeId
+          )
+        }))
+        
+        console.log('🎭 Found', formattedResults.length, 'semantic results via', data.searchStrategy, ':', 
+          formattedResults.map(r => `${r.roleModel}-${r.attribute}`))
+        setSearchResults(formattedResults)
+        
+        // Update AI message based on results
+        updateUIBasedOnResults(formattedResults, query)
+      } else {
+        console.log('❌ Semantic search failed:', data.error)
+        setSearchResults([])
+        setAiMessage(`I didn't find matches for "${query}". Try simpler terms like "focus", "stress", or "confidence".`)
+      }
+    } catch (error) {
+      console.error('❌ Semantic search error:', error)
+      setSearchResults([])
+      setAiMessage(`I'm having trouble searching right now. Try simpler terms like "focus", "stress", or "confidence".`)
+    }
+  }
+
+  const updateUIBasedOnResults = (results: SearchResult[], query: string) => {
     // Update AI message based on results
-    if (topResults.length === 0) {
+    if (results.length === 0) {
       setAiMessage(`I didn't find matches for "${query}". Try simpler terms like "focus", "stress", or "confidence".`)
-    } else if (topResults.length === 1) {
+    } else if (results.length === 1) {
       setAiMessage(`Perfect! I found exactly what you're looking for. Check the box if it resonates with you.`)
     } else {
-      setAiMessage(`Great! I found ${topResults.length} approaches that could help. I've highlighted the strongest match, but explore the options below. Pick up to 2 that resonate most.`)
+      setAiMessage(`Great! I found ${results.length} approaches that could help. I've highlighted the strongest match, but explore the options below. Pick up to 2 that resonate most.`)
     }
     
     // Auto-highlight top result
-    if (topResults.length > 0) {
-      const topResult = topResults[0]
+    if (results.length > 0) {
+      const topResult = results[0]
       console.log('🎯 Highlighting top result:', topResult.roleModel, '-', topResult.attribute)
       console.log('🎯 Role model ID to highlight:', topResult.roleModelId)
       console.log('🎯 Available role models:', roleModels.map(rm => `${rm.commonName}:${rm.id}`))
@@ -306,14 +273,17 @@ Just describe what you're working on, and I'll find the perfect attributes for y
       const data = await response.json()
       
       if (data.success) {
-        setAiMessage(data.aiMessage)
-        
         if (data.keywords.length > 0) {
           const keywords = data.keywords.join(' ')
           console.log('🎯 AI extracted keywords:', keywords)
+          console.log('🎯 Setting searchQuery to:', keywords)
           setSearchQuery(keywords)
           
-          // Message will be updated after search completes in performBasicSearch
+          // Set temporary message while search processes
+          setAiMessage("Let me find the perfect matches for you...")
+        } else {
+          console.log('⚠️ AI returned no keywords:', data.keywords)
+          setAiMessage(data.aiMessage) // Use fallback message from AI service
         }
         
       } else {

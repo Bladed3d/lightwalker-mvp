@@ -199,6 +199,42 @@ This is fundamental to the learning-through-copying model. Users observe and cop
 - Add to the existing array
 - Run the existing command
 
+## CRITICAL: SEARCH SYSTEM DESIGN PRINCIPLES
+
+**NEVER HARD-CODE SPECIFIC KEYWORD SOLUTIONS**
+
+❌ **WRONG APPROACH:**
+- Adding "forgiveness" → "compassion" hard-coded mappings
+- Creating specific fallback rules for individual words
+- Building keyword lists that need manual updates for each user complaint
+
+✅ **CORRECT APPROACH:**
+- Build semantic/fuzzy matching systems that work for ANY concept
+- Use AI models to understand meaning, not keyword matching
+- Create systems that learn and adapt automatically
+- Design for 10,000+ different search terms without manual intervention
+
+**SEARCH ARCHITECTURE REQUIREMENTS:**
+1. **Semantic Understanding**: System must understand concepts like "forgiveness" = "compassion" through AI, not hard-coded rules
+2. **Automatic Learning**: When searches fail, system should learn from database content automatically
+3. **Scalable Matching**: Must work for ANY psychological/personal development concept without manual coding
+4. **Fallback Strategy**: If semantic matching fails, use fuzzy text matching across ALL database content
+
+**IMPLEMENTATION STRATEGY:**
+- Use AI models (OpenRouter) for semantic keyword extraction AND semantic matching
+- Build database content analysis to automatically find related concepts
+- Implement fuzzy matching as final fallback for unknown terms
+- Never add individual keyword mappings - always build systems that scale
+
+**VIOLATION CONSEQUENCES:**
+Hard-coding specific solutions like "forgiveness" keywords will result in:
+- 2,000+ user complaints requiring individual fixes
+- Unmaintainable codebase with hundreds of special cases
+- Poor user experience for uncommon but valid searches
+- Technical debt that prevents scaling
+
+**REMEMBER:** If you find yourself adding specific words to keyword lists, STOP and build a semantic system instead.
+
 ## Success Metrics
 
 - 80%+ users successfully create Lightwalker they're excited about
