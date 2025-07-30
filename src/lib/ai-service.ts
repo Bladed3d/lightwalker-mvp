@@ -32,7 +32,7 @@ class AIService {
           'X-Title': 'Lightwalker Character Creation'
         },
         body: JSON.stringify({
-          model: 'deepseek/deepseek-r1', // Most cost-effective reasoning model
+          model: 'deepseek/deepseek-r1:free', // Free DeepSeek R1 reasoning model
           messages: [{
             role: 'system',
             content: `You are a keyword extraction expert for a personal development app. 
