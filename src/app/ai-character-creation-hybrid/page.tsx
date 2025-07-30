@@ -91,9 +91,15 @@ Just describe what you're working on, and I'll find the perfect attributes for y
       console.log('🔍 Found role model:', roleModel?.commonName)
       if (roleModel?.enhancedAttributes) {
         console.log('📋 Loading', roleModel.enhancedAttributes.length, 'attributes for', roleModel.commonName)
-        setAttributes(roleModel.enhancedAttributes)
+        // Force re-render by clearing first, then setting
+        setAttributes([])
+        setTimeout(() => {
+          setAttributes(roleModel.enhancedAttributes)
+          console.log('✅ Attributes updated for', roleModel.commonName)
+        }, 50)
       } else {
         console.log('❌ No enhancedAttributes found for', roleModel?.commonName)
+        setAttributes([])
       }
     }
   }, [selectedRoleModel, roleModels])
@@ -336,8 +342,9 @@ Just describe what you're working on, and I'll find the perfect attributes for y
         prev.filter(attr => !(attr.roleModelId === result.roleModelId && attr.attributeId === result.attributeId))
       )
     } else {
-      if (selectedAttributes.length >= 5) {
-        // Max 5 attributes
+      if (selectedAttributes.length >= 10) {
+        // Max 10 attributes - show user feedback
+        console.log('⚠️ Maximum 10 attributes reached')
         return
       }
       
@@ -357,6 +364,40 @@ Just describe what you're working on, and I'll find the perfect attributes for y
     // Update highlighted role model when clicking different search results
     setHighlightedRoleModel(result.roleModelId)
     setSelectedRoleModel(result.roleModelId) // Show all attributes for this role model
+    
+    // Auto-scroll to the highlighted role model
+    setTimeout(() => {
+      const roleModelElement = document.querySelector(`[data-role-model-id="${result.roleModelId}"]`) as HTMLElement
+      const scrollContainer = roleModelElement?.parentElement as HTMLElement
+      
+      if (roleModelElement && scrollContainer) {
+        // Custom smooth scroll with deceleration easing
+        const targetLeft = roleModelElement.offsetLeft - (scrollContainer.clientWidth / 2) + (roleModelElement.clientWidth / 2)
+        const startLeft = scrollContainer.scrollLeft
+        const distance = targetLeft - startLeft
+        const duration = 800 // 800ms for smooth deceleration
+        const startTime = performance.now()
+        
+        const easeOutCubic = (t: number): number => {
+          return 1 - Math.pow(1 - t, 3) // Cubic easing out for smooth deceleration
+        }
+        
+        const animateScroll = (currentTime: number) => {
+          const elapsed = currentTime - startTime
+          const progress = Math.min(elapsed / duration, 1)
+          const easedProgress = easeOutCubic(progress)
+          
+          scrollContainer.scrollLeft = startLeft + (distance * easedProgress)
+          
+          if (progress < 1) {
+            requestAnimationFrame(animateScroll)
+          }
+        }
+        
+        requestAnimationFrame(animateScroll)
+        console.log('📍 Custom scrolled to role model from search result click:', result.roleModel)
+      }
+    }, 100)
     
     // Update only the specific search result item
     setSearchResults(prev => 
@@ -388,7 +429,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
         prev.filter(attr => !(attr.roleModelId === selectedRoleModel && attr.attributeId === attributeId))
       )
     } else {
-      if (selectedAttributes.length >= 5) return
+      if (selectedAttributes.length >= 10) return
       
       const dailyDoItems = currentRoleModel.dailyDoEnhanced?.attributes?.find(
         (attr: any) => attr.attributeId === attribute.name.toLowerCase().replace(/\s+/g, '-')
@@ -407,43 +448,9 @@ Just describe what you're working on, and I'll find the perfect attributes for y
       ])
     }
 
-    // Update highlighted role model to match the selected attribute
-    setHighlightedRoleModel(currentRoleModel.id)
-    console.log('🎯 Updated highlighted role model to:', currentRoleModel.commonName)
-    
-    // Auto-scroll to the highlighted role model with custom easing
-    setTimeout(() => {
-      const roleModelElement = document.querySelector(`[data-role-model-id="${currentRoleModel.id}"]`) as HTMLElement
-      const scrollContainer = roleModelElement?.parentElement as HTMLElement
-      
-      if (roleModelElement && scrollContainer) {
-        // Custom smooth scroll with deceleration easing
-        const targetLeft = roleModelElement.offsetLeft - (scrollContainer.clientWidth / 2) + (roleModelElement.clientWidth / 2)
-        const startLeft = scrollContainer.scrollLeft
-        const distance = targetLeft - startLeft
-        const duration = 800 // 800ms for smooth deceleration
-        const startTime = performance.now()
-        
-        const easeOutCubic = (t: number): number => {
-          return 1 - Math.pow(1 - t, 3) // Cubic easing out for smooth deceleration
-        }
-        
-        const animateScroll = (currentTime: number) => {
-          const elapsed = currentTime - startTime
-          const progress = Math.min(elapsed / duration, 1)
-          const easedProgress = easeOutCubic(progress)
-          
-          scrollContainer.scrollLeft = startLeft + (distance * easedProgress)
-          
-          if (progress < 1) {
-            requestAnimationFrame(animateScroll)
-          }
-        }
-        
-        requestAnimationFrame(animateScroll)
-        console.log('📍 Custom scrolled to role model from attribute selection:', currentRoleModel.commonName)
-      }
-    }, 100)
+    // Don't auto-highlight or scroll when user is just browsing attributes
+    // Highlighting should only happen from AI recommendations or search result clicks
+    console.log('🔘 Attribute toggled without highlighting:', currentRoleModel.commonName, '-', attribute.name)
   }
 
   const getUniqueRoleModels = () => {
@@ -779,14 +786,14 @@ Just describe what you're working on, and I'll find the perfect attributes for y
                   }
                 </h4>
                 <div className="text-sm text-gray-400">
-                  {selectedAttributes.length}/5 selected
+                  {selectedAttributes.length}/10 selected
                 </div>
               </div>
             
               <div className="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
                 {attributes.map((attribute) => (
                   <div 
-                    key={`attribute-${selectedRoleModel}-${attribute.id}`} 
+                    key={`${selectedRoleModel}-${attribute.id}-${attribute.name}`} 
                     className={`border rounded-lg p-4 transition-all duration-300 ${
                       highlightedAttribute === attribute.id
                         ? 'border-green-500 bg-green-500/10 ring-2 ring-green-400 animate-pulse'
