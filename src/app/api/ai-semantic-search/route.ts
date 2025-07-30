@@ -81,7 +81,7 @@ Score from 1-100 based on relevance. Only include scores 70+.`
         'X-Title': 'Lightwalker Semantic Search'
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-r1:free', // Free DeepSeek R1 reasoning model
+        model: 'meta-llama/llama-3.2-3b-instruct:free', // Fallback to known working free model
         messages: [
           {
             role: 'system',

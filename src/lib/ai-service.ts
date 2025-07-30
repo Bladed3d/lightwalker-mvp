@@ -32,7 +32,7 @@ class AIService {
           'X-Title': 'Lightwalker Character Creation'
         },
         body: JSON.stringify({
-          model: 'deepseek/deepseek-r1:free', // Free DeepSeek R1 reasoning model
+          model: 'meta-llama/llama-3.2-3b-instruct:free', // Fallback to known working free model
           messages: [{
             role: 'system',
             content: `You are a keyword extraction expert for a personal development app. 
