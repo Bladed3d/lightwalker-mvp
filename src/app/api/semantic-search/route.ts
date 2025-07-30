@@ -66,12 +66,22 @@ export async function POST(request: NextRequest) {
     results.sort((a, b) => b.relevanceScore - a.relevanceScore)
     const topResults = results.slice(0, 8)
 
+    // Determine which strategy was used
+    let searchStrategy = 'none'
+    if (results.length > 0) {
+      if (directMatches.length > 0) {
+        searchStrategy = 'direct'
+      } else if (results.some(r => r.matchReason === 'semantic_ai')) {
+        searchStrategy = 'semantic'
+      } else {
+        searchStrategy = 'fuzzy'
+      }
+    }
+
     return NextResponse.json({
       success: true,
       results: topResults,
-      searchStrategy: results.length > 0 ? 
-        (directMatches.length > 0 ? 'direct' : 
-         semanticMatches.length > 0 ? 'semantic' : 'fuzzy') : 'none'
+      searchStrategy
     })
 
   } catch (error) {
@@ -139,7 +149,7 @@ async function performDirectMatching(roleModels: any[], keywords: string[]): Pro
           attribute: attribute.name,
           attributeId: attribute.id,
           originalMethod: attribute.method,
-          dailyDoItems: null, // TODO: Extract from dailyDoEnhanced
+          dailyDoItems: undefined,
           relevanceScore,
           matchReason: 'direct_keyword'
         })
@@ -204,21 +214,25 @@ Example: [5, 12, 8]`
       const indices = JSON.parse(content)
       if (!Array.isArray(indices)) return []
 
-      return indices.slice(0, 3).map((index: number, rank: number) => {
+      const semanticResults: SearchResult[] = []
+      
+      indices.slice(0, 3).forEach((index: number, rank: number) => {
         const item = allContent[index]
-        if (!item) return null
-
-        return {
-          roleModel: item.roleModel,
-          roleModelId: item.roleModelId,
-          attribute: item.attribute,
-          attributeId: item.attributeId,
-          originalMethod: item.method,
-          dailyDoItems: null,
-          relevanceScore: 15 - (rank * 2), // 15, 13, 11
-          matchReason: 'semantic_ai'
+        if (item) {
+          semanticResults.push({
+            roleModel: item.roleModel,
+            roleModelId: item.roleModelId,
+            attribute: item.attribute,
+            attributeId: item.attributeId,
+            originalMethod: item.method,
+            dailyDoItems: undefined,
+            relevanceScore: 15 - (rank * 2), // 15, 13, 11
+            matchReason: 'semantic_ai'
+          })
         }
-      }).filter(Boolean)
+      })
+      
+      return semanticResults
 
     } catch (parseError) {
       console.error('Failed to parse semantic search results:', parseError)
@@ -261,7 +275,7 @@ async function performFuzzyMatching(roleModels: any[], searchQuery: string): Pro
           attribute: attribute.name,
           attributeId: attribute.id,
           originalMethod: attribute.method,
-          dailyDoItems: null,
+          dailyDoItems: undefined,
           relevanceScore,
           matchReason: 'fuzzy_text'
         })

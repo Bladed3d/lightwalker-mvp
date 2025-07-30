@@ -168,7 +168,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
         }))
         
         console.log('🎭 Found', formattedResults.length, 'semantic results via', data.searchStrategy, ':', 
-          formattedResults.map(r => `${r.roleModel}-${r.attribute}`))
+          formattedResults.map((r: any) => `${r.roleModel}-${r.attribute}`))
         setSearchResults(formattedResults)
         
         // Update AI message based on results
