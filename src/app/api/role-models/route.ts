@@ -46,14 +46,47 @@ export async function GET(request: NextRequest) {
       orderBy: { commonName: 'asc' }
     })
 
-    // Parse JSON fields for response
-    const formattedRoleModels = roleModels.map(roleModel => ({
-      ...roleModel,
-      coreValues: JSON.parse(roleModel.coreValues || '[]'),
-      famousQuotes: JSON.parse(roleModel.famousQuotes || '[]'),
-      enhancedAttributes: JSON.parse(roleModel.enhancedAttributes || '[]'),
-      dailyDoEnhanced: roleModel.dailyDoEnhanced || null // Keep as parsed JSON or null
-    }))
+    // Parse JSON fields for response and add imageUrl + missing UI fields
+    const formattedRoleModels = roleModels.map(roleModel => {
+      // Generate imageUrl from commonName (same logic as working components)
+      const imageFileName = roleModel.commonName
+        .replace(/\s+/g, '-')  // Replace spaces with hyphens
+        .replace(/\./g, '')    // Remove periods (for "Dr." and "Jr.")
+        .toLowerCase() + '.jpg'
+      
+      // Default color schemes for role models (fallback if not in DB)
+      const colorMap: Record<string, {primaryColor: string, secondaryColor: string, archetype: string}> = {
+        'Steve Jobs': { primaryColor: '#007AFF', secondaryColor: '#5AC8FA', archetype: 'innovator' },
+        'Buddha': { primaryColor: '#FF9500', secondaryColor: '#FFCC02', archetype: 'sage' },
+        'Einstein': { primaryColor: '#5856D6', secondaryColor: '#AF52DE', archetype: 'thinker' },
+        'Marcus Aurelius': { primaryColor: '#34C759', secondaryColor: '#30D158', archetype: 'stoic' },
+        'Joan of Arc': { primaryColor: '#FF3B30', secondaryColor: '#FF6482', archetype: 'warrior' },
+        'Leonardo da Vinci': { primaryColor: '#FF9500', secondaryColor: '#FFCC02', archetype: 'renaissance' },
+        'Nelson Mandela': { primaryColor: '#34C759', secondaryColor: '#30D158', archetype: 'leader' },
+        'Marie Curie': { primaryColor: '#5856D6', secondaryColor: '#AF52DE', archetype: 'scientist' },
+        'Gandhi': { primaryColor: '#007AFF', secondaryColor: '#5AC8FA', archetype: 'pacifist' },
+        'Martin Luther King Jr': { primaryColor: '#FF3B30', secondaryColor: '#FF6482', archetype: 'activist' }
+      }
+      
+      const defaultColors = colorMap[roleModel.commonName] || { 
+        primaryColor: '#06b6d4', 
+        secondaryColor: '#67e8f9', 
+        archetype: 'wisdom-keeper' 
+      }
+      
+      return {
+        ...roleModel,
+        imageUrl: `/role-models/${imageFileName}`,
+        // Use defaults since these fields don't exist in current schema
+        archetype: defaultColors.archetype,
+        primaryColor: defaultColors.primaryColor,
+        secondaryColor: defaultColors.secondaryColor,
+        coreValues: JSON.parse(roleModel.coreValues || '[]'),
+        famousQuotes: JSON.parse(roleModel.famousQuotes || '[]'),
+        enhancedAttributes: JSON.parse(roleModel.enhancedAttributes || '[]'),
+        dailyDoEnhanced: roleModel.dailyDoEnhanced || null // Keep as parsed JSON or null
+      }
+    })
 
     return NextResponse.json({ roleModels: formattedRoleModels })
 
