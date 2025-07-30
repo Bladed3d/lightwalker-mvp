@@ -466,12 +466,12 @@ Describe your core values and principles - what you stand for, what drives your 
           
           // Check if any role models were mapped
           const roleModelNames = ['steve jobs', 'einstein', 'buddha', 'newton', 'leonardo da vinci', 'marcus aurelius', 'joan of arc', 'marie curie', 'maya angelou', 'martin luther king jr', 'patanjali']
-          const mappedRoleModels = data.keywords.filter(keyword => 
+          const mappedRoleModels = data.keywords.filter((keyword: string) => 
             roleModelNames.some(name => name.includes(keyword.toLowerCase()) || keyword.toLowerCase().includes(name.replace(' ', '')))
           )
           
           if (mappedRoleModels.length > 0) {
-            setAiMessage(`Perfect! I found conceptual matches in our database: **${mappedRoleModels.join(', ')}** and traits: **${data.keywords.filter(k => !mappedRoleModels.includes(k)).join(', ')}**. 
+            setAiMessage(`Perfect! I found conceptual matches in our database: **${mappedRoleModels.join(', ')}** and traits: **${data.keywords.filter((k: string) => !mappedRoleModels.includes(k)).join(', ')}**. 
 
 Let me search for their most relevant attributes...`)
           } else {
@@ -1464,10 +1464,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
                           )}
                         </div>
                         <div className="text-sm text-gray-300 mb-3">
-                          {activePathway === 'problem-first' && attribute.oppositeOf 
-                            ? attribute.oppositeOf 
-                            : attribute.description
-                          }
+                          {attribute.description}
                         </div>
                       </div>
                     </label>
