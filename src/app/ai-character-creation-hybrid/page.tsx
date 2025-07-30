@@ -75,7 +75,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
 
   useEffect(() => {
     if (searchQuery.length > 2) {
-      performSearch(searchQuery)
+      performSearch(searchQuery) // Now async but no need to await in useEffect
     } else {
       setSearchResults([])
       setHighlightedRoleModel('')
@@ -104,36 +104,92 @@ Just describe what you're working on, and I'll find the perfect attributes for y
     }
   }
 
-  const performSearch = (query: string) => {
-    const results: SearchResult[] = []
-    
-    // Same smart search logic from before
-    const stopWords = ['how', 'can', 'i', 'to', 'be', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'for', 'with', 'by', 'the', 'of', 'is', 'are', 'was', 'were', 'will', 'would', 'could', 'should', 'do', 'does', 'did', 'have', 'has', 'had', 'get', 'got', 'make', 'made', 'take', 'took', 'help', 'want', 'need']
-    
-    let searchTerms = query.toLowerCase()
-      .split(' ')
-      .filter(term => term.length > 2 && !stopWords.includes(term))
-    
-    const synonymMap: Record<string, string[]> = {
-      'focus': ['focus', 'concentration', 'attention', 'strategic', 'priorities', 'distraction'],
-      'overwhelmed': ['overwhelmed', 'stress', 'chaos', 'busy', 'pressure'],
-      'priorities': ['priorities', 'focus', 'strategic', 'important', 'essential'],
-      'procrastination': ['procrastination', 'delay', 'avoidance', 'motivation'],
-      'decisions': ['decisions', 'choice', 'judgment', 'strategy'],
-      'stress': ['stress', 'overwhelmed', 'pressure', 'anxiety', 'calm'],
-      'gratitude': ['gratitude', 'appreciation', 'thankful', 'positive'],
-      'anger': ['anger', 'frustration', 'irritation', 'patience', 'calm'],
-      'empathy': ['empathy', 'compassion', 'understanding', 'kindness']
+  const performSearch = async (query: string) => {
+    if (query.length <= 2) {
+      setSearchResults([])
+      setHighlightedRoleModel('')
+      setHighlightedAttribute('')
+      return
     }
-    
-    const expandedTerms = new Set(searchTerms)
-    searchTerms.forEach(term => {
-      if (synonymMap[term]) {
-        synonymMap[term].forEach(synonym => expandedTerms.add(synonym))
-      }
+
+    // Prepare available attributes for AI semantic search
+    const availableAttributes: any[] = []
+    roleModels.forEach(roleModel => {
+      roleModel.enhancedAttributes?.forEach(attribute => {
+        const dailyDoItems = roleModel.dailyDoEnhanced?.attributes?.find(
+          (attr: any) => attr.attributeId === attribute.name.toLowerCase().replace(/\s+/g, '-')
+        )?.dailyDoItems
+
+        availableAttributes.push({
+          roleModel: roleModel.commonName,
+          roleModelId: roleModel.id,
+          attribute: attribute.name,
+          attributeId: attribute.id,
+          description: attribute.description,
+          method: attribute.method,
+          benefit: attribute.benefit || '',
+          dailyDoItems: dailyDoItems || null
+        })
+      })
     })
-    
-    searchTerms = Array.from(expandedTerms)
+
+    try {
+      // Use AI semantic search
+      const response = await fetch('/api/ai-semantic-search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          searchQuery: query,
+          availableAttributes
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.matches.length > 0) {
+        // Convert AI matches to SearchResult format
+        const aiResults: SearchResult[] = data.matches.map((match: any) => ({
+          roleModel: match.roleModel,
+          roleModelId: match.roleModelId,
+          attribute: match.attribute,
+          attributeId: match.attributeId,
+          originalMethod: availableAttributes.find(attr => 
+            attr.roleModelId === match.roleModelId && attr.attributeId === match.attributeId
+          )?.method || '',
+          dailyDoItems: availableAttributes.find(attr => 
+            attr.roleModelId === match.roleModelId && attr.attributeId === match.attributeId
+          )?.dailyDoItems || null,
+          relevanceScore: match.relevanceScore,
+          selected: selectedAttributes.some(sel => 
+            sel.roleModelId === match.roleModelId && sel.attributeId === match.attributeId
+          )
+        }))
+
+        setSearchResults(aiResults)
+        
+        // Auto-highlight top AI result
+        if (aiResults.length > 0) {
+          const topResult = aiResults[0]
+          setHighlightedRoleModel(topResult.roleModelId)
+          setHighlightedAttribute(topResult.attributeId)
+          setSelectedRoleModel(topResult.roleModelId)
+        }
+        
+        return
+      }
+    } catch (error) {
+      console.error('AI semantic search failed, falling back to basic search:', error)
+    }
+
+    // Fallback to basic search if AI fails
+    performBasicSearch(query)
+  }
+
+  const performBasicSearch = (query: string) => {
+    const results: SearchResult[] = []
+    const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 2)
     
     if (searchTerms.length === 0) {
       setSearchResults([])
@@ -144,29 +200,21 @@ Just describe what you're working on, and I'll find the perfect attributes for y
       roleModel.enhancedAttributes?.forEach(attribute => {
         let relevanceScore = 0
         
-        const primaryText = `${attribute.name} ${attribute.description}`.toLowerCase()
-        const methodText = `${attribute.method}`.toLowerCase() 
-        const benefitText = `${attribute.benefit || ''}`.toLowerCase()
+        const searchText = `${attribute.name} ${attribute.description} ${attribute.method}`.toLowerCase()
         
         const dailyDoItems = roleModel.dailyDoEnhanced?.attributes?.find(
           (attr: any) => attr.attributeId === attribute.name.toLowerCase().replace(/\s+/g, '-')
         )?.dailyDoItems
         
         const dailyDoText = dailyDoItems ? 
-          dailyDoItems.map((item: any) => `${item.action} ${item.category} ${item.successCriteria}`).join(' ').toLowerCase() : ''
+          dailyDoItems.map((item: any) => `${item.action} ${item.category}`).join(' ').toLowerCase() : ''
         
         searchTerms.forEach(term => {
-          if (primaryText.includes(term)) {
-            relevanceScore += (primaryText.split(term).length - 1) * 10
-          }
-          if (methodText.includes(term)) {
-            relevanceScore += (methodText.split(term).length - 1) * 5
-          }
-          if (benefitText.includes(term)) {
-            relevanceScore += (benefitText.split(term).length - 1) * 5
+          if (searchText.includes(term)) {
+            relevanceScore += 10
           }
           if (dailyDoText.includes(term)) {
-            relevanceScore += (dailyDoText.split(term).length - 1) * 8
+            relevanceScore += 5
           }
         })
 
@@ -190,12 +238,12 @@ Just describe what you're working on, and I'll find the perfect attributes for y
     results.sort((a, b) => b.relevanceScore - a.relevanceScore)
     setSearchResults(results.slice(0, 8))
     
-    // Auto-highlight top result for AI magic
+    // Auto-highlight top result
     if (results.length > 0) {
       const topResult = results[0]
       setHighlightedRoleModel(topResult.roleModelId)
       setHighlightedAttribute(topResult.attributeId)
-      setSelectedRoleModel(topResult.roleModelId) // Auto-select role model to show attributes
+      setSelectedRoleModel(topResult.roleModelId)
     }
   }
 
@@ -226,13 +274,14 @@ Just describe what you're working on, and I'll find the perfect attributes for y
         
         if (data.keywords.length > 0) {
           setSearchQuery(data.keywords.join(' '))
-          setIsAIMode(false) // Switch to show search results
+          // Keep AI mode active - don't switch to manual
         }
         
       } else {
         setAiMessage(data.fallback?.aiMessage || "I'm having trouble understanding. Try simpler terms like 'focus' or 'stress'.")
         if (data.fallback?.keywords) {
           setSearchQuery(data.fallback.keywords.join(' '))
+          // Keep AI mode active
         }
       }
       
@@ -272,6 +321,10 @@ Just describe what you're working on, and I'll find the perfect attributes for y
       ])
     }
 
+    // Update highlighted role model when clicking different search results
+    setHighlightedRoleModel(result.roleModelId)
+    setSelectedRoleModel(result.roleModelId) // Show all attributes for this role model
+    
     setSearchResults(prev => 
       prev.map(item => ({
         ...item,
@@ -620,7 +673,7 @@ Just describe what you're working on, and I'll find the perfect attributes for y
                     <label className="flex items-start space-x-3 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={selectedAttributes.some(attr => attr.attributeId === attribute.id)}
+                        checked={selectedAttributes.some(attr => attr.roleModelId === selectedRoleModel && attr.attributeId === attribute.id)}
                         onChange={() => handleAttributeToggle(attribute.id)}
                         className="mt-1 h-4 w-4 text-cyan-500 focus:ring-cyan-500 border-gray-600 rounded bg-gray-800"
                       />

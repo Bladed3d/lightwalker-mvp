@@ -1,5 +1,5 @@
-// AI Service for Lightwalker Character Creation
-// Uses cost-effective Kimi K2 via Openrouter for MVP
+// AI Service for Lightwalker Character Creation  
+// Uses DeepSeek R1 via OpenRouter for maximum cost efficiency
 
 interface KeywordExtractionResult {
   keywords: string[]
@@ -32,7 +32,7 @@ class AIService {
           'X-Title': 'Lightwalker Character Creation'
         },
         body: JSON.stringify({
-          model: 'deepseek/deepseek-chat', // Cost-effective alternative to Kimi K2
+          model: 'deepseek/deepseek-r1', // Most cost-effective reasoning model
           messages: [{
             role: 'system',
             content: `You are a keyword extraction expert for a personal development app. 
