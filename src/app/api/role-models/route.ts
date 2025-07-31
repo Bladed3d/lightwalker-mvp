@@ -65,7 +65,19 @@ export async function GET(request: NextRequest) {
         'Nelson Mandela': { primaryColor: '#34C759', secondaryColor: '#30D158', archetype: 'leader' },
         'Marie Curie': { primaryColor: '#5856D6', secondaryColor: '#AF52DE', archetype: 'scientist' },
         'Gandhi': { primaryColor: '#007AFF', secondaryColor: '#5AC8FA', archetype: 'pacifist' },
-        'Martin Luther King Jr': { primaryColor: '#FF3B30', secondaryColor: '#FF6482', archetype: 'activist' }
+        'Martin Luther King Jr': { primaryColor: '#FF3B30', secondaryColor: '#FF6482', archetype: 'activist' },
+        'Isaac Newton': { primaryColor: '#5856D6', secondaryColor: '#AF52DE', archetype: 'physicist' },
+        'Socrates': { primaryColor: '#FF9500', secondaryColor: '#FFCC02', archetype: 'philosopher' },
+        'Maya Angelou': { primaryColor: '#AF52DE', secondaryColor: '#5AC8FA', archetype: 'poet' },
+        'Theodore Roosevelt': { primaryColor: '#FF3B30', secondaryColor: '#FF6482', archetype: 'pioneer' },
+        'Winston Churchill': { primaryColor: '#34C759', secondaryColor: '#30D158', archetype: 'statesman' },
+        'Benjamin Franklin': { primaryColor: '#FF9500', secondaryColor: '#FFCC02', archetype: 'polymath' },
+        'Frederick Douglass': { primaryColor: '#FF3B30', secondaryColor: '#FF6482', archetype: 'orator' },
+        'Confucius': { primaryColor: '#007AFF', secondaryColor: '#5AC8FA', archetype: 'teacher' },
+        'Patanjali': { primaryColor: '#AF52DE', secondaryColor: '#5AC8FA', archetype: 'mystic' },
+        'Rumi': { primaryColor: '#FF9500', secondaryColor: '#FFCC02', archetype: 'mystic' },
+        'Viktor Frankl': { primaryColor: '#5856D6', secondaryColor: '#AF52DE', archetype: 'psychologist' },
+        'Helen Keller': { primaryColor: '#34C759', secondaryColor: '#30D158', archetype: 'advocate' }
       }
       
       const defaultColors = colorMap[roleModel.commonName] || { 
