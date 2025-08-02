@@ -3,6 +3,9 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+// Force dynamic rendering to prevent build-time database calls
+export const dynamic = 'force-dynamic'
+
 // GET /api/debug-characters - Debug endpoint to see all characters
 export async function GET(request: NextRequest) {
   try {
