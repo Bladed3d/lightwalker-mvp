@@ -3,6 +3,7 @@
   "permissions": {
     "allow": [
       "netstat -ano | findstr :3001"
+      "Bash(netstat -ano | findstr :*)",
       "Bash(npm run build:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",

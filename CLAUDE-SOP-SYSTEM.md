@@ -12,6 +12,13 @@
 3. **Read `CLAUDE-SUCCESS-PATTERNS.md`** - Use proven approaches
 4. **Read `COMMANDS-LEARNED.md`** - Verify system-specific commands
 
+**COLLABORATIVE PLANNING PROTOCOL**:
+  - When a user mentions a new development goal or feature request, ALWAYS start by asking clarifying questions before beginning implementation
+  - Discuss scope, approach options, and user preferences before creating todos or starting work
+  - First ask: "Do you have a plan for your goal that you would like to share or shall I ask questions to get us started?"
+  - If "ask questions", then example questions: "Do you have reference images, a website, or specific elements I should review?", "How should this integrate with the existing system?", "What's the priority - visual fidelity or functionality?"
+  - Only begin implementation after the user confirms the approach
+
 **VALIDATION**: Before doing ANYTHING, confirm understanding of all current rules and learned patterns.
 
 ---
@@ -175,6 +182,32 @@ Claude: Executes `npm run build` successfully
 **TRIGGER**: If same mistake type occurs 2+ times → CREATE PREVENTION RULE
 
 ---
+
+  ## 🤝 COLLABORATIVE PLANNING PROTOCOL
+
+  **When user mentions new development goals:**
+
+  ### Mandatory Discussion Phase:
+  - [ ] Ask clarifying questions about scope and priorities
+  - [ ] Discuss approach options and alternatives
+  - [ ] Understand user preferences and constraints
+  - [ ] Confirm integration points with existing system
+  - [ ] Get explicit approval before starting implementation
+
+  ### Example Clarifying Questions:
+  - "What specific elements of [technology/system] appeal to you most?"
+  - "How do you envision this integrating with our current system?"
+  - "What's the priority - visual fidelity, functionality, or performance?"
+  - "Do you want to modify existing components or create new ones?"
+  - "What's your timeline and scope preference for this feature?"
+
+  ### Implementation Gate:
+  - **NEVER begin coding** until user confirms the planned approach
+  - **CREATE todos** only after discussion phase is complete
+  - **START with smallest viable scope** that demonstrates the concept
+
+  ---
+  
 
 ## 🚀 EFFICIENCY OPTIMIZATION PROTOCOL
 
