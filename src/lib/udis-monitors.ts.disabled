@@ -1,0 +1,725 @@
+/**
+ * UDIS Specialized Monitoring Agents
+ * 
+ * Domain-specific monitors that detect issues in different areas:
+ * - Build & Compilation Issues
+ * - Performance Problems
+ * - User Experience Issues
+ * - Security Vulnerabilities
+ * - Code Quality Issues
+ * - Infrastructure Problems
+ */
+
+import { DetectedIssue, ProblemDomain, IssueSeverity, UDISAgent, UDISConfig, AgentMessage, AgentType } from './udis-core'
+import { aiService } from './ai-service'
+
+/**
+ * Build Monitor - Detects compilation, dependency, and build-time issues
+ */
+export class BuildMonitor extends UDISAgent {
+  private buildMetrics = {
+    buildTimes: [] as number[],
+    errorPatterns: new Map<string, number>(),
+    lastSuccessfulBuild: null as Date | null
+  }
+
+  async start(): Promise<void> {
+    this.isActive = true
+    console.log('[UDIS:BuildMonitor] Monitoring build processes')
+    
+    // Hook into build events if available
+    this.setupBuildHooks()
+  }
+
+  async stop(): Promise<void> {
+    this.isActive = false
+    console.log('[UDIS:BuildMonitor] Stopped build monitoring')
+  }
+
+  receiveMessage(message: AgentMessage): void {
+    if (message.type === 'analysis' && message.data.buildError) {
+      this.analyzeBuildError(message.data)
+    }
+  }
+
+  private setupBuildHooks(): void {
+    // Monitor TypeScript compilation errors
+    this.monitorTypeScriptErrors()
+    
+    // Monitor dependency issues
+    this.monitorDependencyIssues()
+    
+    // Monitor build performance
+    this.monitorBuildPerformance()
+  }
+
+  private monitorTypeScriptErrors(): void {
+    // This would integrate with TypeScript compiler API in a real implementation
+    console.log('[UDIS:BuildMonitor] TypeScript error monitoring active')
+  }
+
+  private monitorDependencyIssues(): void {
+    // Monitor for common dependency issues
+    const commonIssues = [
+      'Module not found',
+      'Cannot resolve module',
+      'ENOENT: no such file or directory',
+      'ERR_PNPM_OUTDATED_LOCKFILE',
+      'peer dependency warning'
+    ]
+    
+    // This would hook into npm/pnpm output in real implementation
+  }
+
+  private monitorBuildPerformance(): void {
+    // Track build times and detect performance regressions
+    setInterval(() => {
+      if (this.buildMetrics.buildTimes.length > 10) {
+        const avgBuildTime = this.buildMetrics.buildTimes.reduce((a, b) => a + b, 0) / this.buildMetrics.buildTimes.length
+        const recentBuildTime = this.buildMetrics.buildTimes[this.buildMetrics.buildTimes.length - 1]
+        
+        if (recentBuildTime > avgBuildTime * 1.5) {
+          this.reportSlowBuild(recentBuildTime, avgBuildTime)
+        }
+      }
+    }, 30000) // Check every 30 seconds
+  }
+
+  private async analyzeBuildError(errorData: any): Promise<void> {
+    const issue: DetectedIssue = {
+      id: `build-analysis-${Date.now()}`,
+      timestamp: new Date(),
+      domain: ProblemDomain.BUILD,
+      severity: IssueSeverity.HIGH,
+      title: 'Build Error Analysis',
+      description: errorData.message,
+      context: {
+        metadata: errorData
+      },
+      autoFixable: this.isAutoFixable(errorData.message),
+      similarIssues: []
+    }
+
+    this.sendMessage({
+      from: AgentType.MONITOR,
+      to: AgentType.ANALYST,
+      type: 'analysis',
+      data: issue,
+      conversationId: issue.id
+    })
+  }
+
+  private reportSlowBuild(currentTime: number, avgTime: number): void {
+    const issue: DetectedIssue = {
+      id: `build-slow-${Date.now()}`,
+      timestamp: new Date(),
+      domain: ProblemDomain.PERFORMANCE,
+      severity: IssueSeverity.MEDIUM,
+      title: 'Build Performance Regression',
+      description: `Build time increased: ${Math.round(currentTime)}ms vs avg ${Math.round(avgTime)}ms`,
+      context: {
+        metadata: { currentTime, avgTime, regression: currentTime / avgTime }
+      },
+      autoFixable: false,
+      similarIssues: []
+    }
+
+    this.sendMessage({
+      from: AgentType.MONITOR,
+      to: AgentType.ANALYST,
+      type: 'analysis',
+      data: issue,
+      conversationId: issue.id
+    })
+  }
+
+  private isAutoFixable(errorMessage: string): boolean {
+    const autoFixablePatterns = [
+      /Module not found.*'(@\/|\.\/|\.\.\/)/, // Relative import issues
+      /Cannot find module.*types/, // Missing type definitions
+      /Expected ';'/, // Missing semicolons
+      /Unexpected token.*}/, // Missing brackets
+    ]
+
+    return autoFixablePatterns.some(pattern => pattern.test(errorMessage))
+  }
+}
+
+/**
+ * Performance Monitor - Detects slow responses, memory leaks, CPU spikes
+ */
+export class PerformanceMonitor extends UDISAgent {
+  private performanceMetrics = {
+    apiResponseTimes: new Map<string, number[]>(),
+    memoryUsage: [] as number[],
+    cpuUsage: [] as number[],
+    userInteractionTimes: new Map<string, number[]>()
+  }
+
+  async start(): Promise<void> {
+    this.isActive = true
+    console.log('[UDIS:PerformanceMonitor] Monitoring application performance')
+    
+    this.startPerformanceTracking()
+  }
+
+  async stop(): Promise<void> {
+    this.isActive = false
+    console.log('[UDIS:PerformanceMonitor] Stopped performance monitoring')
+  }
+
+  receiveMessage(message: AgentMessage): void {
+    if (message.data.apiMetrics) {
+      this.trackAPIPerformance(message.data.apiMetrics)
+    }
+    if (message.data.userInteraction) {
+      this.trackUserInteraction(message.data.userInteraction)
+    }
+  }
+
+  private startPerformanceTracking(): void {
+    // Monitor memory usage
+    setInterval(() => {
+      const usage = process.memoryUsage()
+      const heapUsedMB = usage.heapUsed / 1024 / 1024
+      
+      this.performanceMetrics.memoryUsage.push(heapUsedMB)
+      
+      // Keep only last 100 measurements
+      if (this.performanceMetrics.memoryUsage.length > 100) {
+        this.performanceMetrics.memoryUsage.shift()
+      }
+      
+      // Check for memory leaks
+      if (this.performanceMetrics.memoryUsage.length >= 20) {
+        this.checkMemoryLeak()
+      }
+      
+    }, 5000) // Every 5 seconds
+  }
+
+  private trackAPIPerformance(metrics: { route: string, duration: number }): void {
+    const { route, duration } = metrics
+    
+    if (!this.performanceMetrics.apiResponseTimes.has(route)) {
+      this.performanceMetrics.apiResponseTimes.set(route, [])
+    }
+    
+    const times = this.performanceMetrics.apiResponseTimes.get(route)!
+    times.push(duration)
+    
+    // Keep only last 50 measurements per route
+    if (times.length > 50) {
+      times.shift()
+    }
+    
+    // Check for performance regression
+    if (times.length >= 10) {
+      this.checkAPIPerformanceRegression(route, times)
+    }
+  }
+
+  private trackUserInteraction(interaction: { type: string, duration?: number }): void {
+    if (!interaction.duration) return
+    
+    const { type, duration } = interaction
+    
+    if (!this.performanceMetrics.userInteractionTimes.has(type)) {
+      this.performanceMetrics.userInteractionTimes.set(type, [])
+    }
+    
+    const times = this.performanceMetrics.userInteractionTimes.get(type)!
+    times.push(duration)
+    
+    // Keep only last 30 measurements per interaction type
+    if (times.length > 30) {
+      times.shift()
+    }
+    
+    // Check for UX performance issues
+    if (times.length >= 5) {
+      this.checkUserExperiencePerformance(type, times)
+    }
+  }
+
+  private checkMemoryLeak(): void {
+    const recent = this.performanceMetrics.memoryUsage.slice(-10)
+    const older = this.performanceMetrics.memoryUsage.slice(-20, -10)
+    
+    const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length
+    const olderAvg = older.reduce((a, b) => a + b, 0) / older.length
+    
+    // Memory leak if recent usage is 50% higher than older usage
+    if (recentAvg > olderAvg * 1.5 && recentAvg > 200) { // 200MB threshold
+      const issue: DetectedIssue = {
+        id: `memory-leak-${Date.now()}`,
+        timestamp: new Date(),
+        domain: ProblemDomain.PERFORMANCE,
+        severity: IssueSeverity.HIGH,
+        title: 'Potential Memory Leak Detected',
+        description: `Memory usage increased from ${Math.round(olderAvg)}MB to ${Math.round(recentAvg)}MB`,
+        context: {
+          metadata: { recentAvg, olderAvg, increase: recentAvg / olderAvg }
+        },
+        autoFixable: false,
+        similarIssues: []
+      }
+
+      this.sendMessage({
+        from: AgentType.MONITOR,
+        to: AgentType.ANALYST,
+        type: 'analysis',
+        data: issue,
+        conversationId: issue.id
+      })
+    }
+  }
+
+  private checkAPIPerformanceRegression(route: string, times: number[]): void {
+    const recent = times.slice(-5)
+    const baseline = times.slice(0, -5)
+    
+    const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length
+    const baselineAvg = baseline.reduce((a, b) => a + b, 0) / baseline.length
+    
+    // Performance regression if recent is 2x slower than baseline
+    if (recentAvg > baselineAvg * 2 && recentAvg > 1000) { // 1 second threshold
+      const issue: DetectedIssue = {
+        id: `api-perf-regression-${route.replace(/\//g, '-')}-${Date.now()}`,
+        timestamp: new Date(),
+        domain: ProblemDomain.PERFORMANCE,
+        severity: IssueSeverity.MEDIUM,
+        title: `API Performance Regression: ${route}`,
+        description: `Response time increased from ${Math.round(baselineAvg)}ms to ${Math.round(recentAvg)}ms`,
+        context: {
+          function: route,
+          metadata: { recentAvg, baselineAvg, regression: recentAvg / baselineAvg }
+        },
+        autoFixable: false,
+        similarIssues: []
+      }
+
+      this.sendMessage({
+        from: AgentType.MONITOR,
+        to: AgentType.ANALYST,
+        type: 'analysis',
+        data: issue,
+        conversationId: issue.id
+      })
+    }
+  }
+
+  private checkUserExperiencePerformance(type: string, times: number[]): void {
+    const avgTime = times.reduce((a, b) => a + b, 0) / times.length
+    
+    // UX performance thresholds
+    const thresholds = {
+      'click': 100,      // 100ms for click responses
+      'form_submit': 500, // 500ms for form submissions
+      'search': 300,     // 300ms for search results
+      'page_load': 2000  // 2 seconds for page loads
+    }
+    
+    const threshold = thresholds[type as keyof typeof thresholds] || 1000
+    
+    if (avgTime > threshold) {
+      const issue: DetectedIssue = {
+        id: `ux-perf-${type}-${Date.now()}`,
+        timestamp: new Date(),
+        domain: ProblemDomain.USER_EXPERIENCE,
+        severity: avgTime > threshold * 2 ? IssueSeverity.HIGH : IssueSeverity.MEDIUM,
+        title: `Slow User Interaction: ${type}`,
+        description: `${type} taking ${Math.round(avgTime)}ms (threshold: ${threshold}ms)`,
+        context: {
+          metadata: { avgTime, threshold, interactionType: type }
+        },
+        autoFixable: false,
+        similarIssues: []
+      }
+
+      this.sendMessage({
+        from: AgentType.MONITOR,
+        to: AgentType.ANALYST,
+        type: 'analysis',
+        data: issue,
+        conversationId: issue.id
+      })
+    }
+  }
+}
+
+/**
+ * User Experience Monitor - Detects UI issues, user behavior problems, accessibility issues
+ */
+export class UserExperienceMonitor extends UDISAgent {
+  private uxMetrics = {
+    formAbandonments: new Map<string, number>(),
+    errorEncounters: new Map<string, number>(),
+    searchFailures: new Map<string, number>(),
+    navigationPatterns: [] as string[]
+  }
+
+  async start(): Promise<void> {
+    this.isActive = true
+    console.log('[UDIS:UXMonitor] Monitoring user experience')
+  }
+
+  async stop(): Promise<void> {
+    this.isActive = false
+    console.log('[UDIS:UXMonitor] Stopped UX monitoring')
+  }
+
+  receiveMessage(message: AgentMessage): void {
+    if (message.data.userInteraction) {
+      this.analyzeUserBehavior(message.data.userInteraction)
+    }
+  }
+
+  private analyzeUserBehavior(interaction: any): void {
+    switch (interaction.type) {
+      case 'form_abandon':
+        this.trackFormAbandonment(interaction)
+        break
+      case 'search_no_results':
+        this.trackSearchFailure(interaction)
+        break
+      case 'error_encounter':
+        this.trackErrorEncounter(interaction)
+        break
+      case 'navigation':
+        this.trackNavigationPattern(interaction)
+        break
+    }
+  }
+
+  private trackFormAbandonment(interaction: any): void {
+    const formId = interaction.formId || 'unknown'
+    const current = this.uxMetrics.formAbandonments.get(formId) || 0
+    this.uxMetrics.formAbandonments.set(formId, current + 1)
+    
+    // Alert if abandonment rate is high
+    if (current + 1 >= 5) { // 5 abandonments in session
+      const issue: DetectedIssue = {
+        id: `form-abandon-${formId}-${Date.now()}`,
+        timestamp: new Date(),
+        domain: ProblemDomain.USER_EXPERIENCE,
+        severity: IssueSeverity.MEDIUM,
+        title: `High Form Abandonment: ${formId}`,
+        description: `Form abandoned ${current + 1} times in this session`,
+        context: {
+          metadata: { formId, abandonmentCount: current + 1 }
+        },
+        autoFixable: false,
+        similarIssues: []
+      }
+
+      this.reportUXIssue(issue)
+    }
+  }
+
+  private trackSearchFailure(interaction: any): void {
+    const query = interaction.query || 'unknown'
+    const current = this.uxMetrics.searchFailures.get(query) || 0
+    this.uxMetrics.searchFailures.set(query, current + 1)
+    
+    // Alert if same search fails repeatedly
+    if (current + 1 >= 3) {
+      const issue: DetectedIssue = {
+        id: `search-fail-${query.replace(/\s+/g, '-')}-${Date.now()}`,
+        timestamp: new Date(),
+        domain: ProblemDomain.USER_EXPERIENCE,
+        severity: IssueSeverity.MEDIUM,
+        title: `Repeated Search Failure: "${query}"`,
+        description: `Search query "${query}" returned no results ${current + 1} times`,
+        context: {
+          metadata: { query, failureCount: current + 1 }
+        },
+        autoFixable: true, // Search improvements can be automated
+        similarIssues: []
+      }
+
+      this.reportUXIssue(issue)
+    }
+  }
+
+  private trackErrorEncounter(interaction: any): void {
+    const errorType = interaction.errorType || 'unknown'
+    const current = this.uxMetrics.errorEncounters.get(errorType) || 0
+    this.uxMetrics.errorEncounters.set(errorType, current + 1)
+    
+    const issue: DetectedIssue = {
+      id: `ux-error-${errorType}-${Date.now()}`,
+      timestamp: new Date(),
+      domain: ProblemDomain.USER_EXPERIENCE,
+      severity: IssueSeverity.HIGH,
+      title: `User Error Encounter: ${errorType}`,
+      description: `User encountered error: ${interaction.message}`,
+      context: {
+        metadata: { errorType, message: interaction.message, count: current + 1 }
+      },
+      autoFixable: this.isErrorAutoFixable(errorType),
+      similarIssues: []
+    }
+
+    this.reportUXIssue(issue)
+  }
+
+  private trackNavigationPattern(interaction: any): void {
+    this.uxMetrics.navigationPatterns.push(interaction.path)
+    
+    // Keep only last 50 navigation events
+    if (this.uxMetrics.navigationPatterns.length > 50) {
+      this.uxMetrics.navigationPatterns.shift()
+    }
+    
+    // Detect navigation loops (user going back and forth)
+    this.detectNavigationLoops()
+  }
+
+  private detectNavigationLoops(): void {
+    const recent = this.uxMetrics.navigationPatterns.slice(-6)
+    
+    // Check for A->B->A->B pattern (navigation loop)
+    if (recent.length >= 4) {
+      const [a, b, c, d] = recent.slice(-4)
+      if (a === c && b === d && a !== b) {
+        const issue: DetectedIssue = {
+          id: `nav-loop-${Date.now()}`,
+          timestamp: new Date(),
+          domain: ProblemDomain.USER_EXPERIENCE,
+          severity: IssueSeverity.MEDIUM,
+          title: 'Navigation Loop Detected',
+          description: `User navigating back and forth between ${a} and ${b}`,
+          context: {
+            metadata: { pathA: a, pathB: b, pattern: recent }
+          },
+          autoFixable: false,
+          similarIssues: []
+        }
+
+        this.reportUXIssue(issue)
+      }
+    }
+  }
+
+  private isErrorAutoFixable(errorType: string): boolean {
+    const autoFixableErrors = [
+      'validation_error',     // Can improve validation messages
+      'network_timeout',      // Can add retry logic
+      'form_validation',      // Can improve form validation
+      'search_no_results'     // Can improve search algorithm
+    ]
+    
+    return autoFixableErrors.includes(errorType)
+  }
+
+  private reportUXIssue(issue: DetectedIssue): void {
+    this.sendMessage({
+      from: AgentType.MONITOR,
+      to: AgentType.ANALYST,
+      type: 'analysis',
+      data: issue,
+      conversationId: issue.id
+    })
+  }
+}
+
+/**
+ * Security Monitor - Detects security vulnerabilities, suspicious activities
+ */
+export class SecurityMonitor extends UDISAgent {
+  private securityMetrics = {
+    suspiciousRequests: new Map<string, number>(),
+    failedAuthentications: 0,
+    potentialAttacks: [] as string[]
+  }
+
+  async start(): Promise<void> {
+    this.isActive = true
+    console.log('[UDIS:SecurityMonitor] Monitoring security threats')
+  }
+
+  async stop(): Promise<void> {
+    this.isActive = false
+    console.log('[UDIS:SecurityMonitor] Stopped security monitoring')
+  }
+
+  receiveMessage(message: AgentMessage): void {
+    if (message.data.securityEvent) {
+      this.analyzeSecurityEvent(message.data.securityEvent)
+    }
+  }
+
+  private analyzeSecurityEvent(event: any): void {
+    switch (event.type) {
+      case 'suspicious_request':
+        this.checkSuspiciousRequest(event)
+        break
+      case 'authentication_failure':
+        this.trackAuthenticationFailure(event)
+        break
+      case 'potential_injection':
+        this.checkInjectionAttempt(event)
+        break
+    }
+  }
+
+  private checkSuspiciousRequest(event: any): void {
+    const ip = event.clientIP || 'unknown'
+    const current = this.securityMetrics.suspiciousRequests.get(ip) || 0
+    this.securityMetrics.suspiciousRequests.set(ip, current + 1)
+    
+    // Alert after multiple suspicious requests from same IP
+    if (current + 1 >= 5) {
+      const issue: DetectedIssue = {
+        id: `security-suspicious-${ip}-${Date.now()}`,
+        timestamp: new Date(),
+        domain: ProblemDomain.SECURITY,
+        severity: IssueSeverity.HIGH,
+        title: `Suspicious Activity from IP: ${ip}`,
+        description: `${current + 1} suspicious requests detected from ${ip}`,
+        context: {
+          metadata: { clientIP: ip, requestCount: current + 1, requests: event.requests }
+        },
+        autoFixable: true, // Can implement rate limiting
+        similarIssues: []
+      }
+
+      this.reportSecurityIssue(issue)
+    }
+  }
+
+  private trackAuthenticationFailure(event: any): void {
+    this.securityMetrics.failedAuthentications++
+    
+    // Alert after multiple authentication failures
+    if (this.securityMetrics.failedAuthentications >= 10) {
+      const issue: DetectedIssue = {
+        id: `security-auth-fail-${Date.now()}`,
+        timestamp: new Date(),
+        domain: ProblemDomain.SECURITY,
+        severity: IssueSeverity.HIGH,
+        title: 'Multiple Authentication Failures',
+        description: `${this.securityMetrics.failedAuthentications} authentication failures detected`,
+        context: {
+          metadata: { failureCount: this.securityMetrics.failedAuthentications }
+        },
+        autoFixable: true, // Can implement account lockout
+        similarIssues: []
+      }
+
+      this.reportSecurityIssue(issue)
+    }
+  }
+
+  private checkInjectionAttempt(event: any): void {
+    const injectionPatterns = [
+      /(\bOR\b|\bAND\b).*=.*\b(OR|AND)\b/i,  // SQL injection
+      /<script.*?>.*?<\/script>/i,           // XSS
+      /\{.*?\{.*?\}.*?\}/,                   // Template injection
+      /\.\.\//,                             // Path traversal
+    ]
+
+    const isInjection = injectionPatterns.some(pattern => 
+      pattern.test(event.payload || '')
+    )
+
+    if (isInjection) {
+      const issue: DetectedIssue = {
+        id: `security-injection-${Date.now()}`,
+        timestamp: new Date(),
+        domain: ProblemDomain.SECURITY,
+        severity: IssueSeverity.CRITICAL,
+        title: 'Potential Injection Attack',
+        description: `Injection attempt detected in: ${event.field}`,
+        context: {
+          metadata: { 
+            field: event.field, 
+            payload: event.payload?.slice(0, 200), // Truncate for safety
+            clientIP: event.clientIP 
+          }
+        },
+        autoFixable: true, // Can implement input sanitization
+        similarIssues: []
+      }
+
+      this.reportSecurityIssue(issue)
+    }
+  }
+
+  private reportSecurityIssue(issue: DetectedIssue): void {
+    // Security issues get priority routing
+    this.sendMessage({
+      from: AgentType.MONITOR,
+      to: AgentType.RESOLVER, // Direct to resolver for immediate action
+      type: 'solution',
+      data: issue,
+      conversationId: issue.id
+    })
+  }
+}
+
+/**
+ * Code Quality Monitor - Detects code smells, anti-patterns, technical debt
+ */
+export class CodeQualityMonitor extends UDISAgent {
+  async start(): Promise<void> {
+    this.isActive = true
+    console.log('[UDIS:CodeQualityMonitor] Monitoring code quality')
+  }
+
+  async stop(): Promise<void> {
+    this.isActive = false
+    console.log('[UDIS:CodeQualityMonitor] Stopped code quality monitoring')
+  }
+
+  receiveMessage(message: AgentMessage): void {
+    if (message.data.codeAnalysis) {
+      this.analyzeCodeQuality(message.data.codeAnalysis)
+    }
+  }
+
+  private analyzeCodeQuality(analysis: any): void {
+    // This would integrate with ESLint, TypeScript compiler, etc.
+    // For now, placeholder implementation
+    console.log('[UDIS:CodeQualityMonitor] Analyzing code quality')
+  }
+}
+
+/**
+ * Infrastructure Monitor - Detects deployment, database, external service issues
+ */
+export class InfrastructureMonitor extends UDISAgent {
+  async start(): Promise<void> {
+    this.isActive = true
+    console.log('[UDIS:InfrastructureMonitor] Monitoring infrastructure')
+  }
+
+  async stop(): Promise<void> {
+    this.isActive = false
+    console.log('[UDIS:InfrastructureMonitor] Stopped infrastructure monitoring')
+  }
+
+  receiveMessage(message: AgentMessage): void {
+    if (message.data.infrastructureEvent) {
+      this.analyzeInfrastructureEvent(message.data.infrastructureEvent)
+    }
+  }
+
+  private analyzeInfrastructureEvent(event: any): void {
+    // Monitor database connections, API failures, deployment issues
+    console.log('[UDIS:InfrastructureMonitor] Analyzing infrastructure event')
+  }
+}
+
+// Export all monitors
+export const UDISMonitors = {
+  BuildMonitor,
+  PerformanceMonitor,
+  UserExperienceMonitor,
+  SecurityMonitor,
+  CodeQualityMonitor,
+  InfrastructureMonitor
+}
+
+export default UDISMonitors

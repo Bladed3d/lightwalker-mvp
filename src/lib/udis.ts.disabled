@@ -1,0 +1,418 @@
+/**
+ * UDIS - Universal Development Intelligence System
+ * 
+ * Main entry point for initializing and using UDIS in your Next.js application
+ * Combines all UDIS components into a cohesive, easy-to-use system
+ */
+
+import { UDISController, getUDIS, UDISMode, DetectedIssue, ProblemDomain, IssueSeverity } from './udis-core'
+import { initializeUDISForNextJS, useUDISMonitoring, withUDISMonitoring, UDISMonitored } from './udis-nextjs-integration'
+import { UDISMonitors } from './udis-monitors'
+import { UDISAIAgents } from './udis-ai-engine'
+import { getGlobalUDISConfig, validateEnvironmentVariables } from './udis-config'
+
+/**
+ * UDIS System Status
+ */
+export interface UDISStatus {
+  isRunning: boolean
+  mode: UDISMode
+  uptime: number
+  metrics: {
+    issuesDetected: number
+    issuesResolved: number
+    cpuOverhead: number
+    memoryUsageMb: number
+    costSpentUsd: number
+  }
+  activeAgents: string[]
+  lastError?: string
+}
+
+/**
+ * UDIS Initialization Options
+ */
+export interface UDISInitOptions {
+  mode?: UDISMode
+  autoStart?: boolean
+  enabledDomains?: ProblemDomain[]
+  customConfig?: any
+  onIssueDetected?: (issue: DetectedIssue) => void
+  onIssueResolved?: (issue: DetectedIssue) => void
+  onModeChanged?: (from: UDISMode, to: UDISMode) => void
+}
+
+/**
+ * Main UDIS class that orchestrates the entire system
+ */
+export class UDIS {
+  private controller: UDISController
+  private configManager = getGlobalUDISConfig()
+  private nextjsIntegration: any
+  private initialized = false
+  private startTime: Date | null = null
+
+  constructor(options: UDISInitOptions = {}) {
+    // Validate environment first
+    const validation = validateEnvironmentVariables()
+    if (!validation.valid) {
+      console.warn('[UDIS] Environment validation warnings:', validation.errors)
+    }
+
+    // Get configuration
+    const config = this.configManager.getConfigForMode(options.mode || UDISMode.OFF)
+    
+    // Override with custom config
+    if (options.customConfig) {
+      this.configManager.setConfigOverride(options.customConfig)
+    }
+
+    // Create controller
+    this.controller = getUDIS(config)
+
+    // Set up event listeners
+    this.setupEventListeners(options)
+  }
+
+  /**
+   * Initialize UDIS system
+   */
+  public async initialize(): Promise<void> {
+    if (this.initialized) {
+      console.warn('[UDIS] Already initialized')
+      return
+    }
+
+    console.log('[UDIS] Initializing Universal Development Intelligence System...')
+
+    try {
+      // Initialize Next.js integration
+      this.nextjsIntegration = initializeUDISForNextJS()
+      
+      // Start the controller
+      await this.controller.start()
+      
+      this.initialized = true
+      this.startTime = new Date()
+      
+      console.log(`[UDIS] Successfully initialized in ${this.controller.getConfig().mode} mode`)
+
+    } catch (error) {
+      console.error('[UDIS] Initialization failed:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Start UDIS monitoring
+   */
+  public async start(): Promise<void> {
+    if (!this.initialized) {
+      await this.initialize()
+    }
+    
+    await this.controller.start()
+    this.startTime = new Date()
+    
+    console.log('[UDIS] Monitoring started')
+  }
+
+  /**
+   * Stop UDIS monitoring
+   */
+  public async stop(): Promise<void> {
+    await this.controller.stop()
+    console.log('[UDIS] Monitoring stopped')
+  }
+
+  /**
+   * Change operating mode at runtime
+   */
+  public async setMode(mode: UDISMode): Promise<void> {
+    const currentMode = this.controller.getConfig().mode
+    
+    if (currentMode === mode) {
+      console.log(`[UDIS] Already in ${mode} mode`)
+      return
+    }
+
+    console.log(`[UDIS] Switching from ${currentMode} to ${mode} mode`)
+    
+    // Update configuration
+    const newConfig = this.configManager.getConfigForMode(mode)
+    this.configManager.setConfigOverride({ mode })
+    
+    // Switch controller mode
+    await this.controller.setMode(mode)
+    
+    console.log(`[UDIS] Successfully switched to ${mode} mode`)
+  }
+
+  /**
+   * Report an issue to UDIS
+   */
+  public async reportIssue(issue: Partial<DetectedIssue>): Promise<void> {
+    const fullIssue: DetectedIssue = {
+      id: issue.id || `manual-${Date.now()}`,
+      timestamp: issue.timestamp || new Date(),
+      domain: issue.domain || ProblemDomain.CODE_QUALITY,
+      severity: issue.severity || IssueSeverity.MEDIUM,
+      title: issue.title || 'Manual Issue Report',
+      description: issue.description || 'No description provided',
+      context: issue.context || { metadata: {} },
+      autoFixable: issue.autoFixable || false,
+      similarIssues: issue.similarIssues || []
+    }
+
+    await this.controller.reportIssue(fullIssue)
+  }
+
+  /**
+   * Get current system status
+   */
+  public getStatus(): UDISStatus {
+    const metrics = this.controller.getMetrics()
+    const config = this.controller.getConfig()
+    
+    return {
+      isRunning: this.initialized,
+      mode: config.mode,
+      uptime: this.startTime ? Date.now() - this.startTime.getTime() : 0,
+      metrics: {
+        issuesDetected: metrics.issuesDetected,
+        issuesResolved: metrics.issuesResolved,
+        cpuOverhead: metrics.cpuOverhead,
+        memoryUsageMb: metrics.memoryUsageMb,
+        costSpentUsd: metrics.costSpentUsd
+      },
+      activeAgents: this.getActiveAgents()
+    }
+  }
+
+  /**
+   * Enable emergency mode for crisis situations
+   */
+  public async enableEmergencyMode(options: {
+    duration?: number    // Auto-disable after N minutes
+    target?: string      // Specific target to monitor
+    maxCost?: number     // Budget limit
+  } = {}): Promise<void> {
+    await this.controller.emergencyActivation(options)
+  }
+
+  /**
+   * Get configuration export for diagnostics
+   */
+  public exportConfig(): any {
+    return {
+      ...this.configManager.exportConfig(),
+      status: this.getStatus(),
+      features: this.configManager.getFeatureFlags()
+    }
+  }
+
+  /**
+   * Get monitoring hooks for React components
+   */
+  public getReactHooks() {
+    return {
+      useUDISMonitoring,
+      withUDISMonitoring,
+      UDISMonitored
+    }
+  }
+
+  /**
+   * Set up event listeners
+   */
+  private setupEventListeners(options: UDISInitOptions): void {
+    this.controller.on('issue-detected', (issue: DetectedIssue) => {
+      console.log(`[UDIS] Issue detected: ${issue.title}`)
+      options.onIssueDetected?.(issue)
+    })
+
+    this.controller.on('issue-resolved', (issue: DetectedIssue) => {
+      console.log(`[UDIS] Issue resolved: ${issue.title}`)
+      options.onIssueResolved?.(issue)
+    })
+
+    this.controller.on('mode-changed', (event: { from: UDISMode, to: UDISMode }) => {
+      console.log(`[UDIS] Mode changed: ${event.from} → ${event.to}`)
+      options.onModeChanged?.(event.from, event.to)
+    })
+
+    this.controller.on('performance-metrics', (metrics: any) => {
+      // Log performance metrics periodically
+      if (metrics.cpuOverhead > 2) {
+        console.warn(`[UDIS] High CPU overhead: ${metrics.cpuOverhead}%`)
+      }
+    })
+
+    this.controller.on('emergency-activated', (options: any) => {
+      console.warn('[UDIS] EMERGENCY MODE ACTIVATED:', options)
+    })
+  }
+
+  /**
+   * Get list of active agents
+   */
+  private getActiveAgents(): string[] {
+    const config = this.controller.getConfig()
+    const agents = []
+
+    if (config.mode !== UDISMode.OFF) {
+      agents.push('Monitor')
+    }
+    
+    if (config.mode === UDISMode.ACTIVE || config.mode === UDISMode.EMERGENCY) {
+      agents.push('Analyst', 'Orchestrator')
+    }
+    
+    if (config.mode === UDISMode.EMERGENCY) {
+      agents.push('Resolver')
+    }
+
+    return agents
+  }
+}
+
+/**
+ * Global UDIS instance
+ */
+let globalUDIS: UDIS | null = null
+
+/**
+ * Initialize UDIS for your application
+ */
+export async function initializeUDIS(options: UDISInitOptions = {}): Promise<UDIS> {
+  if (globalUDIS) {
+    console.warn('[UDIS] Already initialized, returning existing instance')
+    return globalUDIS
+  }
+
+  globalUDIS = new UDIS(options)
+  
+  if (options.autoStart !== false) {
+    await globalUDIS.initialize()
+  }
+
+  return globalUDIS
+}
+
+/**
+ * Get global UDIS instance
+ */
+export function getUDISInstance(): UDIS | null {
+  return globalUDIS
+}
+
+/**
+ * Quick setup for Next.js applications
+ */
+export async function setupUDISForNextJS(options: UDISInitOptions = {}) {
+  // Detect environment and set appropriate defaults
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  const isProduction = process.env.NODE_ENV === 'production'
+  
+  const defaultMode = isProduction ? UDISMode.OFF : 
+                     isDevelopment ? UDISMode.ACTIVE : UDISMode.PASSIVE
+
+  const udis = await initializeUDIS({
+    mode: defaultMode,
+    autoStart: true,
+    ...options
+  })
+
+  // Log setup information
+  const status = udis.getStatus()
+  console.log(`[UDIS] Setup complete for Next.js - Mode: ${status.mode}, Environment: ${process.env.NODE_ENV}`)
+
+  return udis
+}
+
+/**
+ * Utility functions for manual monitoring
+ */
+export const UDISUtils = {
+  /**
+   * Create a performance monitor for functions
+   */
+  monitorFunction: <T extends (...args: any[]) => any>(
+    fn: T,
+    name: string,
+    options?: { threshold?: number; domain?: ProblemDomain }
+  ): T => {
+    return ((...args: any[]) => {
+      const start = performance.now()
+      const result = fn(...args)
+      
+      if (result instanceof Promise) {
+        return result.finally(() => {
+          const duration = performance.now() - start
+          if (duration > (options?.threshold || 1000)) {
+            globalUDIS?.reportIssue({
+              title: `Slow Function: ${name}`,
+              domain: options?.domain || ProblemDomain.PERFORMANCE,
+              severity: IssueSeverity.MEDIUM,
+              description: `Function ${name} took ${Math.round(duration)}ms`,
+              context: { function: name, metadata: { duration, threshold: options?.threshold } }
+            })
+          }
+        })
+      }
+      
+      const duration = performance.now() - start
+      if (duration > (options?.threshold || 1000)) {
+        globalUDIS?.reportIssue({
+          title: `Slow Function: ${name}`,
+          domain: options?.domain || ProblemDomain.PERFORMANCE,
+          severity: IssueSeverity.MEDIUM,
+          description: `Function ${name} took ${Math.round(duration)}ms`,
+          context: { function: name, metadata: { duration, threshold: options?.threshold } }
+        })
+      }
+      
+      return result
+    }) as T
+  },
+
+  /**
+   * Report a custom issue
+   */
+  reportIssue: (issue: Partial<DetectedIssue>) => {
+    globalUDIS?.reportIssue(issue)
+  },
+
+  /**
+   * Get current system status
+   */
+  getStatus: () => {
+    return globalUDIS?.getStatus() || null
+  },
+
+  /**
+   * Enable emergency mode
+   */
+  emergency: (options?: { duration?: number; target?: string; maxCost?: number }) => {
+    return globalUDIS?.enableEmergencyMode(options)
+  }
+}
+
+// Export everything for easy imports
+export * from './udis-core'
+export * from './udis-nextjs-integration'
+export * from './udis-config'
+export { UDISMonitors } from './udis-monitors'
+export { UDISAIAgents } from './udis-ai-engine'
+
+// Default export
+export default {
+  UDIS,
+  initializeUDIS,
+  setupUDISForNextJS,
+  getUDISInstance,
+  UDISUtils,
+  UDISMode,
+  ProblemDomain,
+  IssueSeverity
+}

@@ -54,3 +54,6 @@ prisma/migrations/
 
 # Test components (exclude until ready)
 src/components/test/
+
+# Claude sessions
+sessions/

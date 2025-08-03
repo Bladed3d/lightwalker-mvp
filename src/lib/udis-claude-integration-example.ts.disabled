@@ -1,0 +1,355 @@
+/**
+ * UDIS + Claude Code Integration Example
+ * 
+ * Shows how to use Claude Code (running on port 3001) for comprehensive analysis
+ * while using GPT-4o-mini for real-time monitoring in your Lightwalker application
+ */
+
+import { HybridAIEngine, DeepSeekR1Detector } from './udis-hybrid-ai'
+import { setupUDISForNextJS, UDISUtils } from './udis'
+import { UDISMode, ProblemDomain, IssueSeverity } from './udis-core'
+
+/**
+ * Initialize Lightwalker with Hybrid AI System
+ */
+export async function initializeLightwalkerWithClaudeCode() {
+  console.log('🚀 Initializing Lightwalker with Claude Code + GPT-4o-mini hybrid system...')
+
+  // Initialize UDIS with hybrid AI configuration
+  const udis = await setupUDISForNextJS({
+    mode: UDISMode.ACTIVE, // Use ACTIVE mode for development testing
+    onIssueDetected: async (issue) => {
+      console.log(`🔍 Issue detected: ${issue.title}`)
+      
+      // Use hybrid AI for analysis
+      const hybridAI = new HybridAIEngine({
+        enableClaudeCode: true,
+        claudeCodePort: 3001,
+        intelligentRouting: true,
+        emergencyEscalation: true
+      })
+      
+      try {
+        const analysis = await hybridAI.analyzeIssue(issue)
+        console.log(`🧠 Analysis complete with ${analysis.modelUsed}:`)
+        console.log(`   Confidence: ${(analysis.confidence * 100).toFixed(1)}%`)
+        console.log(`   Cost: $${analysis.cost.toFixed(3)}`)
+        
+        if (analysis.architecturalInsights && analysis.architecturalInsights.length > 0) {
+          console.log(`   🏗️  Architectural Insights:`)
+          analysis.architecturalInsights.forEach((insight, i) => {
+            console.log(`      ${i + 1}. ${insight}`)
+          })
+        }
+        
+        console.log(`   💡 Recommendations:`)
+        analysis.recommendations.forEach((rec, i) => {
+          console.log(`      ${i + 1}. ${rec}`)
+        })
+        
+      } catch (error) {
+        console.error('❌ Hybrid AI analysis failed:', error)
+      }
+    }
+  })
+
+  return udis
+}
+
+/**
+ * Example: Monitor AI Service with Claude Code Analysis
+ * This would have caught your DeepSeek R1 issues automatically
+ */
+export async function monitorAIServiceWithClaudeCode() {
+  const detector = new DeepSeekR1Detector({
+    enableClaudeCode: true,
+    claudeCodePort: 3001,
+    intelligentRouting: true
+  })
+
+  // Simulate the DeepSeek R1 problem you experienced
+  console.log('🧪 Simulating DeepSeek R1 issue detection...')
+  
+  const analysis = await detector.analyzeAIServiceIssue(
+    'deepseek-r1', 
+    32000, // 32 second response time
+    new Error('JSON parsing failed: unexpected token in response')
+  )
+
+  console.log('📊 Analysis Results:')
+  console.log(`Model Used: ${analysis.modelUsed}`)
+  console.log(`Analysis: ${analysis.analysis}`)
+  
+  if (analysis.architecturalInsights) {
+    console.log('🏗️ Architectural Insights:')
+    analysis.architecturalInsights.forEach(insight => console.log(`  • ${insight}`))
+  }
+  
+  console.log('💡 Recommendations:')
+  analysis.recommendations.forEach(rec => console.log(`  • ${rec}`))
+  
+  // The system would automatically suggest:
+  // ✅ Switch from DeepSeek R1 to GPT-4o-mini
+  // ✅ Add response validation
+  // ✅ Implement circuit breaker pattern
+  // ✅ Add AI performance monitoring
+
+  return analysis
+}
+
+/**
+ * Example: Real-time monitoring with GPT-4o-mini, deep analysis with Claude Code
+ */
+export class LightwalkerIntelligentMonitoring {
+  private hybridAI: HybridAIEngine
+
+  constructor() {
+    this.hybridAI = new HybridAIEngine({
+      enableClaudeCode: true,
+      claudeCodePort: 3001,
+      intelligentRouting: true,
+      costOptimization: true,
+      emergencyEscalation: true
+    })
+  }
+
+  /**
+   * Monitor character creation process with intelligent AI routing
+   */
+  async monitorCharacterCreation() {
+    console.log('👤 Starting character creation monitoring...')
+
+    // Example: User search returns no results (simple issue - use GPT-4o-mini)
+    await this.reportSearchIssue('forgiveness', 0)
+
+    // Example: Build failure (moderate issue - might use Claude Code)
+    await this.reportBuildIssue('TypeScript compilation failed', 45000)
+
+    // Example: Security vulnerability (critical issue - definitely use Claude Code)
+    await this.reportSecurityIssue('SQL injection attempt detected')
+  }
+
+  /**
+   * Report search issue (simple - GPT-4o-mini handles this)
+   */
+  private async reportSearchIssue(query: string, resultCount: number) {
+    const issue = UDISUtils.reportIssue({
+      title: `Search returned no results: "${query}"`,
+      domain: ProblemDomain.USER_EXPERIENCE,
+      severity: IssueSeverity.MEDIUM,
+      description: `User searched for "${query}" but got ${resultCount} results`,
+      context: { metadata: { query, resultCount } },
+      autoFixable: true
+    })
+
+    // This will likely route to GPT-4o-mini for quick analysis
+    const analysis = await this.hybridAI.analyzeIssue(issue)
+    console.log(`🔍 Search issue analyzed with ${analysis.modelUsed} (cost: $${analysis.cost})`)
+  }
+
+  /**
+   * Report build issue (moderate - intelligent routing)
+   */
+  private async reportBuildIssue(error: string, duration: number) {
+    const issue = UDISUtils.reportIssue({
+      title: 'Build Performance Issue',
+      domain: ProblemDomain.BUILD,
+      severity: IssueSeverity.HIGH,
+      description: error,
+      context: { metadata: { error, duration, durationSeconds: duration / 1000 } }
+    })
+
+    // This might route to Claude Code for comprehensive build analysis
+    const analysis = await this.hybridAI.analyzeIssue(issue)
+    console.log(`🔨 Build issue analyzed with ${analysis.modelUsed} (cost: $${analysis.cost})`)
+    
+    if (analysis.architecturalInsights) {
+      console.log('🏗️ Build Architecture Insights:', analysis.architecturalInsights)
+    }
+  }
+
+  /**
+   * Report security issue (critical - definitely Claude Code)
+   */
+  private async reportSecurityIssue(threat: string) {
+    const issue = UDISUtils.reportIssue({
+      title: 'Security Threat Detected',
+      domain: ProblemDomain.SECURITY,
+      severity: IssueSeverity.CRITICAL,
+      description: threat,
+      context: { metadata: { threat, timestamp: new Date().toISOString() } }
+    })
+
+    // This will definitely route to Claude Code for comprehensive security analysis
+    const analysis = await this.hybridAI.analyzeIssue(issue)
+    console.log(`🛡️ Security issue analyzed with ${analysis.modelUsed} (cost: $${analysis.cost})`)
+    
+    if (analysis.architecturalInsights) {
+      console.log('🔒 Security Architecture Insights:', analysis.architecturalInsights)
+    }
+  }
+
+  /**
+   * Get monitoring statistics
+   */
+  getMonitoringStats() {
+    return this.hybridAI.getUsageStats()
+  }
+}
+
+/**
+ * Example: Testing Claude Code connection and capabilities
+ */
+export async function testClaudeCodeIntegration() {
+  console.log('🧪 Testing Claude Code integration...')
+
+  const hybridAI = new HybridAIEngine({
+    enableClaudeCode: true,
+    claudeCodePort: 3001
+  })
+
+  // Test connection
+  const isConnected = await hybridAI.testClaudeCodeConnection()
+  console.log(`Claude Code connection: ${isConnected ? '✅ Connected' : '❌ Not available'}`)
+
+  if (isConnected) {
+    // Test comprehensive analysis
+    const testIssue = {
+      id: 'test-claude-integration',
+      timestamp: new Date(),
+      domain: ProblemDomain.PERFORMANCE,
+      severity: IssueSeverity.HIGH,
+      title: 'Test Claude Code Analysis',
+      description: 'Testing comprehensive analysis capabilities',
+      context: { metadata: { test: true } },
+      autoFixable: false,
+      similarIssues: []
+    }
+
+    try {
+      const analysis = await hybridAI.analyzeWithClaudeCodeForced(testIssue)
+      console.log('✅ Claude Code analysis successful!')
+      console.log(`Analysis quality: ${analysis.confidence * 100}%`)
+      console.log(`Cost: $${analysis.cost}`)
+      
+      if (analysis.architecturalInsights) {
+        console.log('🏗️ Architectural capabilities confirmed')
+      }
+      
+    } catch (error) {
+      console.error('❌ Claude Code analysis failed:', error)
+    }
+  }
+
+  return isConnected
+}
+
+/**
+ * Example: Cost-optimized monitoring strategy
+ */
+export class CostOptimizedMonitoring {
+  private hybridAI: HybridAIEngine
+  private dailyBudget = 10.00 // $10 daily budget
+  private currentSpend = 0
+
+  constructor() {
+    this.hybridAI = new HybridAIEngine({
+      enableClaudeCode: true,
+      claudeCodePort: 3001,
+      costOptimization: true, // Enable cost optimization
+      intelligentRouting: true
+    })
+  }
+
+  /**
+   * Monitor with intelligent cost management
+   */
+  async smartMonitor(issue: any) {
+    const stats = this.hybridAI.getUsageStats()
+    
+    // Check budget
+    if (stats.totalCost > this.dailyBudget) {
+      console.log('💸 Daily budget exceeded, using cached analysis only')
+      return this.useCachedAnalysis(issue)
+    }
+
+    // Use hybrid analysis with cost consideration
+    const analysis = await this.hybridAI.analyzeIssue(issue)
+    
+    console.log(`💰 Analysis cost: $${analysis.cost} (total today: $${stats.totalCost})`)
+    console.log(`🤖 Model used: ${analysis.modelUsed}`)
+    
+    return analysis
+  }
+
+  private useCachedAnalysis(issue: any) {
+    // Fallback to cached or simpler analysis
+    return {
+      analysis: 'Budget exceeded - using cached analysis',
+      modelUsed: 'Cached/Fallback',
+      cost: 0,
+      recommendations: ['Wait for budget reset', 'Use manual analysis']
+    }
+  }
+}
+
+/**
+ * Main integration function - call this to set everything up
+ */
+export async function setupLightwalkerWithClaudeCode() {
+  console.log('🚀 Setting up Lightwalker with Claude Code integration...')
+  
+  try {
+    // 1. Initialize UDIS with hybrid AI
+    const udis = await initializeLightwalkerWithClaudeCode()
+    
+    // 2. Test Claude Code connection
+    const claudeConnected = await testClaudeCodeIntegration()
+    
+    // 3. Set up intelligent monitoring
+    const monitor = new LightwalkerIntelligentMonitoring()
+    
+    // 4. Start monitoring
+    await monitor.monitorCharacterCreation()
+    
+    console.log('✅ Lightwalker + Claude Code integration complete!')
+    console.log(`📊 Monitoring Stats:`, monitor.getMonitoringStats())
+    
+    return {
+      udis,
+      monitor,
+      claudeConnected,
+      stats: monitor.getMonitoringStats()
+    }
+    
+  } catch (error) {
+    console.error('❌ Setup failed:', error)
+    throw error
+  }
+}
+
+// Export everything for easy use
+export default {
+  initializeLightwalkerWithClaudeCode,
+  monitorAIServiceWithClaudeCode,
+  LightwalkerIntelligentMonitoring,
+  testClaudeCodeIntegration,
+  CostOptimizedMonitoring,
+  setupLightwalkerWithClaudeCode
+}
+
+/**
+ * Quick usage example:
+ * 
+ * 1. Start your Lightwalker app on port 3001: `npm start -- -p 3001`
+ * 2. In another terminal, run Claude Code and connect to the app
+ * 3. Import and run: `setupLightwalkerWithClaudeCode()`
+ * 
+ * The system will then:
+ * - Use GPT-4o-mini for quick monitoring (search issues, simple errors)
+ * - Use Claude Code for complex analysis (build issues, architecture problems)
+ * - Automatically route issues to the best AI model
+ * - Provide comprehensive insights you never had before!
+ * 
+ * Your DeepSeek R1 nightmare would have been solved in 5 minutes instead of 8 hours! 🎉
+ */

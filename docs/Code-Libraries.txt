@@ -1,0 +1,87 @@
+40 JavaScript libraries you should know about.
+
+☸ React JS → User Interfaces
+
+👌🏻 Three JS → 3D on the Web
+
+⏳ Date.js → Time & Date
+
+📊 D3 JS → Data Visualization
+
+🎞 Anime JS → Animation library
+
+📱 React Native → Mobile Applications
+
+👨🏻‍💻 TensorFlow.js → Machine learning
+
+🚀 Next.js → Server-side rendering and static site generation
+
+🌐 Node.js → Backend development
+
+📄 Express.js → Web application framework for Node.js
+
+🔍 Lodash → Utility library for simplifying JavaScript
+
+🖼 Chart.js → Simple and responsive charts
+
+🎨 GSAP (GreenSock Animation Platform) → High-performance animations
+
+📦 pnpm → Package manager for JavaScript
+
+🔐 Passport.js → Authentication middleware for Node.js
+
+📚 Storybook → UI component development and documentation
+
+🧪 Jest → Testing framework for JavaScript
+
+🔄 Redux → State management for React applications
+
+🌊 Vue.js → Progressive JavaScript framework for building UIs
+
+🔥 Svelte → Compiler-based framework for building efficient UIs
+
+🛡 TypeScript → Typed superset of JavaScript for scalable applications
+
+📄 Marked.js → Markdown parser and compiler
+
+📑 Quill.js → Rich text editor
+
+📂 FilePond → File upload library with previews and editing
+
+🌍 Leaflet.js → Interactive maps
+
+📹 Video.js → HTML5 video player framework
+
+🎧 Howler.js → Audio library for the web
+
+📨 Axios → Promise-based HTTP client
+
+🔄 RxJS → Reactive programming with observables
+
+📜 Prism.js → Syntax highlighting for code blocks
+
+📊 Chartist.js → Simple responsive charts
+
+🖌 Fabric.js → Canvas library for interactive graphics
+
+📐 MathJax → Displaying mathematical notation in browsers
+
+📦 Parcel → Blazing-fast, zero-configuration web application bundler
+
+🛠 Rollup → Module bundler for JavaScript libraries
+
+📄 Puppeteer → Headless browser automation
+
+📊 Plotly.js → Advanced data visualization and charting
+
+📄 PDF.js → PDF viewer and parser in the browser
+
+📦 Vite → Next-generation frontend tooling
+
+📄 Swiper.js → Modern touch slider and carousel
+
+📄 Hammer.js → Gesture recognition for touch interactions
+
+📄 Popper.js → Tooltip and popover positioning
+
+📄 Tippy.js → Tooltip and popover library

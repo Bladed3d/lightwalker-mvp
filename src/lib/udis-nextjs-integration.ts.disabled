@@ -1,0 +1,468 @@
+/**
+ * UDIS Next.js Integration
+ * 
+ * Seamlessly integrates Universal Development Intelligence System with Next.js
+ * Provides automatic monitoring of builds, API routes, page loads, and user interactions
+ */
+
+import { NextRequest, NextResponse } from 'next/server'
+import { getUDIS, DetectedIssue, ProblemDomain, IssueSeverity, UDISMode } from './udis-core'
+
+// Performance tracking for API routes
+interface APIPerformanceMetrics {
+  route: string
+  method: string
+  startTime: number
+  endTime?: number
+  duration?: number
+  statusCode?: number
+  error?: string
+}
+
+// User interaction tracking
+interface UserInteractionEvent {
+  type: 'click' | 'form_submit' | 'page_load' | 'search' | 'error'
+  element?: string
+  page: string
+  timestamp: Date
+  userId?: string
+  metadata?: Record<string, any>
+}
+
+/**
+ * Next.js Middleware Integration for UDIS
+ * Monitors all API routes and page requests
+ */
+export function createUDISMiddleware() {
+  const udis = getUDIS()
+  
+  return async function udisMiddleware(request: NextRequest) {
+    // Skip monitoring if UDIS is OFF
+    const config = udis.getConfig()
+    if (config.mode === UDISMode.OFF) {
+      return NextResponse.next()
+    }
+    
+    // Apply sampling rate
+    if (Math.random() > config.samplingRate) {
+      return NextResponse.next()
+    }
+    
+    const startTime = performance.now()
+    const metrics: APIPerformanceMetrics = {
+      route: request.nextUrl.pathname,
+      method: request.method,
+      startTime
+    }
+    
+    try {
+      // Proceed with request
+      const response = NextResponse.next()
+      
+      // Track performance
+      metrics.endTime = performance.now()
+      metrics.duration = metrics.endTime - metrics.startTime
+      metrics.statusCode = response.status
+      
+      // Check for performance issues
+      await checkAPIPerformance(metrics, udis)
+      
+      return response
+      
+    } catch (error) {
+      // Track errors
+      metrics.endTime = performance.now()
+      metrics.duration = metrics.endTime - metrics.startTime
+      metrics.error = error instanceof Error ? error.message : 'Unknown error'
+      
+      // Report error to UDIS
+      await reportAPIError(metrics, error, udis)
+      
+      throw error
+    }
+  }
+}
+
+/**
+ * API Route Wrapper for automatic UDIS monitoring
+ */
+export function withUDISMonitoring<T extends any[], R>(
+  handler: (...args: T) => Promise<R>,
+  options: {
+    route: string
+    domain?: ProblemDomain
+    performanceThreshold?: number // ms
+  }
+) {
+  return async (...args: T): Promise<R> => {
+    const udis = getUDIS()
+    const config = udis.getConfig()
+    
+    // Skip if UDIS is OFF or not sampled
+    if (config.mode === UDISMode.OFF || Math.random() > config.samplingRate) {
+      return handler(...args)
+    }
+    
+    const startTime = performance.now()
+    
+    try {
+      const result = await handler(...args)
+      const duration = performance.now() - startTime
+      
+      // Check performance threshold
+      const threshold = options.performanceThreshold || 1000 // 1 second default
+      if (duration > threshold) {
+        const issue: DetectedIssue = {
+          id: `perf-${options.route}-${Date.now()}`,
+          timestamp: new Date(),
+          domain: options.domain || ProblemDomain.PERFORMANCE,
+          severity: duration > threshold * 2 ? IssueSeverity.HIGH : IssueSeverity.MEDIUM,
+          title: `Slow API Response: ${options.route}`,
+          description: `API route took ${Math.round(duration)}ms (threshold: ${threshold}ms)`,
+          context: {
+            function: options.route,
+            metadata: { duration, threshold, args: JSON.stringify(args).slice(0, 500) }
+          },
+          autoFixable: false,
+          similarIssues: []
+        }
+        
+        await udis.reportIssue(issue)
+      }
+      
+      return result
+      
+    } catch (error) {
+      const duration = performance.now() - startTime
+      
+      // Report API error
+      const issue: DetectedIssue = {
+        id: `error-${options.route}-${Date.now()}`,
+        timestamp: new Date(),
+        domain: options.domain || ProblemDomain.INFRASTRUCTURE,
+        severity: IssueSeverity.HIGH,
+        title: `API Error: ${options.route}`,
+        description: error instanceof Error ? error.message : 'Unknown API error',
+        context: {
+          function: options.route,
+          stackTrace: error instanceof Error ? error.stack : undefined,
+          metadata: { duration, args: JSON.stringify(args).slice(0, 500) }
+        },
+        autoFixable: false,
+        similarIssues: []
+      }
+      
+      await udis.reportIssue(issue)
+      throw error
+    }
+  }
+}
+
+/**
+ * Client-side monitoring hook for React components
+ */
+export function useUDISMonitoring(componentName: string) {
+  const udis = getUDIS()
+  
+  // Track component errors
+  const reportError = async (error: Error, errorInfo?: any) => {
+    const issue: DetectedIssue = {
+      id: `react-error-${componentName}-${Date.now()}`,
+      timestamp: new Date(),
+      domain: ProblemDomain.CODE_QUALITY,
+      severity: IssueSeverity.HIGH,
+      title: `React Component Error: ${componentName}`,
+      description: error.message,
+      context: {
+        function: componentName,
+        stackTrace: error.stack,
+        metadata: { errorInfo }
+      },
+      autoFixable: false,
+      similarIssues: []
+    }
+    
+    await udis.reportIssue(issue)
+  }
+  
+  // Track user interactions
+  const trackInteraction = async (event: Omit<UserInteractionEvent, 'timestamp'>) => {
+    const fullEvent: UserInteractionEvent = {
+      ...event,
+      timestamp: new Date()
+    }
+    
+    // Only track in active mode to avoid performance impact
+    const config = udis.getConfig()
+    if (config.mode === UDISMode.ACTIVE || config.mode === UDISMode.EMERGENCY) {
+      // Emit user interaction for analysis
+      udis.emit('user-interaction', fullEvent)
+    }
+  }
+  
+  return {
+    reportError,
+    trackInteraction
+  }
+}
+
+/**
+ * Build-time monitoring for Next.js compilation
+ */
+export class UDISBuildMonitor {
+  private static instance: UDISBuildMonitor
+  private udis = getUDIS()
+  private buildStartTime?: number
+  
+  static getInstance(): UDISBuildMonitor {
+    if (!UDISBuildMonitor.instance) {
+      UDISBuildMonitor.instance = new UDISBuildMonitor()
+    }
+    return UDISBuildMonitor.instance
+  }
+  
+  /**
+   * Monitor build start
+   */
+  async onBuildStart(): Promise<void> {
+    this.buildStartTime = performance.now()
+    console.log('[UDIS] Build monitoring started')
+  }
+  
+  /**
+   * Monitor build completion
+   */
+  async onBuildComplete(success: boolean, errors?: string[]): Promise<void> {
+    if (!this.buildStartTime) return
+    
+    const duration = performance.now() - this.buildStartTime
+    console.log(`[UDIS] Build completed in ${Math.round(duration)}ms`)
+    
+    if (!success && errors) {
+      // Report build errors
+      for (const error of errors) {
+        const issue: DetectedIssue = {
+          id: `build-error-${Date.now()}`,
+          timestamp: new Date(),
+          domain: ProblemDomain.BUILD,
+          severity: IssueSeverity.HIGH,
+          title: 'Build Error Detected',
+          description: error,
+          context: {
+            metadata: { buildDuration: duration, totalErrors: errors.length }
+          },
+          autoFixable: this.isBuildErrorAutoFixable(error),
+          similarIssues: []
+        }
+        
+        await this.udis.reportIssue(issue)
+      }
+    }
+    
+    // Check build performance
+    const normalBuildTime = 30000 // 30 seconds threshold
+    if (duration > normalBuildTime) {
+      const issue: DetectedIssue = {
+        id: `build-slow-${Date.now()}`,
+        timestamp: new Date(),
+        domain: ProblemDomain.PERFORMANCE,
+        severity: IssueSeverity.MEDIUM,
+        title: 'Slow Build Detected',
+        description: `Build took ${Math.round(duration / 1000)}s (threshold: ${normalBuildTime / 1000}s)`,
+        context: {
+          metadata: { buildDuration: duration, threshold: normalBuildTime }
+        },
+        autoFixable: false,
+        similarIssues: []
+      }
+      
+      await this.udis.reportIssue(issue)
+    }
+  }
+  
+  /**
+   * Determine if build error is auto-fixable
+   */
+  private isBuildErrorAutoFixable(error: string): boolean {
+    // Common auto-fixable build errors
+    const autoFixablePatterns = [
+      /Module not found/,
+      /Cannot resolve module/,
+      /Unexpected token/,
+      /Missing semicolon/,
+      /Property .* does not exist on type/
+    ]
+    
+    return autoFixablePatterns.some(pattern => pattern.test(error))
+  }
+}
+
+/**
+ * Check API performance and report issues
+ */
+async function checkAPIPerformance(
+  metrics: APIPerformanceMetrics, 
+  udis: ReturnType<typeof getUDIS>
+): Promise<void> {
+  if (!metrics.duration) return
+  
+  // Define performance thresholds
+  const thresholds = {
+    api: 1000,      // 1 second for API routes
+    page: 3000,     // 3 seconds for page loads
+    static: 500     // 500ms for static assets
+  }
+  
+  let threshold = thresholds.api
+  if (metrics.route.startsWith('/_next/static/')) {
+    threshold = thresholds.static
+  } else if (!metrics.route.startsWith('/api/')) {
+    threshold = thresholds.page
+  }
+  
+  if (metrics.duration > threshold) {
+    const issue: DetectedIssue = {
+      id: `perf-${metrics.route.replace(/\//g, '-')}-${Date.now()}`,
+      timestamp: new Date(),
+      domain: ProblemDomain.PERFORMANCE,
+      severity: metrics.duration > threshold * 2 ? IssueSeverity.HIGH : IssueSeverity.MEDIUM,
+      title: `Slow ${metrics.method} ${metrics.route}`,
+      description: `Request took ${Math.round(metrics.duration)}ms (threshold: ${threshold}ms)`,
+      context: {
+        function: metrics.route,
+        metadata: {
+          method: metrics.method,
+          duration: metrics.duration,
+          threshold,
+          statusCode: metrics.statusCode
+        }
+      },
+      autoFixable: false,
+      similarIssues: []
+    }
+    
+    await udis.reportIssue(issue)
+  }
+}
+
+/**
+ * Report API errors to UDIS
+ */
+async function reportAPIError(
+  metrics: APIPerformanceMetrics,
+  error: unknown,
+  udis: ReturnType<typeof getUDIS>
+): Promise<void> {
+  const issue: DetectedIssue = {
+    id: `api-error-${metrics.route.replace(/\//g, '-')}-${Date.now()}`,
+    timestamp: new Date(),
+    domain: ProblemDomain.INFRASTRUCTURE,
+    severity: IssueSeverity.HIGH,
+    title: `API Error: ${metrics.method} ${metrics.route}`,
+    description: error instanceof Error ? error.message : 'Unknown API error',
+    context: {
+      function: metrics.route,
+      stackTrace: error instanceof Error ? error.stack : undefined,
+      metadata: {
+        method: metrics.method,
+        duration: metrics.duration,
+        route: metrics.route
+      }
+    },
+    autoFixable: isAPIErrorAutoFixable(error),
+    similarIssues: []
+  }
+  
+  await udis.reportIssue(issue)
+}
+
+/**
+ * Determine if API error is auto-fixable
+ */
+function isAPIErrorAutoFixable(error: unknown): boolean {
+  if (!(error instanceof Error)) return false
+  
+  // Common auto-fixable API errors
+  const autoFixablePatterns = [
+    /ECONNREFUSED/,           // Connection refused - retry logic
+    /ETIMEDOUT/,              // Timeout - retry with backoff
+    /JSON.parse/,             // JSON parsing - input validation
+    /ValidationError/,        // Validation errors - input sanitization
+    /CastError/               // Type casting errors - type validation
+  ]
+  
+  return autoFixablePatterns.some(pattern => pattern.test(error.message))
+}
+
+/**
+ * Initialize UDIS for Next.js application
+ */
+export function initializeUDISForNextJS() {
+  const udis = getUDIS()
+  
+  // Set up build monitoring
+  const buildMonitor = UDISBuildMonitor.getInstance()
+  
+  // Add process event listeners for build monitoring
+  process.on('exit', () => {
+    buildMonitor.onBuildComplete(true)
+  })
+  
+  process.on('uncaughtException', (error) => {
+    buildMonitor.onBuildComplete(false, [error.message])
+  })
+  
+  // Initialize UDIS based on environment
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  const mode = (process.env.UDIS_MODE as any) || (isDevelopment ? 'active' : 'off')
+  
+  udis.setMode(mode)
+  
+  console.log(`[UDIS] Initialized for Next.js in ${mode} mode`)
+  
+  return {
+    udis,
+    buildMonitor,
+    middleware: createUDISMiddleware()
+  }
+}
+
+// Export monitoring decorators for easy use
+export const UDISMonitored = {
+  /**
+   * Decorator for API route handlers
+   */
+  apiRoute: (route: string, options?: { performanceThreshold?: number }) => {
+    return withUDISMonitoring(async (req: NextRequest) => {
+      // This would be implemented by the actual API handler
+      throw new Error('UDISMonitored.apiRoute should wrap actual handler')
+    }, {
+      route,
+      domain: ProblemDomain.INFRASTRUCTURE,
+      ...options
+    })
+  },
+  
+  /**
+   * Decorator for database operations
+   */
+  database: (operation: string, options?: { performanceThreshold?: number }) => {
+    return withUDISMonitoring(async (...args: any[]) => {
+      // This would be implemented by the actual database operation
+      throw new Error('UDISMonitored.database should wrap actual operation')
+    }, {
+      route: `db:${operation}`,
+      domain: ProblemDomain.PERFORMANCE,
+      performanceThreshold: 500, // Database operations should be faster
+      ...options
+    })
+  }
+}
+
+export default {
+  initializeUDISForNextJS,
+  createUDISMiddleware,
+  useUDISMonitoring,
+  withUDISMonitoring,
+  UDISMonitored
+}

@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lightwalker Daily Use Page - Visual Mockups</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a252f 50%, #0f1419 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .mockup-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .mockup-title {
+            text-align: center;
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00d4ff, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 3px;
+        }
+        
+        .mockup-section {
+            margin-bottom: 60px;
+            border: 1px solid rgba(79, 172, 254, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            background: rgba(15, 20, 25, 0.7);
+            backdrop-filter: blur(10px);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: #4facfe;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4facfe;
+            padding-bottom: 10px;
+        }
+        
+        /* MAIN INTERFACE MOCKUP */
+        .chronosphere-interface {
+            background: linear-gradient(135deg, #0f1419 0%, #1a252f 100%);
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+            min-height: 800px;
+            border: 2px solid rgba(79, 172, 254, 0.4);
+        }
+        
+        .header-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, #00d4ff, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .header-subtitle {
+            text-align: center;
+            font-size: 1rem;
+            color: #4facfe;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        /* HERO ACTIVITY SECTION */
+        .hero-activity {
+            background: rgba(15, 20, 25, 0.8);
+            border: 2px solid rgba(79, 172, 254, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-activity::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(79, 172, 254, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .activity-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #4facfe, #00d4ff);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border: 3px solid rgba(79, 172, 254, 0.6);
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(79, 172, 254, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(79, 172, 254, 0.6); }
+        }
+        
+        .activity-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        
+        .activity-time {
+            font-size: 1.5rem;
+            color: #4facfe;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .energy-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+        
+        /* TIMELINE SECTION */
+        .timeline-container {
+            background: rgba(15, 20, 25, 0.6);
+            border: 1px solid rgba(79, 172, 254, 0.3);
+            border-radius: 15px;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 20px 0;
+            position: relative;
+        }
+        
+        .timeline-activity {
+            flex-shrink: 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .timeline-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4facfe, #00d4ff);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .timeline-activity.current .timeline-icon {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            transform: scale(1.1);
+        }
+        
+        .timeline-activity.completed .timeline-icon {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+        }
+        
+        .activity-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .activity-time-small {
+            font-size: 0.8rem;
+            color: #4facfe;
+        }
+        
+        .timeline-progress {
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4facfe, #00d4ff);
+            border-radius: 2px;
+            width: 60%;
+            transition: width 0.3s ease;
+        }
+        
+        /* NAVIGATION CONTROLS */
+        .timeline-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .control-btn {
+            background: rgba(79, 172, 254, 0.2);
+            border: 2px solid #4facfe;
+            border-radius: 10px;
+            padding: 15px 20px;
+            color: #4facfe;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            min-width: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-btn:hover {
+            background: rgba(79, 172, 254, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .now-btn {
+            background: linear-gradient(45deg, #4facfe, #00d4ff);
+            color: white;
+            font-weight: 600;
+            padding: 15px 30px;
+        }
+        
+        .play-btn {
+            background: linear-gradient(45deg, #00d4ff, #4facfe);
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        /* CONTAINER SYSTEM */
+        .container-system {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .role-model-container {
+            background: rgba(15, 20, 25, 0.8);
+            border: 2px solid rgba(79, 172, 254, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .container-title {
+            font-size: 1.3rem;
+            color: #4facfe;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .attribute-item {
+            background: rgba(79, 172, 254, 0.1);
+            border: 1px solid rgba(79, 172, 254, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        
+        .attribute-item:hover {
+            background: rgba(79, 172, 254, 0.2);
+            border-color: #4facfe;
+        }
+        
+        .attribute-item.active {
+            background: linear-gradient(45deg, rgba(255, 107, 107, 0.2), rgba(255, 142, 83, 0.2));
+            border-color: #ff6b6b;
+        }
+        
+        .attribute-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .attribute-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(45deg, #4facfe, #00d4ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #51cf66;
+        }
+        
+        .status-indicator.active {
+            background: #ff6b6b;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .status-indicator.upcoming {
+            background: #ffd43b;
+        }
+        
+        /* INSPIRATIONAL QUOTE */
+        .quote-section {
+            text-align: center;
+            margin-top: 40px;
+            font-style: italic;
+            color: rgba(79, 172, 254, 0.8);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            .container-system {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-title {
+                font-size: 2rem;
+            }
+            
+            .hero-activity {
+                padding: 30px 20px;
+            }
+            
+            .activity-icon {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+            }
+            
+            .timeline-strip {
+                gap: 15px;
+            }
+            
+            .timeline-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* INTERACTION STATES */
+        .interaction-demo {
+            background: rgba(15, 20, 25, 0.6);
+            border: 1px solid rgba(79, 172, 254, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .state-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .state-card {
+            background: rgba(79, 172, 254, 0.05);
+            border: 1px solid rgba(79, 172, 254, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .state-title {
+            color: #4facfe;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .animation-demo {
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(90deg, #4facfe, #00d4ff, #4facfe);
+            background-size: 200% 100%;
+            animation: flow 3s infinite;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        @keyframes flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="mockup-container">
+        <h1 class="mockup-title">LIGHTWALKER DAILY USE PAGE</h1>
+        <div class="mockup-title" style="font-size: 1.2rem; margin-bottom: 40px;">Interactive Timeline + Container System Visual Mockups</div>
+        
+        <!-- MAIN INTERFACE MOCKUP -->
+        <div class="mockup-section">
+            <h2 class="section-title">Main Interface - "Chronosphere" Design</h2>
+            <div class="chronosphere-interface">
+                <div class="header-title">LIGHTWALKER CHRONOSPHERE</div>
+                <div class="header-subtitle">QUANTUM TIMELINE INTERFACE</div>
+                
+                <!-- Hero Activity Display -->
+                <div class="hero-activity">
+                    <div class="activity-icon">🧠</div>
+                    <div class="activity-title">Deep Work Session</div>
+                    <div class="activity-time">
+                        <span>⚡</span>
+                        <span>08:20</span>
+                    </div>
+                    <div class="energy-badge">
+                        <span>🔥</span>
+                        HIGH FOCUS
+                    </div>
+                </div>
+                
+                <!-- Timeline Strip -->
+                <div class="timeline-container">
+                    <div class="timeline-strip">
+                        <div class="timeline-activity completed">
+                            <div class="timeline-icon">☀️</div>
+                            <div class="activity-name">WAKE</div>
+                            <div class="activity-time-small">07:00</div>
+                        </div>
+                        
+                        <div class="timeline-activity completed">
+                            <div class="timeline-icon">🧘</div>
+                            <div class="activity-name">MEDITATE</div>
+                            <div class="activity-time-small">07:15</div>
+                        </div>
+                        
+                        <div class="timeline-activity current">
+                            <div class="timeline-icon">🧠</div>
+                            <div class="activity-name">DEEP WORK</div>
+                            <div class="activity-time-small">08:00-09:45</div>
+                            <div class="timeline-progress"></div>
+                        </div>
+                        
+                        <div class="timeline-activity">
+                            <div class="timeline-icon">🚿</div>
+                            <div class="activity-name">REFRESH</div>
+                            <div class="activity-time-small">09:50</div>
+                        </div>
+                        
+                        <div class="timeline-activity">
+                            <div class="timeline-icon">🍳</div>
+                            <div class="activity-name">FUEL</div>
+                            <div class="activity-time-small">10:15</div>
+                        </div>
+                        
+                        <div class="timeline-activity">
+                            <div class="timeline-icon">📚</div>
+                            <div class="activity-name">LEARN</div>
+                            <div class="activity-time-small">11:00</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Controls -->
+                    <div class="timeline-controls">
+                        <div class="control-btn">◀</div>
+                        <div class="control-btn play-btn">▶</div>
+                        <div class="control-btn now-btn">NOW</div>
+                        <div class="control-btn">▶</div>
+                    </div>
+                </div>
+                
+                <!-- Container System -->
+                <div class="container-system">
+                    <div class="role-model-container">
+                        <div class="container-title">
+                            <span>🧠</span>
+                            Einstein Container - Active
+                        </div>
+                        
+                        <div class="attribute-item active">
+                            <div class="attribute-info">
+                                <div class="attribute-icon">⚡</div>
+                                <div>
+                                    <div>Curiosity</div>
+                                    <div style="font-size: 0.8rem; color: #4facfe;">Ask 3 Why Questions</div>
+                                </div>
+                            </div>
+                            <div class="status-indicator active"></div>
+                        </div>
+                        
+                        <div class="attribute-item">
+                            <div class="attribute-info">
+                                <div class="attribute-icon">🎯</div>
+                                <div>
+                                    <div>Focus</div>
+                                    <div style="font-size: 0.8rem; color: #4facfe;">2-hour Deep Work Block</div>
+                                </div>
+                            </div>
+                            <div class="status-indicator upcoming"></div>
+                        </div>
+                        
+                        <div class="attribute-item">
+                            <div class="attribute-info">
+                                <div class="attribute-icon">🔬</div>
+                                <div>
+                                    <div>Logic</div>
+                                    <div style="font-size: 0.8rem; color: #4facfe;">Problem Analysis Session</div>
+                                </div>
+                            </div>
+                            <div class="status-indicator"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="role-model-container">
+                        <div class="container-title">
+                            <span>🕊️</span>
+                            Gandhi Container
+                        </div>
+                        
+                        <div class="attribute-item">
+                            <div class="attribute-info">
+                                <div class="attribute-icon">🌱</div>
+                                <div>
+                                    <div>Patience</div>
+                                    <div style="font-size: 0.8rem; color: #4facfe;">10-minute Breathing Space</div>
+                                </div>
+                            </div>
+                            <div class="status-indicator"></div>
+                        </div>
+                        
+                        <div class="attribute-item">
+                            <div class="attribute-info">
+                                <div class="attribute-icon">⚖️</div>
+                                <div>
+                                    <div>Justice</div>
+                                    <div style="font-size: 0.8rem; color: #4facfe;">Community Service Planning</div>
+                                </div>
+                            </div>
+                            <div class="status-indicator"></div>
+                        </div>
+                        
+                        <div class="attribute-item">
+                            <div class="attribute-info">
+                                <div class="attribute-icon">🤲</div>
+                                <div>
+                                    <div>Simplicity</div>
+                                    <div style="font-size: 0.8rem; color: #4facfe;">Minimal Living Review</div>
+                                </div>
+                            </div>
+                            <div class="status-indicator"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Inspirational Quote -->
+                <div class="quote-section">
+                    "Observe the quantum possibilities of your ideal timeline. Each moment is an invitation to align."
+                </div>
+            </div>
+        </div>
+        
+        <!-- INTERACTION STATES -->
+        <div class="mockup-section">
+            <h2 class="section-title">Interaction States & Animations</h2>
+            <div class="interaction-demo">
+                <div class="state-examples">
+                    <div class="state-card">
+                        <div class="state-title">Auto-Scrolling Timeline</div>
+                        <div class="animation-demo"></div>
+                        <p>Timeline automatically moves with current time, keeping "now" centered</p>
+                    </div>
+                    
+                    <div class="state-card">
+                        <div class="state-title">Manual Navigation</div>
+                        <div style="display: flex; gap: 10px; align-items: center; margin: 10px 0;">
+                            <div class="control-btn" style="padding: 8px 12px;">◀</div>
+                            <div style="flex: 1; height: 4px; background: #4facfe; border-radius: 2px;"></div>
+                            <div class="control-btn" style="padding: 8px 12px;">▶</div>
+                        </div>
+                        <p>Drag timeline or use arrows to see future/past activities</p>
+                    </div>
+                    
+                    <div class="state-card">
+                        <div class="state-title">"NOW" Snap Back</div>
+                        <div class="now-btn" style="margin: 10px 0; display: inline-block;">NOW</div>
+                        <p>Click "NOW" button to instantly return to current time position</p>
+                    </div>
+                    
+                    <div class="state-card">
+                        <div class="state-title">Activity Status Indicators</div>
+                        <div style="display: flex; gap: 15px; margin: 15px 0;">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <div class="status-indicator active"></div>
+                                <span>Current</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <div class="status-indicator upcoming"></div>
+                                <span>Upcoming</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <div class="status-indicator"></div>
+                                <span>Completed</span>
+                            </div>
+                        </div>
+                        <p>Real-time visual feedback on activity progress</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MOBILE LAYOUT -->
+        <div class="mockup-section">
+            <h2 class="section-title">Mobile Responsive Layout</h2>
+            <div style="max-width: 375px; margin: 0 auto; background: rgba(15, 20, 25, 0.8); border-radius: 20px; padding: 20px; border: 2px solid rgba(79, 172, 254, 0.4);">
+                <div class="header-title" style="font-size: 1.8rem;">LIGHTWALKER</div>
+                <div class="header-subtitle" style="font-size: 0.9rem;">CHRONOSPHERE</div>
+                
+                <div class="hero-activity" style="padding: 25px 15px; margin-bottom: 25px;">
+                    <div class="activity-icon" style="width: 80px; height: 80px; font-size: 2rem;">🧠</div>
+                    <div class="activity-title" style="font-size: 1.8rem;">Deep Work</div>
+                    <div class="activity-time" style="font-size: 1.2rem;">⚡ 08:20</div>
+                    <div class="energy-badge" style="font-size: 0.9rem;">HIGH FOCUS</div>
+                </div>
+                
+                <div class="timeline-container" style="padding: 20px 15px;">
+                    <div class="timeline-strip" style="gap: 10px;">
+                        <div class="timeline-activity completed">
+                            <div class="timeline-icon" style="width: 50px; height: 50px; font-size: 1rem;">☀️</div>
+                            <div class="activity-name" style="font-size: 0.7rem;">WAKE</div>
+                            <div class="activity-time-small" style="font-size: 0.7rem;">07:00</div>
+                        </div>
+                        
+                        <div class="timeline-activity current">
+                            <div class="timeline-icon" style="width: 50px; height: 50px; font-size: 1rem;">🧠</div>
+                            <div class="activity-name" style="font-size: 0.7rem;">WORK</div>
+                            <div class="activity-time-small" style="font-size: 0.7rem;">08:00</div>
+                        </div>
+                        
+                        <div class="timeline-activity">
+                            <div class="timeline-icon" style="width: 50px; height: 50px; font-size: 1rem;">🚿</div>
+                            <div class="activity-name" style="font-size: 0.7rem;">REFRESH</div>
+                            <div class="activity-time-small" style="font-size: 0.7rem;">09:50</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-controls" style="gap: 10px;">
+                        <div class="control-btn" style="padding: 10px 15px;">◀</div>
+                        <div class="now-btn" style="padding: 10px 20px;">NOW</div>
+                        <div class="control-btn" style="padding: 10px 15px;">▶</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TECHNICAL SPECIFICATIONS -->
+        <div class="mockup-section">
+            <h2 class="section-title">Technical Implementation Specifications</h2>
+            <div style="background: rgba(15, 20, 25, 0.6); border-radius: 15px; padding: 25px;">
+                <h3 style="color: #4facfe; margin-bottom: 15px;">Animation Specifications:</h3>
+                <ul style="line-height: 1.8; margin-bottom: 20px;">
+                    <li><strong>Timeline Auto-scroll:</strong> Smooth 1px/minute movement, CSS transform: translateX()</li>
+                    <li><strong>Hero Activity Pulse:</strong> 2s infinite pulse animation on current activity icon</li>
+                    <li><strong>Container Shimmer:</strong> 3s infinite shimmer effect on active containers</li>
+                    <li><strong>Status Indicators:</strong> 1s blink animation for current activities</li>
+                    <li><strong>Navigation Transitions:</strong> 0.3s ease-in-out for timeline position changes</li>
+                </ul>
+                
+                <h3 style="color: #4facfe; margin-bottom: 15px;">Interactive Elements:</h3>
+                <ul style="line-height: 1.8; margin-bottom: 20px;">
+                    <li><strong>Drag Timeline:</strong> Mouse/touch drag with momentum scrolling</li>
+                    <li><strong>Arrow Navigation:</strong> 30-minute jumps forward/backward</li>
+                    <li><strong>NOW Button:</strong> Instant snap to current time with smooth animation</li>
+                    <li><strong>Activity Hover:</strong> Expand cards showing detailed guidance</li>
+                    <li><strong>Container Switching:</strong> Click to activate different role model containers</li>
+                </ul>
+                
+                <h3 style="color: #4facfe; margin-bottom: 15px;">Responsive Breakpoints:</h3>
+                <ul style="line-height: 1.8;">
+                    <li><strong>Desktop (1200px+):</strong> Full container system side-by-side</li>
+                    <li><strong>Tablet (768px-1199px):</strong> Stacked containers, compressed timeline</li>
+                    <li><strong>Mobile (< 768px):</strong> Single column, simplified timeline icons</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

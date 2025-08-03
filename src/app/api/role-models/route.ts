@@ -59,6 +59,9 @@ export async function GET(request: NextRequest) {
         'Steve Jobs': { primaryColor: '#007AFF', secondaryColor: '#5AC8FA', archetype: 'innovator' },
         'Buddha': { primaryColor: '#FF9500', secondaryColor: '#FFCC02', archetype: 'sage' },
         'Einstein': { primaryColor: '#5856D6', secondaryColor: '#AF52DE', archetype: 'thinker' },
+        'Albert Einstein': { primaryColor: '#5856D6', secondaryColor: '#AF52DE', archetype: 'thinker' },
+        'Jesus': { primaryColor: '#FF9500', secondaryColor: '#FFCC02', archetype: 'teacher' },
+        'Jesus Christ': { primaryColor: '#FF9500', secondaryColor: '#FFCC02', archetype: 'teacher' },
         'Marcus Aurelius': { primaryColor: '#34C759', secondaryColor: '#30D158', archetype: 'stoic' },
         'Joan of Arc': { primaryColor: '#FF3B30', secondaryColor: '#FF6482', archetype: 'warrior' },
         'Leonardo da Vinci': { primaryColor: '#FF9500', secondaryColor: '#FFCC02', archetype: 'renaissance' },
@@ -83,7 +86,7 @@ export async function GET(request: NextRequest) {
       const defaultColors = colorMap[roleModel.commonName] || { 
         primaryColor: '#06b6d4', 
         secondaryColor: '#67e8f9', 
-        archetype: 'wisdom-keeper' 
+        archetype: 'guide' 
       }
       
       // Safe JSON parsing with fallbacks  

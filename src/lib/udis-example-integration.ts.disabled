@@ -1,0 +1,353 @@
+/**
+ * UDIS Integration Examples
+ * 
+ * Shows how to integrate UDIS into your existing Lightwalker application
+ * with minimal code changes and maximum benefits
+ */
+
+import { setupUDISForNextJS, UDISUtils, UDISMode, ProblemDomain, IssueSeverity } from './udis'
+import { withUDISMonitoring } from './udis-nextjs-integration'
+import { aiService } from './ai-service'
+
+/**
+ * Example 1: Initialize UDIS in your main app
+ */
+export async function initializeLightwalkerUDIS() {
+  // Initialize UDIS with Lightwalker-specific configuration
+  const udis = await setupUDISForNextJS({
+    mode: process.env.NODE_ENV === 'production' ? UDISMode.OFF : UDISMode.ACTIVE,
+    enabledDomains: [
+      ProblemDomain.BUILD,
+      ProblemDomain.PERFORMANCE,
+      ProblemDomain.USER_EXPERIENCE,
+      ProblemDomain.SECURITY,
+      ProblemDomain.INFRASTRUCTURE
+    ],
+    onIssueDetected: (issue) => {
+      console.log(`🚨 UDIS detected issue: ${issue.title}`)
+      // Could integrate with existing logging/monitoring
+    },
+    onIssueResolved: (issue) => {
+      console.log(`✅ UDIS resolved issue: ${issue.title}`)
+      // Could update metrics or notify team
+    }
+  })
+
+  return udis
+}
+
+/**
+ * Example 2: Wrap your existing AI service with UDIS monitoring
+ */
+export const monitoredAIService = {
+  extractKeywords: UDISUtils.monitorFunction(
+    aiService.extractKeywords.bind(aiService),
+    'aiService.extractKeywords',
+    { 
+      threshold: 5000, // 5 second threshold for AI calls
+      domain: ProblemDomain.INFRASTRUCTURE 
+    }
+  ),
+
+  generateResponse: UDISUtils.monitorFunction(
+    aiService.generateResponse.bind(aiService),
+    'aiService.generateResponse',
+    { 
+      threshold: 3000,
+      domain: ProblemDomain.INFRASTRUCTURE
+    }
+  )
+}
+
+/**
+ * Example 3: Monitor your API routes automatically
+ */
+export const withLightwalkerMonitoring = <T extends any[], R>(
+  handler: (...args: T) => Promise<R>,
+  routeName: string
+) => {
+  return withUDISMonitoring(handler, {
+    route: routeName,
+    domain: ProblemDomain.INFRASTRUCTURE,
+    performanceThreshold: 2000 // 2 second threshold for API routes
+  })
+}
+
+/**
+ * Example 4: Monitor specific Lightwalker operations
+ */
+export class LightwalkerUDISIntegration {
+  /**
+   * Monitor role model search performance
+   */
+  static async monitorRoleModelSearch(searchQuery: string, results: any[]) {
+    // Check if search returned empty results
+    if (results.length === 0) {
+      UDISUtils.reportIssue({
+        title: 'Role Model Search Returned No Results',
+        domain: ProblemDomain.USER_EXPERIENCE,
+        severity: IssueSeverity.MEDIUM,
+        description: `Search query "${searchQuery}" returned no results`,
+        context: {
+          metadata: { searchQuery, resultCount: 0 }
+        },
+        autoFixable: true // UDIS could suggest search improvements
+      })
+    }
+
+    // Check if search was slow (this would be called from your search function)
+    const searchTime = performance.now() // You'd measure actual search time
+    if (searchTime > 1000) {
+      UDISUtils.reportIssue({
+        title: 'Slow Role Model Search',
+        domain: ProblemDomain.PERFORMANCE,
+        severity: IssueSeverity.MEDIUM,
+        description: `Role model search took ${Math.round(searchTime)}ms`,
+        context: {
+          metadata: { searchQuery, searchTime, resultCount: results.length }
+        }
+      })
+    }
+  }
+
+  /**
+   * Monitor character creation abandonment
+   */
+  static async monitorCharacterCreation(step: string, userId?: string) {
+    // This would be called when users abandon character creation
+    UDISUtils.reportIssue({
+      title: 'Character Creation Abandonment',
+      domain: ProblemDomain.USER_EXPERIENCE,
+      severity: IssueSeverity.HIGH,
+      description: `User abandoned character creation at step: ${step}`,
+      context: {
+        metadata: { step, userId, timestamp: new Date().toISOString() }
+      },
+      autoFixable: false // Requires UX analysis
+    })
+  }
+
+  /**
+   * Monitor database connection issues
+   */
+  static async monitorDatabaseOperation(operation: string, duration: number, error?: Error) {
+    if (error) {
+      UDISUtils.reportIssue({
+        title: 'Database Operation Failed',
+        domain: ProblemDomain.INFRASTRUCTURE,
+        severity: IssueSeverity.HIGH,
+        description: `Database ${operation} failed: ${error.message}`,
+        context: {
+          function: operation,
+          stackTrace: error.stack,
+          metadata: { operation, duration }
+        },
+        autoFixable: operation.includes('timeout') // Timeouts can be auto-retried
+      })
+    } else if (duration > 2000) {
+      UDISUtils.reportIssue({
+        title: 'Slow Database Operation',
+        domain: ProblemDomain.PERFORMANCE,
+        severity: IssueSeverity.MEDIUM,
+        description: `Database ${operation} took ${Math.round(duration)}ms`,
+        context: {
+          function: operation,
+          metadata: { operation, duration }
+        }
+      })
+    }
+  }
+
+  /**
+   * Monitor AI service issues (like the DeepSeek R1 problems you had)
+   */
+  static async monitorAIService(operation: string, duration: number, error?: Error, model?: string) {
+    if (error) {
+      // This would have caught the DeepSeek R1 JSON parsing issues automatically
+      UDISUtils.reportIssue({
+        title: `AI Service Error: ${operation}`,
+        domain: ProblemDomain.INFRASTRUCTURE,
+        severity: IssueSeverity.HIGH,
+        description: `AI ${operation} failed: ${error.message}`,
+        context: {
+          function: operation,
+          stackTrace: error.stack,
+          metadata: { operation, duration, model, errorType: error.name }
+        },
+        autoFixable: error.message.includes('JSON') || error.message.includes('timeout')
+      })
+    } else if (duration > 10000) {
+      // This would have caught DeepSeek R1's 30+ second response times
+      UDISUtils.reportIssue({
+        title: `Slow AI Response: ${operation}`,
+        domain: ProblemDomain.PERFORMANCE,
+        severity: IssueSeverity.HIGH,
+        description: `AI ${operation} took ${Math.round(duration / 1000)}s with ${model}`,
+        context: {
+          function: operation,
+          metadata: { operation, duration, model, durationSeconds: duration / 1000 }
+        },
+        suggestedFix: model?.includes('deepseek') ? 'Consider switching to GPT-4o-mini for better performance' : undefined
+      })
+    }
+  }
+
+  /**
+   * Monitor build issues (like the ones you mentioned)
+   */
+  static async monitorBuildProcess(stage: string, duration: number, errors: string[] = []) {
+    if (errors.length > 0) {
+      for (const error of errors) {
+        UDISUtils.reportIssue({
+          title: `Build Error: ${stage}`,
+          domain: ProblemDomain.BUILD,
+          severity: IssueSeverity.HIGH,
+          description: error,
+          context: {
+            metadata: { stage, duration, buildTime: new Date().toISOString() }
+          },
+          autoFixable: this.isBuildErrorAutoFixable(error)
+        })
+      }
+    } else if (duration > 60000) { // 1 minute threshold
+      UDISUtils.reportIssue({
+        title: `Slow Build: ${stage}`,
+        domain: ProblemDomain.PERFORMANCE,
+        severity: IssueSeverity.MEDIUM,
+        description: `Build stage ${stage} took ${Math.round(duration / 1000)}s`,
+        context: {
+          metadata: { stage, duration, durationSeconds: duration / 1000 }
+        }
+      })
+    }
+  }
+
+  /**
+   * Monitor port conflicts (like the Windows crash issue you mentioned)
+   */
+  static async monitorPortUsage(port: number, processCount: number) {
+    if (processCount > 1) {
+      UDISUtils.reportIssue({
+        title: 'Multiple Processes on Same Port',
+        domain: ProblemDomain.INFRASTRUCTURE,
+        severity: IssueSeverity.CRITICAL,
+        description: `${processCount} processes detected on port ${port} - Windows crash risk`,
+        context: {
+          metadata: { port, processCount, platform: process.platform }
+        },
+        autoFixable: true, // Can automatically kill existing processes
+        suggestedFix: `Kill existing process on port ${port} before starting new one`
+      })
+    }
+  }
+
+  private static isBuildErrorAutoFixable(error: string): boolean {
+    const autoFixablePatterns = [
+      /Module not found/,
+      /Cannot resolve module/,
+      /Missing semicolon/,
+      /Unexpected token/,
+      /Property .* does not exist on type/
+    ]
+    
+    return autoFixablePatterns.some(pattern => pattern.test(error))
+  }
+}
+
+/**
+ * Example 5: React Hook for component-level monitoring
+ */
+export function useLightwalkerUDIS(componentName: string) {
+  const { reportError, trackInteraction } = require('./udis-nextjs-integration').useUDISMonitoring(componentName)
+
+  return {
+    reportError,
+    trackInteraction,
+    
+    // Lightwalker-specific tracking
+    trackRoleModelSelection: (roleModel: string) => {
+      trackInteraction({
+        type: 'click',
+        element: 'role-model-card',
+        page: 'character-creation',
+        metadata: { roleModel }
+      })
+    },
+    
+    trackAttributeSelection: (attribute: string, roleModel: string) => {
+      trackInteraction({
+        type: 'click',
+        element: 'attribute-selection',
+        page: 'character-creation',
+        metadata: { attribute, roleModel }
+      })
+    },
+    
+    trackSearchQuery: (query: string, resultCount: number) => {
+      trackInteraction({
+        type: 'search',
+        element: 'search-box',
+        page: 'character-creation',
+        metadata: { query, resultCount }
+      })
+      
+      // Auto-report if search returned no results
+      if (resultCount === 0) {
+        LightwalkerUDISIntegration.monitorRoleModelSearch(query, [])
+      }
+    }
+  }
+}
+
+/**
+ * Example 6: Emergency mode activation for critical issues
+ */
+export async function activateLightwalkerEmergencyMode(reason: string) {
+  const udis = require('./udis').getUDISInstance()
+  
+  if (udis) {
+    await udis.enableEmergencyMode({
+      duration: 30, // 30 minutes
+      maxCost: 20,  // $20 budget for emergency analysis
+      target: reason
+    })
+    
+    console.warn(`🚨 UDIS Emergency Mode activated: ${reason}`)
+  }
+}
+
+/**
+ * Example 7: Integration with your existing middleware
+ */
+export function createLightwalkerMiddleware() {
+  const udisMiddleware = require('./udis-nextjs-integration').createUDISMiddleware()
+  
+  return async function lightwalkerMiddleware(request: any) {
+    // Run UDIS monitoring
+    const response = await udisMiddleware(request)
+    
+    // Add Lightwalker-specific monitoring
+    if (request.nextUrl.pathname.startsWith('/api/role-models')) {
+      // Monitor role model API performance
+      const start = performance.now()
+      // ... your existing logic ...
+      const duration = performance.now() - start
+      
+      if (duration > 1000) {
+        LightwalkerUDISIntegration.monitorDatabaseOperation('role-models-fetch', duration)
+      }
+    }
+    
+    return response
+  }
+}
+
+export default {
+  initializeLightwalkerUDIS,
+  monitoredAIService,
+  withLightwalkerMonitoring,
+  LightwalkerUDISIntegration,
+  useLightwalkerUDIS,
+  activateLightwalkerEmergencyMode,
+  createLightwalkerMiddleware
+}

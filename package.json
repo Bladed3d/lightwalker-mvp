@@ -11,7 +11,12 @@
   },
   "scripts": {
     "dev": "next dev -p 3001",
+    "dev:clean": "npm run clean && next dev -p 3001",
+    "dev:safe": "npm run kill-port && npm run dev:clean",
+    "dev:full": "npm run kill-port && npm run clean && npm run db:generate && next dev -p 3001",
+    "kill-port": "taskkill /F /IM node.exe 2>nul || echo 'No node processes running'",
     "build": "prisma generate && next build",
+    "build:clean": "npm run clean && npm run build",
     "start": "next start -p 3001",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
@@ -26,7 +31,8 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate",
-    "clean": "rm -rf .next out dist build"
+    "clean": "rm -rf .next out dist build",
+    "reset": "npm run clean && npm install && npm run db:generate"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -44,6 +50,7 @@
     "next": "^14.0.4",
     "openai": "^4.24.7",
     "react": "^18.2.0",
+    "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.2",
     "superjson": "^2.2.1",

@@ -29,6 +29,30 @@ to see what names in role model images do the following:
 
   Then just name your image files to match exactly what's shown in the
   console!
-  
-  Fix!!
-  On the Character display page, the quotes only appear from one role model. The quote window changes size for two lines which disrupts the whole screen.
+
+
+Hi Claude! Before working on any AI issues, please:
+
+  1. Read docs/Claude-Problem-Solving-Playbook.md
+  2. Follow the systematic debugging methodology in CLAUDE.md
+  3. Use src/app/api/test-llm-reliability to test models before debugging
+  4. Remember: We spent 8 hours debugging DeepSeek R1 when the real issues were model reliability + semantic mismatches     
+
+  Key insight: Always check both technical issues AND semantic alignment between user language and database structure.
+
+Lost power: http://localhost:3001/ai-character-creation-hybrid
+https://lightwalker-mvp.vercel.app/ai-character-creation-hybrid
+https://lightwalker-mvp.vercel.app/hud-test
+
+
+Cool dashboard to make better when we have users: http://localhost:3001/udis-dashboard
+
+I will research more about this later:
+Want to try something concrete? We could build a simple "AI App Observer" that:
+  1. Watches user behavior on your Lightwalker app
+  2. Identifies friction points
+  3. Suggests specific improvements
+  4. Even better - implements A/B tests automatically
+
+
+http://localhost:3001/daily-use/bulletproof

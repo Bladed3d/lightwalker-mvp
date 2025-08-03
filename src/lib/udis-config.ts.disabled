@@ -1,0 +1,478 @@
+/**
+ * UDIS Configuration and Environment Controls
+ * 
+ * Provides runtime configuration, environment-specific settings,
+ * and control interfaces for the Universal Development Intelligence System
+ */
+
+import { UDISMode, UDISConfig, ProblemDomain } from './udis-core'
+
+/**
+ * Environment-specific UDIS configurations
+ */
+export const UDIS_ENVIRONMENTS = {
+  development: {
+    mode: UDISMode.ACTIVE,
+    performanceBudget: {
+      maxCpuOverhead: 5.0,        // Higher overhead acceptable in dev
+      maxMemoryMb: 200,           // More memory for debugging
+      maxResponseTimeMs: 100      // More lenient response times
+    },
+    samplingRate: 1.0,            // Monitor all requests in development
+    enabledDomains: Object.values(ProblemDomain),
+    aiConfig: {
+      model: 'openai/gpt-4o-mini',
+      maxTokens: 1000,
+      temperature: 0.1,
+      costBudgetPerHour: 10.0     // Higher budget for development
+    }
+  },
+  staging: {
+    mode: UDISMode.PASSIVE,
+    performanceBudget: {
+      maxCpuOverhead: 2.0,
+      maxMemoryMb: 100,
+      maxResponseTimeMs: 50
+    },
+    samplingRate: 0.1,            // 10% sampling in staging
+    enabledDomains: [
+      ProblemDomain.PERFORMANCE,
+      ProblemDomain.SECURITY,
+      ProblemDomain.INFRASTRUCTURE
+    ],
+    aiConfig: {
+      model: 'openai/gpt-4o-mini',
+      maxTokens: 500,
+      temperature: 0.1,
+      costBudgetPerHour: 2.0
+    }
+  },
+  production: {
+    mode: UDISMode.OFF,           // OFF by default in production
+    performanceBudget: {
+      maxCpuOverhead: 1.0,        // Strict performance requirements
+      maxMemoryMb: 50,
+      maxResponseTimeMs: 25
+    },
+    samplingRate: 0.01,           // 1% sampling in production
+    enabledDomains: [
+      ProblemDomain.SECURITY,     // Only critical domains
+      ProblemDomain.INFRASTRUCTURE
+    ],
+    aiConfig: {
+      model: 'openai/gpt-4o-mini',
+      maxTokens: 200,
+      temperature: 0.05,
+      costBudgetPerHour: 1.0      // Strict cost control
+    }
+  }
+} as const
+
+/**
+ * Feature flags for UDIS capabilities
+ */
+export interface UDISFeatureFlags {
+  aiAnalysis: boolean
+  autoResolution: boolean
+  realTimeMonitoring: boolean
+  performanceTracking: boolean
+  securityMonitoring: boolean
+  userExperienceTracking: boolean
+  buildMonitoring: boolean
+  emergencyMode: boolean
+  costOptimization: boolean
+  preventionLearning: boolean
+}
+
+/**
+ * Default feature flags by environment
+ */
+export const UDIS_FEATURE_FLAGS = {
+  development: {
+    aiAnalysis: true,
+    autoResolution: true,
+    realTimeMonitoring: true,
+    performanceTracking: true,
+    securityMonitoring: true,
+    userExperienceTracking: true,
+    buildMonitoring: true,
+    emergencyMode: true,
+    costOptimization: false,      // Cost optimization off in dev
+    preventionLearning: true
+  },
+  staging: {
+    aiAnalysis: true,
+    autoResolution: false,        // No auto-resolution in staging
+    realTimeMonitoring: true,
+    performanceTracking: true,
+    securityMonitoring: true,
+    userExperienceTracking: false,
+    buildMonitoring: true,
+    emergencyMode: true,
+    costOptimization: true,
+    preventionLearning: true
+  },
+  production: {
+    aiAnalysis: false,            // AI analysis off by default
+    autoResolution: false,        // No auto-resolution in production
+    realTimeMonitoring: false,    // Real-time monitoring off
+    performanceTracking: false,   // Performance tracking off
+    securityMonitoring: true,     // Security monitoring always on
+    userExperienceTracking: false,
+    buildMonitoring: false,
+    emergencyMode: true,          // Emergency mode available
+    costOptimization: true,
+    preventionLearning: false
+  }
+} as const
+
+/**
+ * Runtime configuration manager
+ */
+export class UDISConfigManager {
+  private currentConfig: UDISConfig
+  private featureFlags: UDISFeatureFlags
+  private overrides: Partial<UDISConfig> = {}
+  private environment: keyof typeof UDIS_ENVIRONMENTS
+
+  constructor(environment?: keyof typeof UDIS_ENVIRONMENTS) {
+    this.environment = environment || this.detectEnvironment()
+    this.currentConfig = { ...UDIS_ENVIRONMENTS[this.environment] }
+    this.featureFlags = { ...UDIS_FEATURE_FLAGS[this.environment] }
+    
+    this.applyEnvironmentVariables()
+    this.validateConfiguration()
+  }
+
+  /**
+   * Detect environment from NODE_ENV and other indicators
+   */
+  private detectEnvironment(): keyof typeof UDIS_ENVIRONMENTS {
+    const nodeEnv = process.env.NODE_ENV
+    const vercelEnv = process.env.VERCEL_ENV
+    
+    if (vercelEnv === 'production' || nodeEnv === 'production') {
+      return 'production'
+    } else if (vercelEnv === 'preview' || nodeEnv === 'staging') {
+      return 'staging'
+    } else {
+      return 'development'
+    }
+  }
+
+  /**
+   * Apply environment variable overrides
+   */
+  private applyEnvironmentVariables(): void {
+    // UDIS mode override
+    const modeOverride = process.env.UDIS_MODE as UDISMode
+    if (modeOverride && Object.values(UDISMode).includes(modeOverride)) {
+      this.currentConfig.mode = modeOverride
+    }
+
+    // Performance budget overrides
+    if (process.env.UDIS_MAX_CPU_OVERHEAD) {
+      const override = parseFloat(process.env.UDIS_MAX_CPU_OVERHEAD)
+      if (!isNaN(override)) {
+        this.currentConfig.performanceBudget.maxCpuOverhead = override
+      }
+    }
+
+    if (process.env.UDIS_MAX_MEMORY_MB) {
+      const override = parseInt(process.env.UDIS_MAX_MEMORY_MB)
+      if (!isNaN(override)) {
+        this.currentConfig.performanceBudget.maxMemoryMb = override
+      }
+    }
+
+    if (process.env.UDIS_MAX_RESPONSE_TIME_MS) {
+      const override = parseInt(process.env.UDIS_MAX_RESPONSE_TIME_MS)
+      if (!isNaN(override)) {
+        this.currentConfig.performanceBudget.maxResponseTimeMs = override
+      }
+    }
+
+    // Sampling rate override
+    if (process.env.UDIS_SAMPLING_RATE) {
+      const override = parseFloat(process.env.UDIS_SAMPLING_RATE)
+      if (!isNaN(override) && override >= 0 && override <= 1) {
+        this.currentConfig.samplingRate = override
+      }
+    }
+
+    // AI configuration overrides
+    if (process.env.UDIS_AI_MODEL) {
+      this.currentConfig.aiConfig.model = process.env.UDIS_AI_MODEL
+    }
+
+    if (process.env.UDIS_AI_BUDGET_PER_HOUR) {
+      const override = parseFloat(process.env.UDIS_AI_BUDGET_PER_HOUR)
+      if (!isNaN(override)) {
+        this.currentConfig.aiConfig.costBudgetPerHour = override
+      }
+    }
+
+    // Feature flag overrides
+    if (process.env.UDIS_ENABLE_AI_ANALYSIS === 'true') {
+      this.featureFlags.aiAnalysis = true
+    } else if (process.env.UDIS_ENABLE_AI_ANALYSIS === 'false') {
+      this.featureFlags.aiAnalysis = false
+    }
+
+    if (process.env.UDIS_ENABLE_AUTO_RESOLUTION === 'true') {
+      this.featureFlags.autoResolution = true
+    } else if (process.env.UDIS_ENABLE_AUTO_RESOLUTION === 'false') {
+      this.featureFlags.autoResolution = false
+    }
+  }
+
+  /**
+   * Validate configuration for consistency and safety
+   */
+  private validateConfiguration(): void {
+    // Ensure sampling rate is valid
+    if (this.currentConfig.samplingRate < 0 || this.currentConfig.samplingRate > 1) {
+      console.warn('[UDIS:Config] Invalid sampling rate, defaulting to 0.1')
+      this.currentConfig.samplingRate = 0.1
+    }
+
+    // Ensure performance budgets are reasonable
+    if (this.currentConfig.performanceBudget.maxCpuOverhead > 10) {
+      console.warn('[UDIS:Config] CPU overhead budget too high, capping at 10%')
+      this.currentConfig.performanceBudget.maxCpuOverhead = 10
+    }
+
+    // Ensure cost budget is reasonable
+    if (this.currentConfig.aiConfig.costBudgetPerHour > 100) {
+      console.warn('[UDIS:Config] AI cost budget too high, capping at $100/hour')
+      this.currentConfig.aiConfig.costBudgetPerHour = 100
+    }
+
+    // Production safety checks
+    if (this.environment === 'production') {
+      if (this.currentConfig.mode === UDISMode.ACTIVE) {
+        console.warn('[UDIS:Config] ACTIVE mode in production - ensure this is intentional')
+      }
+      
+      if (this.currentConfig.samplingRate > 0.1) {
+        console.warn('[UDIS:Config] High sampling rate in production may impact performance')
+      }
+    }
+  }
+
+  /**
+   * Get current configuration
+   */
+  public getConfig(): UDISConfig {
+    return { ...this.currentConfig, ...this.overrides }
+  }
+
+  /**
+   * Get feature flags
+   */
+  public getFeatureFlags(): UDISFeatureFlags {
+    return { ...this.featureFlags }
+  }
+
+  /**
+   * Set runtime configuration override
+   */
+  public setConfigOverride(override: Partial<UDISConfig>): void {
+    this.overrides = { ...this.overrides, ...override }
+    console.log('[UDIS:Config] Configuration override applied:', override)
+  }
+
+  /**
+   * Set feature flag override
+   */
+  public setFeatureFlag(flag: keyof UDISFeatureFlags, enabled: boolean): void {
+    this.featureFlags[flag] = enabled
+    console.log(`[UDIS:Config] Feature flag ${flag} set to ${enabled}`)
+  }
+
+  /**
+   * Reset to environment defaults
+   */
+  public resetToDefaults(): void {
+    this.currentConfig = { ...UDIS_ENVIRONMENTS[this.environment] }
+    this.featureFlags = { ...UDIS_FEATURE_FLAGS[this.environment] }
+    this.overrides = {}
+    console.log(`[UDIS:Config] Reset to ${this.environment} defaults`)
+  }
+
+  /**
+   * Get configuration for specific mode
+   */
+  public getConfigForMode(mode: UDISMode): UDISConfig {
+    const config = this.getConfig()
+    
+    // Adjust configuration based on mode
+    switch (mode) {
+      case UDISMode.OFF:
+        return {
+          ...config,
+          mode,
+          samplingRate: 0,
+          enabledDomains: [],
+          aiConfig: { ...config.aiConfig, costBudgetPerHour: 0 }
+        }
+      
+      case UDISMode.PASSIVE:
+        return {
+          ...config,
+          mode,
+          samplingRate: Math.min(config.samplingRate, 0.1),
+          enabledDomains: [ProblemDomain.SECURITY, ProblemDomain.INFRASTRUCTURE],
+          aiConfig: { ...config.aiConfig, maxTokens: 200 }
+        }
+      
+      case UDISMode.ACTIVE:
+        return { ...config, mode }
+      
+      case UDISMode.EMERGENCY:
+        return {
+          ...config,
+          mode,
+          samplingRate: 1.0,
+          performanceBudget: {
+            maxCpuOverhead: 10.0,
+            maxMemoryMb: 500,
+            maxResponseTimeMs: 200
+          },
+          aiConfig: {
+            ...config.aiConfig,
+            costBudgetPerHour: config.aiConfig.costBudgetPerHour * 5,
+            maxTokens: 2000
+          }
+        }
+      
+      default:
+        return config
+    }
+  }
+
+  /**
+   * Export configuration for diagnostics
+   */
+  public exportConfig(): {
+    environment: string
+    config: UDISConfig
+    featureFlags: UDISFeatureFlags
+    overrides: Partial<UDISConfig>
+  } {
+    return {
+      environment: this.environment,
+      config: this.getConfig(),
+      featureFlags: this.getFeatureFlags(),
+      overrides: this.overrides
+    }
+  }
+}
+
+/**
+ * Environment variable configuration schema
+ */
+export const UDIS_ENV_VARS = {
+  // Core settings
+  UDIS_MODE: 'UDISMode (off|passive|active|emergency)',
+  UDIS_SAMPLING_RATE: 'number (0.0-1.0)',
+  
+  // Performance settings
+  UDIS_MAX_CPU_OVERHEAD: 'number (percentage)',
+  UDIS_MAX_MEMORY_MB: 'number (megabytes)',
+  UDIS_MAX_RESPONSE_TIME_MS: 'number (milliseconds)',
+  
+  // AI settings
+  UDIS_AI_MODEL: 'string (OpenRouter model name)',
+  UDIS_AI_BUDGET_PER_HOUR: 'number (dollars)',
+  
+  // Feature flags
+  UDIS_ENABLE_AI_ANALYSIS: 'boolean (true|false)',
+  UDIS_ENABLE_AUTO_RESOLUTION: 'boolean (true|false)',
+  UDIS_ENABLE_REAL_TIME_MONITORING: 'boolean (true|false)',
+  UDIS_ENABLE_SECURITY_MONITORING: 'boolean (true|false)',
+  UDIS_ENABLE_EMERGENCY_MODE: 'boolean (true|false)'
+} as const
+
+/**
+ * Create configuration manager instance
+ */
+export function createUDISConfig(environment?: keyof typeof UDIS_ENVIRONMENTS): UDISConfigManager {
+  return new UDISConfigManager(environment)
+}
+
+/**
+ * Get default configuration for environment
+ */
+export function getDefaultConfig(environment: keyof typeof UDIS_ENVIRONMENTS): {
+  config: UDISConfig
+  featureFlags: UDISFeatureFlags
+} {
+  return {
+    config: { ...UDIS_ENVIRONMENTS[environment] },
+    featureFlags: { ...UDIS_FEATURE_FLAGS[environment] }
+  }
+}
+
+/**
+ * Validate environment variables
+ */
+export function validateEnvironmentVariables(): { valid: boolean; errors: string[] } {
+  const errors: string[] = []
+  
+  // Check OpenRouter API key
+  if (!process.env.OPENROUTER_API_KEY) {
+    errors.push('OPENROUTER_API_KEY is required for AI analysis')
+  }
+  
+  // Validate UDIS_MODE if set
+  const udisMode = process.env.UDIS_MODE
+  if (udisMode && !Object.values(UDISMode).includes(udisMode as UDISMode)) {
+    errors.push(`Invalid UDIS_MODE: ${udisMode}. Must be one of: ${Object.values(UDISMode).join(', ')}`)
+  }
+  
+  // Validate numeric environment variables
+  const numericVars = [
+    'UDIS_SAMPLING_RATE',
+    'UDIS_MAX_CPU_OVERHEAD',
+    'UDIS_MAX_MEMORY_MB',
+    'UDIS_MAX_RESPONSE_TIME_MS',
+    'UDIS_AI_BUDGET_PER_HOUR'
+  ]
+  
+  for (const varName of numericVars) {
+    const value = process.env[varName]
+    if (value && isNaN(parseFloat(value))) {
+      errors.push(`${varName} must be a valid number, got: ${value}`)
+    }
+  }
+  
+  return {
+    valid: errors.length === 0,
+    errors
+  }
+}
+
+// Global configuration manager instance
+let globalConfigManager: UDISConfigManager | null = null
+
+/**
+ * Get global configuration manager
+ */
+export function getGlobalUDISConfig(): UDISConfigManager {
+  if (!globalConfigManager) {
+    globalConfigManager = new UDISConfigManager()
+  }
+  return globalConfigManager
+}
+
+export default {
+  UDISConfigManager,
+  createUDISConfig,
+  getDefaultConfig,
+  validateEnvironmentVariables,
+  getGlobalUDISConfig,
+  UDIS_ENVIRONMENTS,
+  UDIS_FEATURE_FLAGS,
+  UDIS_ENV_VARS
+}

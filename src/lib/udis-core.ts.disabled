@@ -1,0 +1,591 @@
+/**
+ * Universal Development Intelligence System (UDIS) - Core Framework
+ * 
+ * Inspired by BMAD Method's multi-agent coordination and performance-conscious design
+ * Combines real-time monitoring with intelligent problem detection and resolution
+ * 
+ * Architecture: Multi-agent system with context preservation and performance optimization
+ */
+
+import { EventEmitter } from 'events'
+
+// Operating modes for scalable performance
+export enum UDISMode {
+  OFF = 'off',           // Zero overhead - completely disabled
+  PASSIVE = 'passive',   // Silent monitoring only - <2% overhead  
+  ACTIVE = 'active',     // Full intelligence - development mode
+  EMERGENCY = 'emergency' // Crisis diagnostics - unlimited resources
+}
+
+// Problem detection domains
+export enum ProblemDomain {
+  BUILD = 'build',
+  PERFORMANCE = 'performance', 
+  USER_EXPERIENCE = 'user_experience',
+  SECURITY = 'security',
+  CODE_QUALITY = 'code_quality',
+  INFRASTRUCTURE = 'infrastructure'
+}
+
+// Issue severity levels
+export enum IssueSeverity {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical'
+}
+
+// Agent types inspired by BMAD Method specialization
+export enum AgentType {
+  MONITOR = 'monitor',        // Continuous system observation
+  ANALYST = 'analyst',        // Problem analysis and pattern recognition
+  RESOLVER = 'resolver',      // Solution generation and implementation
+  ORCHESTRATOR = 'orchestrator' // Context management and agent coordination
+}
+
+// Core interfaces
+export interface UDISConfig {
+  mode: UDISMode
+  performanceBudget: {
+    maxCpuOverhead: number      // Maximum CPU overhead percentage
+    maxMemoryMb: number         // Maximum memory usage in MB
+    maxResponseTimeMs: number   // Maximum acceptable response time increase
+  }
+  samplingRate: number          // Percentage of requests to monitor (0.01 = 1%)
+  enabledDomains: ProblemDomain[]
+  aiConfig: {
+    model: string               // AI model for analysis (GPT-4o-mini, etc.)
+    maxTokens: number
+    temperature: number
+    costBudgetPerHour: number   // Dollar limit per hour for AI analysis
+  }
+}
+
+export interface DetectedIssue {
+  id: string
+  timestamp: Date
+  domain: ProblemDomain
+  severity: IssueSeverity
+  title: string
+  description: string
+  context: {
+    file?: string
+    function?: string
+    userAction?: string
+    stackTrace?: string
+    metadata: Record<string, any>
+  }
+  suggestedFix?: string
+  autoFixable: boolean
+  similarIssues: string[]       // IDs of similar issues for pattern recognition
+}
+
+export interface AgentMessage {
+  from: AgentType
+  to: AgentType
+  type: 'analysis' | 'solution' | 'context' | 'status'
+  data: any
+  conversationId: string
+  timestamp: Date
+}
+
+export interface PerformanceMetrics {
+  cpuOverhead: number           // Current CPU overhead percentage
+  memoryUsageMb: number         // Current memory usage
+  responseTimeImpactMs: number  // Response time increase caused by UDIS
+  issuesDetected: number        // Total issues detected this session
+  issuesResolved: number        // Total issues resolved automatically
+  costSpentUsd: number          // AI analysis costs this hour
+}
+
+/**
+ * Main UDIS Controller
+ * Coordinates multiple specialized agents and manages system performance
+ */
+export class UDISController extends EventEmitter {
+  private config: UDISConfig
+  private agents: Map<AgentType, UDISAgent> = new Map()
+  private detectedIssues: Map<string, DetectedIssue> = new Map()
+  private performanceMetrics: PerformanceMetrics
+  private startTime: Date
+  private performanceMonitor: NodeJS.Timer | null = null
+
+  constructor(config: Partial<UDISConfig> = {}) {
+    super()
+    
+    // Default configuration with production-safe settings
+    this.config = {
+      mode: UDISMode.OFF,
+      performanceBudget: {
+        maxCpuOverhead: 2.0,      // 2% max CPU overhead
+        maxMemoryMb: 100,         // 100MB max memory
+        maxResponseTimeMs: 50     // 50ms max response time increase
+      },
+      samplingRate: 0.1,          // Monitor 10% of requests by default
+      enabledDomains: Object.values(ProblemDomain),
+      aiConfig: {
+        model: 'openai/gpt-4o-mini',
+        maxTokens: 500,
+        temperature: 0.1,
+        costBudgetPerHour: 5.0    // $5/hour AI analysis budget
+      },
+      ...config
+    }
+
+    this.performanceMetrics = {
+      cpuOverhead: 0,
+      memoryUsageMb: 0,
+      responseTimeImpactMs: 0,
+      issuesDetected: 0,
+      issuesResolved: 0,
+      costSpentUsd: 0
+    }
+
+    this.startTime = new Date()
+    this.initializeAgents()
+  }
+
+  /**
+   * Initialize specialized agents following BMAD Method pattern
+   */
+  private initializeAgents(): void {
+    // Monitor Agent - Continuous system observation
+    this.agents.set(AgentType.MONITOR, new MonitorAgent(this.config))
+    
+    // Analyst Agent - Problem analysis and pattern recognition  
+    this.agents.set(AgentType.ANALYST, new AnalystAgent(this.config))
+    
+    // Resolver Agent - Solution generation and implementation
+    this.agents.set(AgentType.RESOLVER, new ResolverAgent(this.config))
+    
+    // Orchestrator Agent - Context management and coordination
+    this.agents.set(AgentType.ORCHESTRATOR, new OrchestratorAgent(this.config))
+
+    // Set up agent communication channels
+    this.setupAgentCommunication()
+  }
+
+  /**
+   * Set up inter-agent communication following BMAD Method's context preservation
+   */
+  private setupAgentCommunication(): void {
+    // All agents can send messages through the controller
+    this.agents.forEach((agent, type) => {
+      agent.on('message', (message: AgentMessage) => {
+        this.routeMessage(message)
+      })
+    })
+  }
+
+  /**
+   * Route messages between agents with context preservation
+   */
+  private routeMessage(message: AgentMessage): void {
+    const targetAgent = this.agents.get(message.to)
+    if (targetAgent) {
+      targetAgent.receiveMessage(message)
+    }
+    
+    // Log all messages for context preservation (BMAD Method pattern)
+    this.emit('agent-communication', message)
+  }
+
+  /**
+   * Start UDIS monitoring based on current mode
+   */
+  public async start(): Promise<void> {
+    if (this.config.mode === UDISMode.OFF) {
+      return // No-op for OFF mode - zero overhead
+    }
+
+    console.log(`[UDIS] Starting in ${this.config.mode} mode`)
+    
+    // Start performance monitoring
+    this.startPerformanceMonitoring()
+    
+    // Initialize agents based on mode
+    const activeAgents = this.getActiveAgentsForMode(this.config.mode)
+    for (const agentType of activeAgents) {
+      const agent = this.agents.get(agentType)
+      if (agent) {
+        await agent.start()
+      }
+    }
+
+    this.emit('started', { mode: this.config.mode, timestamp: new Date() })
+  }
+
+  /**
+   * Stop UDIS monitoring
+   */
+  public async stop(): Promise<void> {
+    console.log('[UDIS] Stopping...')
+    
+    // Stop all agents
+    for (const agent of this.agents.values()) {
+      await agent.stop()
+    }
+
+    // Stop performance monitoring
+    if (this.performanceMonitor) {
+      clearInterval(this.performanceMonitor)
+      this.performanceMonitor = null
+    }
+
+    this.emit('stopped', { timestamp: new Date() })
+  }
+
+  /**
+   * Change operating mode at runtime
+   */
+  public async setMode(mode: UDISMode): Promise<void> {
+    const previousMode = this.config.mode
+    this.config.mode = mode
+    
+    console.log(`[UDIS] Switching from ${previousMode} to ${mode} mode`)
+    
+    // Restart with new mode
+    await this.stop()
+    await this.start()
+    
+    this.emit('mode-changed', { from: previousMode, to: mode, timestamp: new Date() })
+  }
+
+  /**
+   * Get active agents for specific mode (performance optimization)
+   */
+  private getActiveAgentsForMode(mode: UDISMode): AgentType[] {
+    switch (mode) {
+      case UDISMode.OFF:
+        return []
+      case UDISMode.PASSIVE:
+        return [AgentType.MONITOR] // Only monitoring, no analysis
+      case UDISMode.ACTIVE:
+        return [AgentType.MONITOR, AgentType.ANALYST, AgentType.ORCHESTRATOR]
+      case UDISMode.EMERGENCY:
+        return Object.values(AgentType) // All agents active
+      default:
+        return []
+    }
+  }
+
+  /**
+   * Monitor UDIS performance impact and auto-adjust if needed
+   */
+  private startPerformanceMonitoring(): void {
+    this.performanceMonitor = setInterval(() => {
+      this.measurePerformanceImpact()
+      this.checkPerformanceBudget()
+    }, 10000) // Check every 10 seconds
+  }
+
+  /**
+   * Measure UDIS performance impact
+   */
+  private measurePerformanceImpact(): void {
+    const usage = process.memoryUsage()
+    this.performanceMetrics.memoryUsageMb = usage.heapUsed / 1024 / 1024
+    
+    // Emit metrics for monitoring
+    this.emit('performance-metrics', this.performanceMetrics)
+  }
+
+  /**
+   * Check if UDIS is exceeding performance budget and auto-adjust
+   */
+  private checkPerformanceBudget(): void {
+    const { performanceBudget } = this.config
+    const metrics = this.performanceMetrics
+
+    // Auto-downgrade if exceeding budget
+    if (metrics.cpuOverhead > performanceBudget.maxCpuOverhead ||
+        metrics.memoryUsageMb > performanceBudget.maxMemoryMb ||
+        metrics.responseTimeImpactMs > performanceBudget.maxResponseTimeMs) {
+      
+      console.warn('[UDIS] Performance budget exceeded, auto-downgrading mode')
+      
+      // Downgrade mode automatically
+      if (this.config.mode === UDISMode.EMERGENCY) {
+        this.setMode(UDISMode.ACTIVE)
+      } else if (this.config.mode === UDISMode.ACTIVE) {
+        this.setMode(UDISMode.PASSIVE)
+      } else if (this.config.mode === UDISMode.PASSIVE) {
+        this.setMode(UDISMode.OFF)
+      }
+    }
+  }
+
+  /**
+   * Report detected issue to UDIS system
+   */
+  public async reportIssue(issue: DetectedIssue): Promise<void> {
+    this.detectedIssues.set(issue.id, issue)
+    this.performanceMetrics.issuesDetected++
+    
+    console.log(`[UDIS] Issue detected: ${issue.title} (${issue.severity})`)
+    
+    // Send to analyst for analysis
+    const analysisMessage: AgentMessage = {
+      from: AgentType.MONITOR,
+      to: AgentType.ANALYST,
+      type: 'analysis',
+      data: issue,
+      conversationId: issue.id,
+      timestamp: new Date()
+    }
+    
+    this.routeMessage(analysisMessage)
+    this.emit('issue-detected', issue)
+  }
+
+  /**
+   * Get current performance metrics
+   */
+  public getMetrics(): PerformanceMetrics {
+    return { ...this.performanceMetrics }
+  }
+
+  /**
+   * Get current configuration
+   */
+  public getConfig(): UDISConfig {
+    return { ...this.config }
+  }
+
+  /**
+   * Emergency activation for crisis situations
+   */
+  public async emergencyActivation(options: {
+    target?: string      // Specific user, feature, or endpoint
+    duration?: number    // Auto-disable after N minutes
+    maxCost?: number     // Budget limit for emergency analysis
+  } = {}): Promise<void> {
+    console.log('[UDIS] EMERGENCY ACTIVATION')
+    
+    // Switch to emergency mode
+    await this.setMode(UDISMode.EMERGENCY)
+    
+    // Set up auto-disable timer if specified
+    if (options.duration) {
+      setTimeout(() => {
+        console.log('[UDIS] Emergency mode auto-disabled')
+        this.setMode(UDISMode.PASSIVE)
+      }, options.duration * 60 * 1000)
+    }
+    
+    this.emit('emergency-activated', options)
+  }
+}
+
+/**
+ * Base class for all UDIS agents
+ */
+export abstract class UDISAgent extends EventEmitter {
+  protected config: UDISConfig
+  protected isActive: boolean = false
+
+  constructor(config: UDISConfig) {
+    super()
+    this.config = config
+  }
+
+  abstract start(): Promise<void>
+  abstract stop(): Promise<void>
+  abstract receiveMessage(message: AgentMessage): void
+
+  protected sendMessage(message: Omit<AgentMessage, 'timestamp'>): void {
+    this.emit('message', {
+      ...message,
+      timestamp: new Date()
+    })
+  }
+}
+
+/**
+ * Monitor Agent - Continuous system observation
+ */
+export class MonitorAgent extends UDISAgent {
+  private monitoringInterval: NodeJS.Timer | null = null
+
+  async start(): Promise<void> {
+    this.isActive = true
+    console.log('[UDIS:Monitor] Starting system monitoring')
+    
+    // Start monitoring based on sampling rate
+    const intervalMs = Math.max(1000, 1000 / this.config.samplingRate)
+    this.monitoringInterval = setInterval(() => {
+      this.performMonitoringCheck()
+    }, intervalMs)
+  }
+
+  async stop(): Promise<void> {
+    this.isActive = false
+    if (this.monitoringInterval) {
+      clearInterval(this.monitoringInterval)
+      this.monitoringInterval = null
+    }
+    console.log('[UDIS:Monitor] Stopped monitoring')
+  }
+
+  receiveMessage(message: AgentMessage): void {
+    // Monitor agent primarily sends, doesn't receive much
+    console.log(`[UDIS:Monitor] Received message: ${message.type}`)
+  }
+
+  private performMonitoringCheck(): void {
+    // This is where we'd implement actual monitoring logic
+    // For now, just placeholder structure
+    
+    // Example: Check memory usage
+    const usage = process.memoryUsage()
+    if (usage.heapUsed > 500 * 1024 * 1024) { // 500MB threshold
+      const issue: DetectedIssue = {
+        id: `memory-${Date.now()}`,
+        timestamp: new Date(),
+        domain: ProblemDomain.PERFORMANCE,
+        severity: IssueSeverity.MEDIUM,
+        title: 'High Memory Usage Detected',
+        description: `Heap usage: ${Math.round(usage.heapUsed / 1024 / 1024)}MB`,
+        context: {
+          metadata: { memoryUsage: usage }
+        },
+        autoFixable: false,
+        similarIssues: []
+      }
+      
+      this.sendMessage({
+        from: AgentType.MONITOR,
+        to: AgentType.ANALYST,
+        type: 'analysis',
+        data: issue,
+        conversationId: issue.id
+      })
+    }
+  }
+}
+
+/**
+ * Analyst Agent - Problem analysis and pattern recognition
+ */
+export class AnalystAgent extends UDISAgent {
+  async start(): Promise<void> {
+    this.isActive = true
+    console.log('[UDIS:Analyst] Ready for issue analysis')
+  }
+
+  async stop(): Promise<void> {
+    this.isActive = false
+    console.log('[UDIS:Analyst] Stopped analysis engine')
+  }
+
+  receiveMessage(message: AgentMessage): void {
+    if (message.type === 'analysis') {
+      this.analyzeIssue(message.data as DetectedIssue)
+    }
+  }
+
+  private async analyzeIssue(issue: DetectedIssue): Promise<void> {
+    console.log(`[UDIS:Analyst] Analyzing issue: ${issue.title}`)
+    
+    // This is where we'd implement AI-powered analysis
+    // For now, just forward to resolver if it's auto-fixable
+    if (issue.autoFixable) {
+      this.sendMessage({
+        from: AgentType.ANALYST,
+        to: AgentType.RESOLVER,
+        type: 'solution',
+        data: issue,
+        conversationId: issue.id
+      })
+    }
+  }
+}
+
+/**
+ * Resolver Agent - Solution generation and implementation
+ */
+export class ResolverAgent extends UDISAgent {
+  async start(): Promise<void> {
+    this.isActive = true
+    console.log('[UDIS:Resolver] Ready for automatic problem resolution')
+  }
+
+  async stop(): Promise<void> {
+    this.isActive = false
+    console.log('[UDIS:Resolver] Stopped resolution engine')
+  }
+
+  receiveMessage(message: AgentMessage): void {
+    if (message.type === 'solution') {
+      this.resolveIssue(message.data as DetectedIssue)
+    }
+  }
+
+  private async resolveIssue(issue: DetectedIssue): Promise<void> {
+    console.log(`[UDIS:Resolver] Attempting to resolve: ${issue.title}`)
+    
+    // This is where we'd implement automatic issue resolution
+    // For now, just log the resolution attempt
+  }
+}
+
+/**
+ * Orchestrator Agent - Context management and coordination
+ */
+export class OrchestratorAgent extends UDISAgent {
+  private conversationHistory: Map<string, AgentMessage[]> = new Map()
+
+  async start(): Promise<void> {
+    this.isActive = true
+    console.log('[UDIS:Orchestrator] Managing context and coordination')
+  }
+
+  async stop(): Promise<void> {
+    this.isActive = false
+    console.log('[UDIS:Orchestrator] Stopped orchestration')
+  }
+
+  receiveMessage(message: AgentMessage): void {
+    // Track all messages for context preservation (BMAD Method pattern)
+    const history = this.conversationHistory.get(message.conversationId) || []
+    history.push(message)
+    this.conversationHistory.set(message.conversationId, history)
+    
+    console.log(`[UDIS:Orchestrator] Context updated for conversation: ${message.conversationId}`)
+  }
+
+  public getConversationContext(conversationId: string): AgentMessage[] {
+    return this.conversationHistory.get(conversationId) || []
+  }
+}
+
+// Global UDIS instance (singleton pattern)
+let globalUDIS: UDISController | null = null
+
+/**
+ * Get or create global UDIS instance
+ */
+export function getUDIS(config?: Partial<UDISConfig>): UDISController {
+  if (!globalUDIS) {
+    globalUDIS = new UDISController(config)
+  }
+  return globalUDIS
+}
+
+/**
+ * Initialize UDIS based on environment
+ */
+export function initializeUDIS(): UDISController {
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  const mode = process.env.UDIS_MODE as UDISMode || 
+               (isDevelopment ? UDISMode.ACTIVE : UDISMode.OFF)
+  
+  const udis = getUDIS({ mode })
+  
+  // Auto-start UDIS
+  udis.start().catch(error => {
+    console.error('[UDIS] Failed to start:', error)
+  })
+  
+  return udis
+}
