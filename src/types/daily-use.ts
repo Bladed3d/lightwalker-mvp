@@ -25,6 +25,9 @@ export interface Activity {
   materials?: string[];
   location?: string;
   
+  // Visual representation
+  icon: string; // Emoji or image URL
+  
   // Role model context
   roleModelColor: string;
   roleModelArchetype: string;
@@ -153,7 +156,7 @@ export interface DailyUseUIState {
   activeTab: 'timeline' | 'lightwalker' | 'stats' | 'settings';
   selectedActivity?: Activity;
   showActivityModal: boolean;
-  quickActionPanel: 'hidden' | 'journal' | 'schedule' | 'todo';
+  quickActionPanel: 'hidden' | 'journal' | 'schedule' | 'edit';
   timelineView: 'today' | 'week' | 'month';
   lightwalkerView: 'avatar' | 'attributes' | 'influences';
 }
@@ -180,6 +183,67 @@ export interface ActivityScheduleRequest {
     scheduledTime: string; // HH:MM
     date: string; // YYYY-MM-DD
   }>;
+}
+
+// Activity Preferences System
+export interface ActivityPreference {
+  id: string;
+  userId?: string; // For logged-in users
+  sessionId?: string; // For anonymous users
+  activityId: string; // Original activity template ID
+  activityTitle: string; // For quick reference
+  
+  // Customizable properties
+  customDuration?: string; // e.g., "45 min", "1 hour"
+  customPoints?: number; // Custom point value
+  customDifficulty?: number; // 1-9 scale
+  customCategory?: string; // Custom category if changed
+  customDescription?: string; // Custom description
+  customIcon?: string; // Custom emoji icon
+  
+  // Art Studio - Image customization
+  customImageUrl?: string; // URL to uploaded/generated image
+  imageSource?: 'upload' | 'ai_generated' | 'template'; // Source of the image
+  imagePrompt?: string; // For AI-generated images
+  imageMetadata?: Record<string, any>; // Additional image data (size, cost, etc.)
+  
+  // Art Studio - Dynamic grid sizing
+  customGridSize?: { w: number; h: number }; // Custom grid dimensions
+  
+  // Metadata
+  timesUsed: number; // How often this customization is applied
+  lastUsedAt?: string; // When last applied (ISO string)
+  isActive: boolean;
+  createdAt: string; // ISO string
+  updatedAt: string; // ISO string
+}
+
+export interface ActivityPreferenceSaveRequest {
+  userId?: string;
+  sessionId?: string;
+  activityId: string;
+  activityTitle: string;
+  customDuration?: string;
+  customPoints?: number;
+  customDifficulty?: number;
+  customCategory?: string;
+  customDescription?: string;
+  customIcon?: string;
+  // Art Studio - Image customization
+  customImageUrl?: string;
+  imageSource?: 'upload' | 'ai_generated' | 'template';
+  imagePrompt?: string;
+  imageMetadata?: Record<string, any>;
+  // Art Studio - Dynamic grid sizing
+  customGridSize?: { w: number; h: number };
+}
+
+export interface ActivityPreferencesApiResponse {
+  success: boolean;
+  data?: ActivityPreference | ActivityPreference[];
+  error?: string;
+  message?: string;
+  details?: any;
 }
 
 // Constants for the Daily Use system

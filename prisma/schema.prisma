@@ -29,6 +29,7 @@ model User {
   notificationSchedules NotificationSchedule[]
   userRoleModelConsultations UserRoleModelConsultation[]
   savedCharacters   SavedCharacter[]
+  activityPreferences ActivityPreference[]
 
   @@map("users")
 }
@@ -537,4 +538,47 @@ model SavedCharacter {
   @@map("saved_characters")
   @@index([sessionId, isActive])
   @@index([userId, isActive])
+}
+
+// Activity Preferences System - For Daily Actions Customization
+model ActivityPreference {
+  id                    String   @id @default(cuid())
+  userId                String?  @map("user_id") // For logged-in users
+  sessionId             String?  @map("session_id") // For anonymous users
+  activityId            String   @map("activity_id") // Original activity template ID
+  activityTitle         String   @map("activity_title") // For quick reference
+  
+  // Customizable properties
+  customDuration        String?  @map("custom_duration") // e.g., "45 min", "1 hour"
+  customPoints          Int?     @map("custom_points") // Custom point value
+  customDifficulty      Int?     @map("custom_difficulty") // 1-9 scale
+  customCategory        String?  @map("custom_category") // Custom category if changed
+  customDescription     String?  @map("custom_description") // Custom description
+  customIcon            String?  @map("custom_icon") // Custom emoji icon
+  
+  // Art Studio - Image customization (Stage 1)
+  customImageUrl        String?  @map("custom_image_url") // URL to uploaded/generated image
+  imageSource           String?  @map("image_source") // "upload", "ai_generated", "template"
+  imagePrompt           String?  @map("image_prompt") // For AI-generated images
+  imageMetadata         Json?    @map("image_metadata") // Additional image data (size, cost, etc.)
+  
+  // Art Studio - Dynamic grid sizing (Stage 2)
+  customGridSize        Json?    @map("custom_grid_size") // Custom grid dimensions {"w": 2, "h": 1}
+  
+  // Metadata
+  timesUsed             Int      @default(0) @map("times_used") // How often this customization is applied
+  lastUsedAt            DateTime? @map("last_used_at") // When last applied
+  isActive              Boolean  @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user                  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activity_preferences")
+  @@index([userId, activityId])
+  @@index([sessionId, activityId])
+  @@index([activityId, isActive])
+  @@unique([userId, activityId], name: "unique_user_activity_preference")
+  @@unique([sessionId, activityId], name: "unique_session_activity_preference")
 }
