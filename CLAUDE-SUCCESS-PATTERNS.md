@@ -4,6 +4,61 @@
 
 ---
 
+## 🎯 ICON POSITIONING & TIMELINE ALIGNMENT - CSS TRANSFORM CENTERING ✅
+
+### Icon Offset in Timeline Problem Pattern ✅
+**Use when**: Timeline icons/activities appear offset (typically 1-3 characters) from their intended position markers
+
+**Problem Symptoms**:
+- Activities drop at correct time (logs show accurate time calculations)
+- Visual positioning appears 10-20px offset from timeline markers
+- Hard-coded pixel offsets (`-24px`, `-30px`) don't solve the problem reliably
+- Offset varies between screen sizes or when element styling changes
+
+**Root Cause**: 
+Hard-coded pixel centering assumes exact element dimensions, but actual rendered elements have:
+- Internal padding from CSS classes
+- Border widths from styling
+- Margin spacing from layout
+- Font-based spacing in text elements
+
+**Proven Solution - CSS Transform Centering**:
+```javascript
+// ❌ WRONG: Hard-coded pixel offset (fragile)
+style={{ 
+  left: `${position - 24}px`, // Assumes 48px width ÷ 2
+  top: '6px'
+}}
+
+// ✅ CORRECT: CSS transform centering (robust)
+style={{ 
+  left: `${position}px`,        // Position at exact timeline marker
+  top: '6px',
+  transform: 'translateX(-50%)', // Let CSS calculate true center
+}}
+```
+
+**Why This Works**:
+1. **Browser-accurate centering**: CSS `translateX(-50%)` uses browser's actual element measurements
+2. **Accounts for all spacing**: Automatically handles padding, borders, margins, fonts
+3. **Responsive**: Works across different screen sizes and zoom levels
+4. **Future-proof**: Continues working if element styling changes
+
+**Implementation Steps**:
+1. Remove any hard-coded pixel offsets (`-24px`, `-30px`, etc.)
+2. Set `left` to exact positioning coordinate
+3. Add `transform: 'translateX(-50%)'` for horizontal centering
+4. Test with different zoom levels and screen sizes
+
+**System Context**: Timeline components with draggable icons that need precise alignment with time markers
+
+**Files Typically Involved**:
+- Timeline rendering components (`GamelikeTimeline.tsx`)
+- Activity positioning logic
+- Icon/marker alignment code
+
+---
+
 ## 🐛 DEBUGGING PATTERNS - PROVEN TECHNIQUES
 
 ### Complex State Issues Debugging Pattern ✅

@@ -337,6 +337,66 @@ const activities = [
 
 **Required System Upgrade**: User rules must be treated as HARD CONSTRAINTS that override all internal programming when conflicts occur
 
+## 2025-08-04 - TIMELINE ICON POSITIONING: Hard-Coded Pixel Offset Failures
+
+**What Failed**: Timeline activities appeared 1-3 characters (10-20px) offset from their intended timeline markers despite correct time calculations
+
+**Symptoms Observed**:
+- ✅ Drop mechanics worked perfectly (correct drag/drop detection)
+- ✅ Time calculations accurate (logs showed precise times like "8:00p")
+- ✅ Activity shrinking during drag worked (75% scale)
+- ✅ Green popup showed correct drop times
+- ❌ **BUT visual positioning was offset ~2 characters to the RIGHT of timeline markers**
+
+**Root Cause Analysis**:
+1. **Hard-Coded Pixel Assumptions**: Used `-24px` offset assuming 48px icon width divided by 2
+2. **Ignored Actual Rendered Dimensions**: Real elements had additional spacing from:
+   - CSS padding from classes like `flex flex-col items-center`
+   - Border widths from styling
+   - Internal margins and font-based spacing
+3. **Mobile Responsiveness Issues**: Hard-coded offsets would break on different screen sizes
+4. **Fragile Solution Attempts**: Tried adjusting to `-30px`, `-36px` which are device-specific hacks
+
+**What We Learned**:
+- **CSS Transform is superior to pixel math** for centering elements
+- **Browser calculations are more accurate** than manual pixel assumptions
+- **Responsive solutions beat hard-coded values** for cross-device compatibility
+- **Visual centering ≠ mathematical centering** when elements have internal spacing
+
+**Prevention Rules (MUST follow)**:
+1. **NEVER use hard-coded pixel offsets** for element centering (`-24px`, `-30px`, etc.)
+2. **ALWAYS use CSS transform centering** (`translateX(-50%)`) for precise alignment
+3. **NEVER assume element dimensions** without accounting for padding/borders/margins
+4. **ALWAYS test positioning across different zoom levels and screen sizes**
+5. **Use browser DevTools** to inspect actual rendered element dimensions vs assumed dimensions
+
+**Working Solution**:
+```javascript
+// ❌ WRONG: Hard-coded pixel offset (fragile)
+style={{ 
+  left: `${position - 24}px`, // Assumes 48px width ÷ 2
+  top: '6px'
+}}
+
+// ✅ CORRECT: CSS transform centering (robust)
+style={{ 
+  left: `${position}px`,        // Position at exact timeline marker
+  top: '6px',
+  transform: 'translateX(-50%)', // Let CSS calculate true center
+}}
+```
+
+**Files Involved**: 
+- `/src/components/daily-actions3/GamelikeTimeline.tsx` (activity positioning logic)
+- Timeline icon rendering and alignment code
+
+**Time Spent**: ~1 hour debugging alignment with multiple hard-coded offset attempts
+**Impact**: Perfect timeline alignment now works across all devices and zoom levels
+
+**System Context**: React Timeline component with draggable activities that need precise alignment with time markers
+
+---
+
 ## [TEMPLATE] - [ERROR TYPE]: [Brief Description]
 
 **What Failed**: Exact command/approach that didn't work

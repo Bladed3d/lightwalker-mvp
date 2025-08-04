@@ -131,8 +131,14 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
         minutesDifference,
         newScrollOffset
       });
+    } else if (isPaused) {
+      // If timeline is paused but no specific selectedTime, maintain current view by using currentTime
+      const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
+      // Keep the current time centered by maintaining zero offset relative to current time
+      setScrollOffset(0);
+      console.log('🔒 Maintaining paused position at zoom change:', zoomLevel + 'x');
     }
-  }, [zoomLevel]);
+  }, [zoomLevel, currentTime, pixelsPerMinute, selectedTime, isPaused]);
 
   // Prevent text selection while dragging
   useEffect(() => {
@@ -340,9 +346,19 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
         while (normalizedMinutes < 0) normalizedMinutes += 1440;
         while (normalizedMinutes >= 1440) normalizedMinutes -= 1440;
         
+        // Remove 5-minute snapping temporarily to test alignment
+        // normalizedMinutes = Math.round(normalizedMinutes / 5) * 5;
+        
         // Convert to time string
-        const hours = Math.floor(normalizedMinutes / 60);
-        const mins = Math.round(normalizedMinutes % 60);
+        let hours = Math.floor(normalizedMinutes / 60);
+        let mins = Math.round(normalizedMinutes % 60);
+        
+        // Handle mins = 60 case (carry over to next hour)
+        if (mins === 60) {
+          mins = 0;
+          hours = (hours + 1) % 24;
+        }
+        
         const timeSlot = hours === 0 ? '12:00a' : 
                         hours <= 11 ? `${hours}:${mins.toString().padStart(2, '0')}a` : 
                         hours === 12 ? `12:${mins.toString().padStart(2, '0')}p` : 
@@ -480,6 +496,9 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                     let normalizedMinutes = targetMinutes;
                     while (normalizedMinutes < 0) normalizedMinutes += 1440;
                     while (normalizedMinutes >= 1440) normalizedMinutes -= 1440;
+                    
+                    // Round to nearest 5-minute interval for cleaner placement
+                    normalizedMinutes = Math.round(normalizedMinutes / 5) * 5;
                     
                     // Convert to time string (24-hour format for consistency)
                     let hours = Math.floor(normalizedMinutes / 60);
@@ -661,13 +680,13 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                   className={`relative bg-black border-2 ${
                     snapshot.isDraggingOver ? 'border-green-400 bg-green-500/20 shadow-lg shadow-green-400/30' : 
                     isDropTarget ? 'border-green-400 bg-green-500/10' : 'border-slate-700'
-                  } rounded-lg h-28 overflow-hidden select-none ${isDragging && !isDndActive ? 'cursor-grabbing' : isDndActive ? 'cursor-pointer' : 'cursor-grab'} ${hideCurrentActivity ? '' : 'ml-4'}`}
+                  } rounded-lg h-36 overflow-hidden select-none ${isDragging && !isDndActive ? 'cursor-grabbing' : isDndActive ? 'cursor-pointer' : 'cursor-grab'} ${hideCurrentActivity ? '' : 'ml-4'}`}
                   style={{ 
                     userSelect: 'none', 
                     WebkitUserSelect: 'none', 
                     MozUserSelect: 'none', 
                     msUserSelect: 'none',
-                    minHeight: '112px' // Increased height for better activity spacing
+                    minHeight: '144px' // Increased height for better activity spacing and label positioning
                   }}
                   // Add mouse move handler for React Beautiful DND drop indicator
                   onMouseMove={(e) => {
@@ -698,19 +717,38 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                       while (normalizedMinutes < 0) normalizedMinutes += 1440;
                       while (normalizedMinutes >= 1440) normalizedMinutes -= 1440;
                       
+                      // Remove 5-minute snapping temporarily to test alignment
+                      // normalizedMinutes = Math.round(normalizedMinutes / 5) * 5;
+                      
                       // Convert to time string
-                      const hours = Math.floor(normalizedMinutes / 60);
-                      const mins = Math.round(normalizedMinutes % 60);
+                      let hours = Math.floor(normalizedMinutes / 60);
+                      let mins = Math.round(normalizedMinutes % 60);
+                      
+                      // Handle mins = 60 case (carry over to next hour)
+                      if (mins === 60) {
+                        mins = 0;
+                        hours = (hours + 1) % 24;
+                      }
+                      
                       const timeString = hours === 0 ? `12:${mins.toString().padStart(2, '0')}a` : 
                                         hours <= 11 ? `${hours}:${mins.toString().padStart(2, '0')}a` : 
                                         hours === 12 ? `12:${mins.toString().padStart(2, '0')}p` : 
                                         `${hours-12}:${mins.toString().padStart(2, '0')}p`;
                       
-                      // Update the drop time in the dragging card
+                      // Update the drop time in the dragging card (with retry for timing issues)
                       if (snapshot.draggingOverWith) {
-                        const dropTimeElement = document.getElementById(`drop-time-${snapshot.draggingOverWith}`);
-                        if (dropTimeElement) {
-                          dropTimeElement.textContent = timeString;
+                        const updateDropTime = () => {
+                          const dropTimeElement = document.getElementById(`drop-time-${snapshot.draggingOverWith}`);
+                          if (dropTimeElement) {
+                            dropTimeElement.textContent = timeString;
+                            return true;
+                          }
+                          return false;
+                        };
+                        
+                        // Try immediate update, then retry after small delay if element not found
+                        if (!updateDropTime()) {
+                          setTimeout(updateDropTime, 10);
                         }
                       }
                     }
@@ -805,6 +843,9 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                       while (normalizedMinutes < 0) normalizedMinutes += 1440;
                       while (normalizedMinutes >= 1440) normalizedMinutes -= 1440;
                       
+                      // Remove 5-minute snapping temporarily to test alignment
+                      // normalizedMinutes = Math.round(normalizedMinutes / 5) * 5;
+                      
                       // Convert to time string
                       let hours = Math.floor(normalizedMinutes / 60);
                       let mins = Math.round(normalizedMinutes % 60);
@@ -846,8 +887,8 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                 transform: `translateX(${getTimelinePosition()}px)`,
               }}
             >
-              {/* Timeline Base Line - moved down with time labels */}
-              <div className="absolute left-0 right-0 h-0.5 bg-slate-600" style={{ bottom: '16px' }}></div>
+              {/* Timeline Base Line - moved lower to avoid activity label overlap */}
+              <div className="absolute left-0 right-0 h-0.5 bg-slate-600" style={{ bottom: '24px' }}></div>
 
               {/* Hourly Time Markers (aligned with moved timeline) */}
               {Array.from({ length: 24 }, (_, i) => (
@@ -856,14 +897,15 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                     className="absolute w-px h-4 bg-slate-500"
                     style={{ 
                       left: `${i * 60 * pixelsPerMinute}px`,
-                      bottom: '16px'
+                      bottom: '24px'
                     }}
                   />
                   <div 
-                    className="absolute text-xs text-slate-400 font-mono"
+                    className="absolute text-xs text-slate-400 font-mono text-center"
                     style={{ 
-                      left: `${i * 60 * pixelsPerMinute - 15}px`,
-                      bottom: '1px'
+                      left: `${i * 60 * pixelsPerMinute - 20}px`,
+                      width: '40px',
+                      bottom: '8px'
                     }}
                   >
                     {i === 0 ? '12:00a' : i <= 11 ? `${i}:00a` : i === 12 ? '12:00p' : `${i-12}:00p`}
@@ -933,8 +975,9 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                     key={`${activity.id || activity.time}-${index}`}
                     className="absolute flex flex-col items-center"
                     style={{ 
-                      left: `${position - 24}px`, // Center the 48px icon (24px offset)
-                      top: '6px'
+                      left: `${position}px`, // No offset - use CSS transform for centering
+                      top: '6px',
+                      transform: 'translateX(-50%)', // CSS centering - more reliable
                     }}
                   >
                     {/* Activity Time (above icon) */}
@@ -982,11 +1025,9 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
 
           {/* Timeline Zoom Control with NOW button */}
           <div className="mt-2">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between">
               <span className={`text-xs ${theme?.cardSubtext || 'text-slate-400'}`}>Timeline Zoom</span>
-              <span className={`text-xs ${theme?.timelineText || 'text-slate-300'}`}>{zoomLevel}x ({pixelsPerMinute}px/min)</span>
-            </div>
-            <div className="flex items-center justify-center space-x-1">
+              <div className="flex items-center justify-center space-x-1">
               {/* Zoom buttons 1-8 */}
               {Array.from({ length: 8 }, (_, i) => i + 1).map((level) => (
                 <button
@@ -1009,6 +1050,8 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                 NOW
               </button>
             </div>
+            <span className={`text-xs ${theme?.timelineText || 'text-slate-300'}`}>{zoomLevel}x ({pixelsPerMinute}px/min)</span>
+          </div>
           </div>
 
         </div>

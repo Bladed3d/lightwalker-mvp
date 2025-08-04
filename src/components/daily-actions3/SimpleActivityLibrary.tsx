@@ -158,7 +158,7 @@ export default function SimpleActivityLibrary({ isVisible, theme, onToggle, onDr
                         {...provided.dragHandleProps}
                         className={`relative cursor-pointer p-3 rounded-lg border-2 ${getRarityBorder(activity.rarity)} 
                                    bg-gradient-to-br ${getRarityGradient(activity.rarity)} text-white transition-all duration-200 
-                                   ${snapshot.isDragging ? 'scale-105 shadow-xl z-50' : 'hover:scale-105 hover:shadow-lg'}
+                                   ${snapshot.isDragging ? 'scale-75 shadow-2xl z-50 opacity-90' : 'hover:scale-105 hover:shadow-lg'}
                                    select-none`}
                         style={{
                           ...provided.draggableProps.style,
@@ -168,10 +168,15 @@ export default function SimpleActivityLibrary({ isVisible, theme, onToggle, onDr
                           msUserSelect: 'none'
                         }}
                       >
-                        {/* Show drop time when dragging */}
+                        {/* Enhanced drop time popup when dragging */}
                         {snapshot.isDragging && (
-                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-green-400 text-white px-2 py-1 rounded text-xs font-bold shadow-lg z-50 animate-pulse">
-                            <span id={`drop-time-${activity.id}`}>Drop Time</span>
+                          <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold shadow-2xl z-[100] animate-pulse border-2 border-green-300">
+                            <div className="text-center">
+                              <div className="text-xs opacity-90">Drop at</div>
+                              <div id={`drop-time-${activity.id}`} className="text-base font-black">Hover Timeline</div>
+                            </div>
+                            {/* Arrow pointing down */}
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-green-500"></div>
                           </div>
                         )}
                         {/* Legendary Glow Effect */}

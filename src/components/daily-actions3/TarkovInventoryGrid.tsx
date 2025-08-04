@@ -173,7 +173,7 @@ export default function TarkovInventoryGrid({ theme, onDragEnd }: TarkovInventor
                         className={`
                           relative bg-black border border-slate-600
                           flex items-center justify-center cursor-pointer transition-all duration-200
-                          ${snapshot.isDragging ? 'opacity-50' : 'hover:border-slate-400'}
+                          ${snapshot.isDragging ? 'opacity-90 shadow-2xl z-50' : 'hover:border-slate-400'}
                           ${!activity.gridSize ? 'aspect-square' : ''}
                         `}
                         style={{
@@ -182,12 +182,28 @@ export default function TarkovInventoryGrid({ theme, onDragEnd }: TarkovInventor
                           WebkitUserSelect: 'none',
                           MozUserSelect: 'none',
                           msUserSelect: 'none',
+                          // Apply scale through style to avoid conflicts with React Beautiful DND
+                          transform: snapshot.isDragging 
+                            ? `${provided.draggableProps.style?.transform || ''} scale(0.75)`.trim()
+                            : provided.draggableProps.style?.transform,
                           gridColumn: activity.gridSize ? `span ${activity.gridSize.w}` : undefined,
                           gridRow: activity.gridSize ? `span ${activity.gridSize.h}` : undefined
                         }}
                         onMouseEnter={(e) => handleMouseEnter(activity, e)}
                         onMouseLeave={handleMouseLeave}
                       >
+                        {/* Enhanced drop time popup when dragging */}
+                        {snapshot.isDragging && (
+                          <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold shadow-2xl z-[100] animate-pulse border-2 border-green-300">
+                            <div className="text-center">
+                              <div className="text-xs opacity-90">Drop at</div>
+                              <div id={`drop-time-${activity.id}`} className="text-base font-black">Hover Timeline</div>
+                            </div>
+                            {/* Arrow pointing down */}
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-green-500"></div>
+                          </div>
+                        )}
+                        
                         {/* Activity Image or Emoji */}
                         {activity.icon.startsWith('/') ? (
                           <img 
