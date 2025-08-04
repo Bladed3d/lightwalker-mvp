@@ -271,10 +271,9 @@ export default function DailyActions2Page() {
           console.log('📝 Activity added to state for slot:', timeSlot);
           
         } else if (result.destination.droppableId === 'timeline-drop-zone') {
-          // NOTE: The timeline component should handle this via onActivityAdd
-          // This is just a fallback - if you're seeing star emojis, the timeline handler isn't working
-          console.log('⚠️ WARNING: Main handler processing timeline drop - timeline handler may not be working');
-          return; // Don't create duplicate activities
+          // Timeline component handles this via onActivityAdd - main handler ignores timeline drops
+          console.log('✅ Timeline drop detected - letting timeline component handle it');
+          return; // Timeline component will handle this drop
         } else {
           console.log('📅 Unknown drop destination:', result.destination.droppableId);
         }
@@ -508,8 +507,8 @@ export default function DailyActions2Page() {
             />
             <UpNextPanel 
               theme={theme}
-              nextActivities={getNextActivities(3)}
-              currentTime={selectedTime || currentTime}
+              currentTime={liveTime}
+              timelineActivities={allTimelineActivities}
             />
           </div>
           

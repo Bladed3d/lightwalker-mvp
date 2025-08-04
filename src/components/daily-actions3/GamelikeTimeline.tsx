@@ -99,7 +99,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
     if (onTimeChange) {
       onTimeChange(currentTime, selectedTime);
     }
-  }, [currentTime, selectedTime, onTimeChange]);
+  }, [currentTime, selectedTime]);
 
   // Notify parent component of all available activities (sample + timeline)
   useEffect(() => {
@@ -107,7 +107,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
       const allActivities = [...activities, ...timelineActivities];
       onActivitiesChange(allActivities);
     }
-  }, [timelineActivities, onActivitiesChange]);
+  }, [timelineActivities]);
 
   // Preserve user's selected time when zoom level changes
   useEffect(() => {
@@ -138,7 +138,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
       setScrollOffset(0);
       console.log('🔒 Maintaining paused position at zoom change:', zoomLevel + 'x');
     }
-  }, [zoomLevel, currentTime, pixelsPerMinute, selectedTime, isPaused]);
+  }, [zoomLevel, pixelsPerMinute, selectedTime, isPaused]);
 
   // Prevent text selection while dragging
   useEffect(() => {

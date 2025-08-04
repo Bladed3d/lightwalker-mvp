@@ -194,10 +194,10 @@ export default function TarkovInventoryGrid({ theme, onDragEnd }: TarkovInventor
                       >
                         {/* Enhanced drop time popup when dragging */}
                         {snapshot.isDragging && (
-                          <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold shadow-2xl z-[100] animate-pulse border-2 border-green-300">
+                          <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold shadow-2xl z-[100] animate-pulse border-2 border-green-300 w-24">
                             <div className="text-center">
                               <div className="text-xs opacity-90">Drop at</div>
-                              <div id={`drop-time-${activity.id}`} className="text-base font-black">Hover Timeline</div>
+                              <div id={`drop-time-${activity.id}`} className="text-base font-black w-full">Hover Timeline</div>
                             </div>
                             {/* Arrow pointing down */}
                             <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-green-500"></div>
