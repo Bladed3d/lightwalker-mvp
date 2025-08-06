@@ -13,9 +13,10 @@ interface GamelikeTimelineProps {
   hideCurrentActivity?: boolean;
   onTimeChange?: (currentTime: Date, selectedTime: Date | null) => void;
   onActivitiesChange?: (activities: any[]) => void;
+  isMobileView?: boolean;
 }
 
-const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySetRepeat, isDndActive = false, timelineActivities = [], onDragEnd, hideCurrentActivity = false, onTimeChange, onActivitiesChange }: GamelikeTimelineProps) => {
+const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySetRepeat, isDndActive = false, timelineActivities = [], onDragEnd, hideCurrentActivity = false, onTimeChange, onActivitiesChange, isMobileView = false }: GamelikeTimelineProps) => {
   // Fix Next.js SSR/CSR mismatch for React Beautiful DND
   if (typeof window === 'undefined') {
     return (
@@ -36,7 +37,14 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
   
   const [dragStartX, setDragStartX] = useState(0);
   const [dragStartTime, setDragStartTime] = useState<Date | null>(null);
-  const [zoomLevel, setZoomLevel] = useState(4); // 1-8 zoom levels (pixels per minute)
+  const [zoomLevel, setZoomLevel] = useState(isMobileView ? 2 : 4); // Mobile: zoom 2, Desktop: zoom 4
+  const [fadedActivities, setFadedActivities] = useState<Set<string>>(new Set()); // Track faded activities
+  const [lastDisplayedDropTime, setLastDisplayedDropTime] = useState<string | null>(null); // Track displayed drop time for accurate placement
+  
+  // Update zoom level when mobile view changes
+  useEffect(() => {
+    setZoomLevel(isMobileView ? 2 : 4);
+  }, [isMobileView]);
   const [isDropTarget, setIsDropTarget] = useState(false);
   const [dropIndicatorPosition, setDropIndicatorPosition] = useState<number | null>(null);
   const [draggedActivityId, setDraggedActivityId] = useState<string | null>(null);
@@ -223,6 +231,27 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
       clearInterval(intervalId);
     };
   }, [isDragging]);
+
+  // Auto-fade green circle after 1 second for newly dropped activities
+  useEffect(() => {
+    const timers: NodeJS.Timeout[] = [];
+
+    timelineActivities.forEach(activity => {
+      if (activity.scheduledTime && activity.id && !fadedActivities.has(activity.id)) {
+        // Set timer to fade this activity's green circle
+        const timer = setTimeout(() => {
+          setFadedActivities(prev => new Set([...prev, activity.id]));
+        }, 1000);
+
+        timers.push(timer);
+      }
+    });
+
+    // Cleanup all timers when component unmounts or dependencies change
+    return () => {
+      timers.forEach(timer => clearTimeout(timer));
+    };
+  }, [timelineActivities]); // Only depend on timelineActivities to avoid re-running when activities fade
 
   // FIXED TIMELINE POSITION - ensures proper centering at all zoom levels
   const getTimelinePosition = () => {
@@ -480,6 +509,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                     setIsDropTarget(false);
                     setDropIndicatorPosition(null);
                     setDraggedActivityId(null);
+                    setLastDisplayedDropTime(null);
                   }, 100);
                 }
               }, [snapshot.isDraggingOver]);
@@ -488,90 +518,113 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
               const handleReactDNDDrop = (result: any) => {
                 const activityId = result.draggableId || draggedActivityId;
                 
-                if (result.destination?.droppableId === 'timeline-drop-zone' && onActivityAdd && isDropTarget && dropIndicatorPosition !== null && activityId) {
+                if (result.destination?.droppableId === 'timeline-drop-zone' && onActivityAdd && isDropTarget && activityId) {
                   
-                  // Calculate the exact time for the drop position (same logic as drop indicator)
-                  if (containerRef.current) {
-                    const centerX = containerRef.current.clientWidth / 2;
-                    const pixelOffsetFromCenter = dropIndicatorPosition - centerX;
-                    const timeOffsetMinutes = pixelOffsetFromCenter / pixelsPerMinute;
+                  // FIXED: Use the displayed drop time for accurate placement instead of recalculating from mouse position
+                  let preciseTimeSlot: string;
+                  
+                  if (lastDisplayedDropTime) {
+                    // Convert 12-hour format to 24-hour format for database consistency
+                    const isPM = lastDisplayedDropTime.includes('p');
+                    const timeStr = lastDisplayedDropTime.replace(/[ap]/, '');
+                    const [hourStr, minStr] = timeStr.split(':');
+                    let hours = parseInt(hourStr);
+                    const mins = parseInt(minStr);
                     
-                    // Use the same calculation as timeline scrolling for consistency
-                    const baseTime = selectedTime || currentTime;
-                    const baseMinutes = baseTime.getHours() * 60 + baseTime.getMinutes();
-                    const targetMinutes = baseMinutes + timeOffsetMinutes;
+                    // Convert to 24-hour format
+                    if (isPM && hours !== 12) hours += 12;
+                    if (!isPM && hours === 12) hours = 0;
                     
-                    // Normalize to 24-hour format
-                    let normalizedMinutes = targetMinutes;
-                    while (normalizedMinutes < 0) normalizedMinutes += 1440;
-                    while (normalizedMinutes >= 1440) normalizedMinutes -= 1440;
-                    
-                    // Round to nearest 5-minute interval for cleaner placement
-                    normalizedMinutes = Math.round(normalizedMinutes / 5) * 5;
-                    
-                    // Convert to time string (24-hour format for consistency)
-                    let hours = Math.floor(normalizedMinutes / 60);
-                    let mins = Math.round(normalizedMinutes % 60);
-                    
-                    // Handle mins = 60 case (carry over to next hour)
-                    if (mins === 60) {
-                      mins = 0;
-                      hours = (hours + 1) % 24;
-                    }
-                    
-                    const preciseTimeSlot = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-                    
-                    // Database-first activity lookup - Enhanced ID matching for timeline rescheduling
-                    const matchesActivityId = (storedActivity: any, targetId: string) => {
-                      if (!storedActivity) return false;
-                      const storedId = storedActivity.id || storedActivity.name?.toLowerCase().replace(/\s+/g, '-');
-                      return storedId === targetId || 
-                             storedId?.includes(targetId) || 
-                             targetId?.includes(storedId) ||
-                             storedActivity.title?.toLowerCase().replace(/\s+/g, '-') === targetId;
-                    };
-                    
-                    // Get activity data from processed database activities (no async calls)
-                    let activityData;
-                    const preferenceAppliedActivity = (window as any).currentDraggedActivity;
-                    const databaseActivities = (window as any).databaseActivities || [];
-                    
-                    
-                    if (preferenceAppliedActivity && matchesActivityId(preferenceAppliedActivity, activityId)) {
-                      activityData = preferenceAppliedActivity;
-                    } else {
-                      // Use processed database activities from grid
-                      const dbActivity = databaseActivities.find((a: any) => a.id === activityId);
-                      if (dbActivity) {
-                        activityData = {
-                          id: dbActivity.id,
-                          title: dbActivity.title,
-                          icon: dbActivity.icon, // Already processed with preferences
-                          category: dbActivity.category,
-                          points: dbActivity.points,
-                          rarity: dbActivity.rarity,
-                          duration: dbActivity.duration
-                        };
+                    preciseTimeSlot = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+                  } else {
+                    // Fallback: Calculate from position if no displayed time available
+                    if (containerRef.current && dropIndicatorPosition !== null) {
+                      const centerX = containerRef.current.clientWidth / 2;
+                      const pixelOffsetFromCenter = dropIndicatorPosition - centerX;
+                      const timeOffsetMinutes = pixelOffsetFromCenter / pixelsPerMinute;
+                      
+                      // Use the same calculation as timeline scrolling for consistency
+                      const baseTime = selectedTime || currentTime;
+                      const baseMinutes = baseTime.getHours() * 60 + baseTime.getMinutes();
+                      const targetMinutes = baseMinutes + timeOffsetMinutes;
+                      
+                      // Normalize to 24-hour format
+                      let normalizedMinutes = targetMinutes;
+                      while (normalizedMinutes < 0) normalizedMinutes += 1440;
+                      while (normalizedMinutes >= 1440) normalizedMinutes -= 1440;
+                      
+                      // Round to nearest 5-minute interval for cleaner placement
+                      normalizedMinutes = Math.round(normalizedMinutes / 5) * 5;
+                      
+                      // Convert to time string (24-hour format for consistency)
+                      let hours = Math.floor(normalizedMinutes / 60);
+                      let mins = Math.round(normalizedMinutes % 60);
+                      
+                      // Handle mins = 60 case (carry over to next hour)
+                      if (mins === 60) {
+                        mins = 0;
+                        hours = (hours + 1) % 24;
                       }
+                      
+                      preciseTimeSlot = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+                    } else {
+                      // Final fallback to current time
+                      const now = new Date();
+                      preciseTimeSlot = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
                     }
-                    
-                    // Final fallback if database activities not available
-                    if (!activityData) {
-                      activityData = { id: activityId, title: 'Activity', icon: '⭐', category: 'custom', points: 25, rarity: 'common', duration: '15 min' };
-                    }
-                    
-                    
-                    // Call onActivityAdd with full activity data and precise time
-                    onActivityAdd(activityData, preciseTimeSlot);
-                    
-                    // Clear drop indicators and drag data
-                    setIsDropTarget(false);
-                    setDropIndicatorPosition(null);
-                    setDraggedActivityId(null);
-                    
-                    // Clear the stored drag data to prevent stale data issues
-                    (window as any).currentDraggedActivity = null;
                   }
+                  
+                  // Database-first activity lookup - Enhanced ID matching for timeline rescheduling
+                  const matchesActivityId = (storedActivity: any, targetId: string) => {
+                    if (!storedActivity) return false;
+                    const storedId = storedActivity.id || storedActivity.name?.toLowerCase().replace(/\s+/g, '-');
+                    return storedId === targetId || 
+                           storedId?.includes(targetId) || 
+                           targetId?.includes(storedId) ||
+                           storedActivity.title?.toLowerCase().replace(/\s+/g, '-') === targetId;
+                  };
+                  
+                  // Get activity data from processed database activities (no async calls)
+                  let activityData;
+                  const preferenceAppliedActivity = (window as any).currentDraggedActivity;
+                  const databaseActivities = (window as any).databaseActivities || [];
+                  
+                  
+                  if (preferenceAppliedActivity && matchesActivityId(preferenceAppliedActivity, activityId)) {
+                    activityData = preferenceAppliedActivity;
+                  } else {
+                    // Use processed database activities from grid
+                    const dbActivity = databaseActivities.find((a: any) => a.id === activityId);
+                    if (dbActivity) {
+                      activityData = {
+                        id: dbActivity.id,
+                        title: dbActivity.title,
+                        icon: dbActivity.icon, // Already processed with preferences
+                        category: dbActivity.category,
+                        points: dbActivity.points,
+                        rarity: dbActivity.rarity,
+                        duration: dbActivity.duration
+                      };
+                    }
+                  }
+                  
+                  // Final fallback if database activities not available
+                  if (!activityData) {
+                    activityData = { id: activityId, title: 'Activity', icon: '⭐', category: 'custom', points: 25, rarity: 'common', duration: '15 min' };
+                  }
+                  
+                  
+                  // Call onActivityAdd with full activity data and precise time
+                  onActivityAdd(activityData, preciseTimeSlot);
+                  
+                  // Clear drop indicators and drag data
+                  setIsDropTarget(false);
+                  setDropIndicatorPosition(null);
+                  setDraggedActivityId(null);
+                  setLastDisplayedDropTime(null); // Clear stored drop time
+                  
+                  // Clear the stored drag data to prevent stale data issues
+                  (window as any).currentDraggedActivity = null;
                 }
               };
               
@@ -733,8 +786,8 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                       while (normalizedMinutes < 0) normalizedMinutes += 1440;
                       while (normalizedMinutes >= 1440) normalizedMinutes -= 1440;
                       
-                      // Remove 5-minute snapping temporarily to test alignment
-                      // normalizedMinutes = Math.round(normalizedMinutes / 5) * 5;
+                      // Apply 5-minute snapping for visual feedback during drag
+                      normalizedMinutes = Math.round(normalizedMinutes / 5) * 5;
                       
                       // Convert to time string
                       let hours = Math.floor(normalizedMinutes / 60);
@@ -751,14 +804,33 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                                         hours === 12 ? `12:${mins.toString().padStart(2, '0')}p` : 
                                         `${hours-12}:${mins.toString().padStart(2, '0')}p`;
                       
+                      // Store the displayed drop time for accurate placement
+                      setLastDisplayedDropTime(timeString);
+                      
                       // Update the drop time in the dragging card (with retry for timing issues)
                       if (snapshot.draggingOverWith) {
                         const updateDropTime = () => {
-                          const dropTimeElement = document.getElementById(`drop-time-${snapshot.draggingOverWith}`);
+                          // Try updating grid activity drop time first
+                          let dropTimeElement = document.getElementById(`drop-time-${snapshot.draggingOverWith}`);
                           if (dropTimeElement) {
                             dropTimeElement.textContent = timeString;
                             return true;
                           }
+                          
+                          // If not found, try timeline activity drop time format
+                          dropTimeElement = document.getElementById(`drop-time-timeline-activity-${snapshot.draggingOverWith.replace('timeline-activity-', '')}`);
+                          if (dropTimeElement) {
+                            dropTimeElement.textContent = timeString;
+                            return true;
+                          }
+                          
+                          // Also try the full timeline activity ID format
+                          dropTimeElement = document.getElementById(`drop-time-${snapshot.draggingOverWith}`);
+                          if (dropTimeElement) {
+                            dropTimeElement.textContent = timeString;
+                            return true;
+                          }
+                          
                           return false;
                         };
                         
@@ -778,6 +850,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                     setIsDropTarget(false);
                     setDropIndicatorPosition(null);
                     setDraggedActivityId(null);
+                    setLastDisplayedDropTime(null);
                     
                     // Clear timeline drag state to prevent erratic movement after React Beautiful DND
                     setIsDragging(false);
@@ -868,8 +941,8 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                       while (normalizedMinutes < 0) normalizedMinutes += 1440;
                       while (normalizedMinutes >= 1440) normalizedMinutes -= 1440;
                       
-                      // Remove 5-minute snapping temporarily to test alignment
-                      // normalizedMinutes = Math.round(normalizedMinutes / 5) * 5;
+                      // Apply 5-minute snapping for visual feedback during drag
+                      normalizedMinutes = Math.round(normalizedMinutes / 5) * 5;
                       
                       // Convert to time string
                       let hours = Math.floor(normalizedMinutes / 60);
@@ -881,10 +954,15 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                         hours = (hours + 1) % 24;
                       }
                       
-                      return hours === 0 ? `12:${mins.toString().padStart(2, '0')}a` : 
-                             hours <= 11 ? `${hours}:${mins.toString().padStart(2, '0')}a` : 
-                             hours === 12 ? `12:${mins.toString().padStart(2, '0')}p` : 
-                             `${hours-12}:${mins.toString().padStart(2, '0')}p`;
+                      const timeString = hours === 0 ? `12:${mins.toString().padStart(2, '0')}a` : 
+                                       hours <= 11 ? `${hours}:${mins.toString().padStart(2, '0')}a` : 
+                                       hours === 12 ? `12:${mins.toString().padStart(2, '0')}p` : 
+                                       `${hours-12}:${mins.toString().padStart(2, '0')}p`;
+                      
+                      // Store this calculated time for accurate drop placement
+                      setLastDisplayedDropTime(timeString);
+                      
+                      return timeString;
                     }
                     return '';
                   })()}
@@ -937,6 +1015,24 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                   </div>
                 </div>
               ))}
+
+              {/* 15-Minute Interval Markers - Half height of hourly markers */}
+              {Array.from({ length: 24 * 4 }, (_, i) => {
+                // Skip if this is an hourly marker (every 4th marker)
+                if (i % 4 === 0) return null;
+                
+                return (
+                  <div key={`quarter-${i}`}>
+                    <div 
+                      className="absolute w-px h-2 bg-slate-600 opacity-60"
+                      style={{ 
+                        left: `${i * 15 * pixelsPerMinute}px`,
+                        bottom: '24px'
+                      }}
+                    />
+                  </div>
+                );
+              })}
 
               {/* Activity Icons - Only show user-added timeline activities */}
               {timelineActivities.map((activity, index) => {
@@ -992,6 +1088,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                 
                 // Debug logging removed - drag and drop fix is working correctly
                 const isDroppedActivity = !!activity.scheduledTime;
+                const isActivityFaded = fadedActivities.has(activity.id);
                 
                 // Only make dropped activities (user-placed) draggable to edit zone
                 const activityContent = (
@@ -1010,14 +1107,18 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                     
                     {/* Activity Icon */}
                     <div className="relative">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 overflow-hidden ${
-                        isDroppedActivity ? 'bg-green-600 ring-2 ring-green-400 shadow-lg shadow-green-400/30 cursor-move' : 'bg-black'
+                      <div className={`transition-all duration-300 overflow-hidden ${
+                        isDroppedActivity 
+                          ? isActivityFaded 
+                            ? 'w-12 h-12 flex items-center justify-center cursor-move' // Faded styling - no rounded-full clipping
+                            : 'w-12 h-12 rounded-full flex items-center justify-center bg-green-600 ring-2 ring-green-400 shadow-lg shadow-green-400/30 cursor-move' // Fresh green styling
+                          : 'w-12 h-12 rounded-full flex items-center justify-center bg-black' // Default styling for non-dropped activities
                       }`}>
                         {(activityIcon.startsWith('/') || activityIcon.startsWith('data:')) ? (
                           <img 
                             src={activityIcon} 
                             alt={activityName}
-                            className="w-full h-full object-cover rounded-full"
+                            className={`w-full h-full object-cover ${isActivityFaded ? '' : 'rounded-full'}`}
                             draggable={false}
                           />
                         ) : (
@@ -1092,6 +1193,17 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                             snapshot.isDragging ? 'z-50 rotate-6 scale-110' : ''
                           }`}
                         >
+                          {/* Enhanced drop time popup when dragging timeline activities */}
+                          {snapshot.isDragging && (
+                            <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-3 py-2 rounded-lg text-sm font-bold shadow-2xl z-[100] animate-pulse border-2 border-orange-300 w-24">
+                              <div className="text-center">
+                                <div className="text-xs opacity-90">Drop at</div>
+                                <div id={`drop-time-timeline-activity-${activity.id}`} className="text-base font-black w-full">Hover Timeline</div>
+                              </div>
+                              {/* Arrow pointing down */}
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-orange-500"></div>
+                            </div>
+                          )}
                           {/* Activity Time (above icon) */}
                           <div className="text-xs text-slate-300 font-mono mb-1 whitespace-nowrap">
                             {displayTime}
@@ -1099,16 +1211,18 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                           
                           {/* Activity Icon */}
                           <div className="relative">
-                            <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 overflow-hidden ${
+                            <div className={`transition-all duration-300 overflow-hidden ${
                               snapshot.isDragging 
-                                ? 'bg-orange-500 ring-2 ring-orange-400 shadow-xl shadow-orange-400/50' 
-                                : 'bg-green-600 ring-2 ring-green-400 shadow-lg shadow-green-400/30 cursor-move'
+                                ? 'w-12 h-12 rounded-full flex items-center justify-center bg-orange-500 ring-2 ring-orange-400 shadow-xl shadow-orange-400/50' 
+                                : isActivityFaded
+                                  ? 'w-12 h-12 flex items-center justify-center cursor-move' // Faded styling - no rounded-full clipping
+                                  : 'w-12 h-12 rounded-full flex items-center justify-center bg-green-600 ring-2 ring-green-400 shadow-lg shadow-green-400/30 cursor-move' // Fresh green styling
                             }`}>
                               {(activityIcon.startsWith('/') || activityIcon.startsWith('data:')) ? (
                                 <img 
                                   src={activityIcon} 
                                   alt={activityName}
-                                  className="w-full h-full object-cover rounded-full"
+                                  className={`w-full h-full object-cover ${isActivityFaded ? '' : 'rounded-full'}`}
                                   draggable={false}
                                 />
                               ) : (

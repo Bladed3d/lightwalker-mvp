@@ -106,6 +106,9 @@ export default function DailyActions2Page() {
   });
 
   const [viewMode, setViewMode] = useState<'classic' | 'gamified'>('gamified');
+  
+  // Mobile view state
+  const [isMobileView, setIsMobileView] = useState(false);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
@@ -704,7 +707,7 @@ export default function DailyActions2Page() {
       <div className={`min-h-screen ${theme.pageBackground} ${viewMode === 'gamified' ? 'text-white' : 'text-gray-900'}`}>
       {/* Header */}
       <header className={`${theme.headerBackground} border-b ${theme.headerBorder} sticky top-0 z-40`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className={`${isMobileView ? 'max-w-md mx-auto px-3' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
           <div className="flex items-center justify-between h-16">
             {/* Logo and Title */}
             <div className="flex items-center space-x-3">
@@ -719,6 +722,20 @@ export default function DailyActions2Page() {
 
             {/* View Mode Toggle & Stats */}
             <div className="hidden md:flex items-center space-x-6">
+              {/* Mobile View Toggle */}
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setIsMobileView(!isMobileView)}
+                  className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    isMobileView
+                      ? 'bg-blue-500 text-white shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  📱 Mobile
+                </button>
+              </div>
+              
               {/* View Mode Toggle */}
               <div className={`flex ${viewMode === 'classic' ? 'bg-gray-100' : 'bg-slate-700'} rounded-lg p-1`}>
                 <button
@@ -794,6 +811,22 @@ export default function DailyActions2Page() {
                 </div>
               </div>
               
+              {/* Mobile View Toggle - Mobile */}
+              <div className="mb-3">
+                <div className="flex bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setIsMobileView(!isMobileView)}
+                    className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isMobileView
+                        ? 'bg-blue-500 text-white shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    📱 Mobile
+                  </button>
+                </div>
+              </div>
+              
               {/* View Mode Toggle - Mobile */}
               <div className="mb-3">
                 <div className="flex bg-gray-100 rounded-lg p-1">
@@ -847,11 +880,13 @@ export default function DailyActions2Page() {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto p-6">
+      <div className={`${isMobileView ? 'max-w-md mx-auto p-3' : 'max-w-7xl mx-auto p-6'}`}>
+        
         {/* Top Section - Current Activity, Timeline and Activity Grid */}
-        <div className="flex gap-4 mb-6">
+        <div className={`${isMobileView ? 'space-y-4 mb-4' : 'flex gap-4 mb-6'}`}>
           {/* Left side - Current Activity Panel, Up Next, and Quick Actions */}
-          <div className="w-48 flex-shrink-0">
+          <div className={`${isMobileView ? 'grid grid-cols-2 gap-2 w-full' : 'w-48 flex-shrink-0'}`}>
+            {/* Mobile: Current Activity and Up Next side by side, Desktop: Current Activity only */}
             <CurrentActivityPanel 
               theme={theme}
               currentActivity={getCurrentActivity()}
@@ -861,35 +896,40 @@ export default function DailyActions2Page() {
               onInstructionsToggle={() => setShowInstructions(!showInstructions)}
               isInstructionsOpen={showInstructions}
             />
+            {/* Mobile: Up Next beside Current Activity, Desktop: Up Next below Current Activity */}
             <UpNextPanel 
               theme={theme}
               currentTime={liveTime}
               timelineActivities={allTimelineActivities}
             />
             
-            {/* Manage Images Button - Right after Up Next */}
-            <div className="mt-3">
-              <button
+            {/* Manage Images Button - Right after Up Next - Hidden in Mobile */}
+            {!isMobileView && (
+              <div className="mt-3">
+                <button
                 onClick={() => setShowQuickActionsPanel(true)}
                 className="w-full flex items-center space-x-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 border-2 border-purple-500 rounded-lg transition-colors shadow-lg"
               >
                 <ImageIcon className="w-5 h-5 text-white" />
                 <span className="text-sm font-bold text-white">Manage Images</span>
               </button>
-            </div>
+              </div>
+            )}
             
-            <QuickActions
+            {!isMobileView && (
+              <QuickActions
               onAction={handleQuickAction}
               activePanel={uiState.quickActionPanel}
               currentActivity={getCurrentActivity()}
               nextActivities={getNextActivities(3)}
               achievements={achievements}
               theme={theme}
-            />
+              />
+            )}
           </div>
           
-          {/* Middle - Timeline Container */}
-          <div className="flex-1">
+          {/* Middle - Timeline Container - Show in both Desktop and Mobile */}
+          <div className={`${isMobileView ? 'w-full' : 'flex-1'}`}>
             <GamelikeTimeline 
             key="main-timeline"
             theme={theme}
@@ -898,6 +938,7 @@ export default function DailyActions2Page() {
             onDragEnd={handleDragEnd}
             onTimeChange={handleTimeChange}
             onActivitiesChange={handleActivitiesChange}
+            isMobileView={isMobileView}
             onActivityAdd={async (activity, preciseTimeSlot) => {
               try {
                 // Apply 5-minute snap to the time slot
@@ -1024,6 +1065,7 @@ export default function DailyActions2Page() {
                 activityPreferences={activityPreferences}
                 timelineActivities={allTimelineActivities}
                 onActivitiesProcessed={handleActivitiesProcessed}
+                isMobileView={isMobileView}
                 onCreateNewActivity={() => {
                   // Open Duration Screen with a blank activity
                   setUIState(prev => ({ ...prev, quickActionPanel: 'edit' }));
@@ -1245,12 +1287,13 @@ export default function DailyActions2Page() {
               />
             </div>
           </div>
+          )}
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Sidebar - Desktop Navigation (moved down) */}
-          <div className="hidden md:block lg:col-span-2">
+        <div className={`${isMobileView ? 'space-y-4' : 'grid grid-cols-1 lg:grid-cols-12 gap-6'}`}>
+          {/* Left Sidebar - Desktop Navigation (moved down) - Hidden in Mobile */}
+          <div className={`${isMobileView ? 'hidden' : 'hidden md:block lg:col-span-2'}`}>
             <div className={`${theme.menuBackground} rounded-lg p-4 border ${theme.menuBorder}`}>
               <nav className="space-y-2">
                 {[
@@ -1276,8 +1319,8 @@ export default function DailyActions2Page() {
           </div>
 
           {/* Main Content Area */}
-          <div className="lg:col-span-7">
-            {uiState.activeTab === 'timeline' && (
+          <div className={`${isMobileView ? 'w-full' : 'lg:col-span-7'}`}>
+            {(uiState.activeTab === 'timeline' && !isMobileView) && (
               <>
                 {viewMode === 'classic' ? (
                   <ActivityTimeline
@@ -1338,7 +1381,7 @@ export default function DailyActions2Page() {
                   onActivityFocus={handleActivitySelect}
                 />
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className={`${isMobileView ? 'space-y-4' : 'grid grid-cols-1 md:grid-cols-2 gap-6'}`}>
                   <AttributeContainer
                     activeAttributes={lightwalkerState.activeAttributes}
                     attributeGlow={lightwalkerState.attributeGlow}
@@ -1357,7 +1400,7 @@ export default function DailyActions2Page() {
               <div className="bg-white rounded-xl shadow-sm border border-indigo-100 p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-6">Your Progress</h2>
                 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div className={`${isMobileView ? 'grid grid-cols-2 gap-2 mb-4' : 'grid grid-cols-2 md:grid-cols-4 gap-4 mb-8'}`}>
                   <div className="text-center p-4 bg-indigo-50 rounded-lg">
                     <div className="text-2xl font-bold text-indigo-600">{stats.todayPoints}</div>
                     <div className="text-sm text-gray-600">Today's Points</div>
@@ -1400,11 +1443,12 @@ export default function DailyActions2Page() {
           </div>
 
           {/* Right Sidebar - Available for future content */}
-          <div className="lg:col-span-3">
+          <div className={`${isMobileView ? 'w-full' : 'lg:col-span-3'}`}>
             {/* Quick Actions moved to left side under Up Next panel */}
           </div>
         </div>
       </div>
+
 
       {/* Activity Modal - Temporarily commented out for build */}
       {/* 

@@ -41,6 +41,7 @@ interface TarkovInventoryGridProps {
   timelineActivities?: any[];
   onCreateNewActivity?: () => void;
   onActivitiesProcessed?: (activitiesWithPreferences: ActivityTemplate[]) => void;
+  isMobileView?: boolean;
 }
 
 // DEPRECATED: Hardcoded templates removed - all activities now loaded from database
@@ -93,7 +94,7 @@ const getRarityColors = (rarity: string) => {
   }
 };
 
-export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, activityPreferences = [], timelineActivities = [], onCreateNewActivity, onActivitiesProcessed }: TarkovInventoryGridProps) {
+export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, activityPreferences = [], timelineActivities = [], onCreateNewActivity, onActivitiesProcessed, isMobileView = false }: TarkovInventoryGridProps) {
   const [hoveredActivity, setHoveredActivity] = useState<ActivityTemplate | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [currentLayout, setCurrentLayout] = useState<GridLayout | null>(null);
@@ -397,8 +398,9 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
 
   // Generate CSS styles for the grid
   const { containerStyle, itemStyles } = useMemo(() => {
-    return generateGridStyles(gridLayout, 100); // 100px cells
-  }, [gridLayout]);
+    const cellSize = isMobileView ? 60 : 100; // Smaller cells on mobile
+    return generateGridStyles(gridLayout, cellSize);
+  }, [gridLayout, isMobileView]);
 
   // Update current layout and handle transitions
   useEffect(() => {
@@ -462,29 +464,9 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
             </div>
           </div>
           {/* Search and Filter Controls */}
-          <div className="flex items-center space-x-2">
-            {/* Search Input */}
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search activities..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-7 pr-3 py-1 w-40 bg-slate-800 border border-slate-600 rounded-lg text-slate-300 placeholder-slate-500 focus:border-slate-400 focus:outline-none transition-colors font-mono text-xs"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-300"
-                >
-                  <div className="w-3 h-3 text-xs">×</div>
-                </button>
-              )}
-            </div>
-
-            {/* Filter Dropdown */}
-            <div className="relative" ref={dropdownRef}>
+          <div className={`${isMobileView ? 'flex flex-col space-y-2' : 'flex items-center space-x-2'}`}>
+            {/* Filter Dropdown - Show first on mobile */}
+            <div className={`relative ${isMobileView ? 'order-1' : 'order-2'}`} ref={dropdownRef}>
               <button
                 onClick={() => setShowFilterDropdown(!showFilterDropdown)}
                 className="flex items-center justify-between px-3 py-1 bg-slate-800 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors font-mono text-xs"
@@ -526,6 +508,26 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
                 </div>
               )}
             </div>
+
+            {/* Search Input - Show second on mobile */}
+            <div className={`relative ${isMobileView ? 'order-2' : 'order-1'}`}>
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search activities..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={`pl-7 pr-3 py-1 bg-slate-800 border border-slate-600 rounded-lg text-slate-300 placeholder-slate-500 focus:border-slate-400 focus:outline-none transition-colors font-mono text-xs ${isMobileView ? 'w-full' : 'w-40'}`}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-300"
+                >
+                  <div className="w-3 h-3 text-xs">×</div>
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -541,10 +543,15 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
               }}
               className={`border border-slate-600 transition-opacity duration-200 ${
                 isLayoutTransitioning ? 'opacity-75' : 'opacity-100'
-              }`}
+              } ${isMobileView ? 'max-w-full' : ''}`}
               style={{ 
                 ...containerStyle,
-                gap: '1px' // Small gap for visual separation
+                gap: '1px', // Small gap for visual separation
+                ...(isMobileView ? {
+                  maxWidth: '100%',
+                  width: '100%',
+                  overflow: 'hidden'
+                } : {})
               }}
               onMouseMove={handleMouseMove}
             >
