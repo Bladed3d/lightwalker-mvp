@@ -30,6 +30,9 @@ model User {
   userRoleModelConsultations UserRoleModelConsultation[]
   savedCharacters   SavedCharacter[]
   activityPreferences ActivityPreference[]
+  lifeSkillProgress LifeSkillProgress[]
+  activityCompletions ActivityCompletion[]
+  timelineActivities TimelineActivity[]
 
   @@map("users")
 }
@@ -540,6 +543,145 @@ model SavedCharacter {
   @@index([userId, isActive])
 }
 
+// Base Activity table - replaces hardcoded ACTIVITY_TEMPLATES
+model Activity {
+  id                    String   @id @default(cuid())
+  title                 String
+  description           String?  // Philosophical context and meaning
+  instructions          String?  // Step-by-step practical activities
+  icon                  String   // Path to image file, no emojis
+  category              String   // 'mindfulness', 'physical', 'creative', etc.
+  points                Int      @default(20)
+  rarity                String   @default("common") // 'common', 'uncommon', 'rare', 'epic', 'legendary'
+  duration              String   @default("15 min") // e.g., "5 min", "30 min"
+  difficulty            Int      @default(1) // 1-5 scale
+  gridSizeW             Int      @default(1) @map("grid_size_w") // Grid width
+  gridSizeH             Int      @default(1) @map("grid_size_h") // Grid height
+  isActive              Boolean  @default(true) @map("is_active")
+  sortOrder             Int      @default(0) @map("sort_order")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  activityPreferences   ActivityPreference[]
+  timelineActivities    TimelineActivity[]
+  activityCompletions   ActivityCompletion[]
+  
+  @@map("activities")
+  @@index([isActive, category])
+  @@index([rarity, sortOrder])
+}
+
+// Timeline activities - scheduled instances of activities
+model TimelineActivity {
+  id                    String   @id @default(cuid())
+  userId                String?  @map("user_id") // For logged-in users
+  sessionId             String?  @map("session_id") // For anonymous users
+  activityId            String   @map("activity_id")
+  scheduledTime         String   @map("scheduled_time") // e.g., "9:30a", "2:15p"
+  scheduledDate         DateTime @default(now()) @map("scheduled_date")
+  isCompleted           Boolean  @default(false) @map("is_completed")
+  completedAt           DateTime? @map("completed_at")
+  customDuration        String?  @map("custom_duration") // Override activity duration
+  customPoints          Int?     @map("custom_points") // Override activity points
+  notes                 String?
+  
+  // Recurring pattern fields
+  isRecurring           Boolean  @default(false) @map("is_recurring")
+  recurringPattern      Json?    @map("recurring_pattern") // Store recurring configuration as JSON
+  parentTimelineId      String?  @map("parent_timeline_id") // For recurring instances, reference to the original
+  
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  activity              Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user                  User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("timeline_activities")
+  @@index([userId, scheduledDate])
+  @@index([sessionId, scheduledDate])
+  @@index([scheduledDate, scheduledTime])
+}
+
+// Activity Categories System
+model ActivityCategory {
+  id                    Int      @id @default(autoincrement())
+  name                  String   @unique
+  description           String?
+  icon                  String?
+  sortOrder             Int      @default(0) @map("sort_order")
+  isActive              Boolean  @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  activityPreferences   ActivityPreference[]
+
+  @@map("activity_categories")
+  @@index([isActive, sortOrder])
+}
+
+// Life Skills Progress Tracking
+model LifeSkillProgress {
+  id                    String   @id @default(cuid())
+  userId                String?  @map("user_id") // For logged-in users
+  sessionId             String?  @map("session_id") // For anonymous users
+  activityId            String   @map("activity_id")
+  programStartDate      DateTime @map("program_start_date")
+  programDuration       Int      @default(30) @map("program_duration") // days
+  targetCompletions     Int      @map("target_completions") // e.g., 21 out of 30 days
+  actualCompletions     Int      @default(0) @map("actual_completions")
+  currentAverage        Float    @default(0) @map("current_average") // rolling average
+  completionData        Json?    @map("completion_data") // daily tracking: {"1": true, "2": false, ...}
+  isCompleted           Boolean  @default(false) @map("is_completed")
+  completionDate        DateTime? @map("completion_date")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user                  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("life_skill_progress")
+  @@index([userId, activityId])
+  @@index([sessionId, activityId])
+  @@unique([userId, activityId], name: "unique_user_life_skill")
+  @@unique([sessionId, activityId], name: "unique_session_life_skill")
+}
+
+// Activity Completions - Enhanced tracking
+model ActivityCompletion {
+  id                    String   @id @default(cuid())
+  userId                String?  @map("user_id") // For logged-in users
+  sessionId             String?  @map("session_id") // For anonymous users
+  activityId            String   @map("activity_id")
+  completionDate        DateTime @default(now()) @map("completion_date")
+  completionTime        DateTime @default(now()) @map("completion_time")
+  rating                Int?     // 1-5 rating
+  notes                 String?
+  
+  // Enhanced completion tracking
+  completionCount       Int      @default(1) @map("completion_count") // 1=normal, 2=double for make-up
+  isMakeup              Boolean  @default(false) @map("is_makeup")
+  makeupForDate         DateTime? @map("makeup_for_date")
+  
+  // Learning Loop - what happened, learned, will do differently
+  whatHappened          String?  @map("what_happened")
+  whatLearned           String?  @map("what_learned")
+  nextTimeWillDo        String?  @map("next_time_will_do")
+  
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user                  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity              Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@map("activity_completions")
+  @@index([userId, activityId, completionDate])
+  @@index([sessionId, activityId, completionDate])
+  @@index([isMakeup, makeupForDate])
+}
+
 // Activity Preferences System - For Daily Actions Customization
 model ActivityPreference {
   id                    String   @id @default(cuid())
@@ -547,6 +689,15 @@ model ActivityPreference {
   sessionId             String?  @map("session_id") // For anonymous users
   activityId            String   @map("activity_id") // Original activity template ID
   activityTitle         String   @map("activity_title") // For quick reference
+  
+  // Enhanced Activity System
+  categoryId            Int?     @map("category_id") // Foreign key to ActivityCategory
+  activityType          String   @default("single") @map("activity_type") // 'single', 'linked_pair', 'life_skill'
+  programDuration       Int?     @map("program_duration") // for Life Skills (21-30 days)
+  linkedActivityId      String?  @map("linked_activity_id") // for paired activities
+  sequenceOrder         Int?     @map("sequence_order") // 1=morning, 2=evening for linked activities
+  successThreshold      Float    @default(0.70) @map("success_threshold") // for Life Skills (70% completion needed)
+  learningEnabled       Boolean  @default(false) @map("learning_enabled") // can user document learnings?
   
   // Customizable properties
   customDuration        String?  @map("custom_duration") // e.g., "45 min", "1 hour"
@@ -574,11 +725,15 @@ model ActivityPreference {
 
   // Relations
   user                  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity              Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  category              ActivityCategory? @relation(fields: [categoryId], references: [id])
 
   @@map("activity_preferences")
   @@index([userId, activityId])
   @@index([sessionId, activityId])
   @@index([activityId, isActive])
+  @@index([categoryId])
+  @@index([activityType])
   @@unique([userId, activityId], name: "unique_user_activity_preference")
   @@unique([sessionId, activityId], name: "unique_session_activity_preference")
 }
