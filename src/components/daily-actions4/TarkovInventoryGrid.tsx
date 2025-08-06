@@ -1,12 +1,26 @@
 'use client'
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
+import { ChevronDown, Search } from 'lucide-react';
 import { ThemeConfig } from '@/lib/theme-config';
 import { ActivityPreference } from '@/types/daily-use';
 import { applyPreferencesToActivities } from '@/lib/activity-preferences';
+import { 
+  GridLayoutEngine, 
+  GridLayout, 
+  createGridItemFromActivity, 
+  applyCustomGridSizes, 
+  generateGridStyles,
+  shouldReorganizeLayout,
+  calculateLayoutTransitions
+} from '@/lib/grid-layout';
+import { 
+  FILTER_OPTIONS, 
+  getActivitiesFromDatabase
+} from '@/lib/database-activity-filter';
 
-interface ActivityTemplate {
+export interface ActivityTemplate {
   id: string;
   title: string;
   icon: string;
@@ -24,37 +38,13 @@ interface TarkovInventoryGridProps {
   onDragEnd?: (result: any) => void;
   onActivityEdit?: (activity: ActivityTemplate) => void;
   activityPreferences?: ActivityPreference[];
+  timelineActivities?: any[];
+  onCreateNewActivity?: () => void;
+  onActivitiesProcessed?: (activitiesWithPreferences: ActivityTemplate[]) => void;
 }
 
-const ACTIVITY_TEMPLATES: ActivityTemplate[] = [
-  // Common Activities (15-20 points) - sorted alphabetically
-  { id: 'hydrate', title: 'Hydrate', icon: '/activity-icons/hydrate.jpg', category: 'physical', points: 15, rarity: 'common', duration: '1 min', difficulty: 1, description: 'Stay hydrated with pure water', gridSize: { w: 1, h: 2 } },
-  { id: 'mindful-breathing', title: 'Mindful Breathing', icon: '/activity-icons/meditation.jpg', category: 'mindfulness', points: 15, rarity: 'common', duration: '5 min', difficulty: 1, description: 'Center yourself with conscious breathing' },
-  { id: 'posture-check', title: 'Posture Check', icon: '/activity-icons/posture-check.jpg', category: 'physical', points: 15, rarity: 'common', duration: '2 min', difficulty: 1, description: 'Align your spine and shoulders' },
-  { id: 'quick-walk', title: 'Quick Walk', icon: '/activity-icons/running.jpg', category: 'physical', points: 20, rarity: 'common', duration: '10 min', difficulty: 1, description: 'Get your body moving with a short walk' },
-  
-  // Uncommon Activities (25-35 points)
-  { id: 'creative-thinking', title: 'Creative Thinking', icon: '/activity-icons/creative-thinking.jpg', category: 'creative', points: 25, rarity: 'uncommon', duration: '10 min', difficulty: 2, description: 'Generate innovative ideas and solutions' },
-  { id: 'gratitude-practice', title: 'Gratitude Practice', icon: '/activity-icons/gratitude.jpg', category: 'mindfulness', points: 30, rarity: 'uncommon', duration: '5 min', difficulty: 2, description: 'Acknowledge what you are thankful for' },
-  { id: 'skill-practice', title: 'Skill Practice', icon: '/activity-icons/skill-practice.jpg', category: 'creative', points: 35, rarity: 'uncommon', duration: '20 min', difficulty: 2, description: 'Develop a meaningful skill or craft' },
-  { id: 'strategic-planning', title: 'Strategic Planning', icon: '/activity-icons/strategic-planning.jpg', category: 'decision-making', points: 30, rarity: 'uncommon', duration: '15 min', difficulty: 2, description: 'Plan your approach to important goals' },
-  
-  // Rare Activities (40-55 points)
-  { id: 'deep-reflection', title: 'Deep Reflection', icon: '/activity-icons/deep-reflection.jpg', category: 'reflection', points: 50, rarity: 'rare', duration: '30 min', difficulty: 3, description: 'Contemplate life\'s deeper meanings' },
-  { id: 'empathy-practice', title: 'Empathy Practice', icon: '/activity-icons/empathy.jpg', category: 'communication', points: 45, rarity: 'rare', duration: '15 min', difficulty: 3, description: 'Understand others\' perspectives deeply' },
-  { id: 'mentoring', title: 'Mentoring Others', icon: '/activity-icons/mentoring.jpg', category: 'communication', points: 55, rarity: 'rare', duration: '30 min', difficulty: 3, description: 'Guide and teach someone valuable skills' },
-  { id: 'problem-solving', title: 'Problem Solving', icon: '/activity-icons/problem-solving.jpg', category: 'decision-making', points: 40, rarity: 'rare', duration: '25 min', difficulty: 3, description: 'Tackle complex challenges systematically' },
-  
-  // Epic Activities (60-75 points)
-  { id: 'conflict-resolution', title: 'Conflict Resolution', icon: '/activity-icons/conflict-resolution.jpg', category: 'communication', points: 75, rarity: 'epic', duration: '30 min', difficulty: 4, description: 'Resolve disputes with wisdom and skill', gridSize: { w: 2, h: 1 } },
-  { id: 'innovation-session', title: 'Innovation Session', icon: '/activity-icons/innovation-session.jpg', category: 'creative', points: 65, rarity: 'epic', duration: '60 min', difficulty: 4, description: 'Create breakthrough solutions', gridSize: { w: 2, h: 2 } },
-  { id: 'leadership-moment', title: 'Leadership Moment', icon: '/activity-icons/leadership-moment.jpg', category: 'communication', points: 70, rarity: 'epic', duration: '45 min', difficulty: 4, description: 'Lead others toward a common goal' },
-  
-  // Legendary Activities (80+ points)
-  { id: 'inspire-others', title: 'Inspire Others', icon: '/activity-icons/inspire-others.jpg', category: 'communication', points: 90, rarity: 'legendary', duration: '60 min', difficulty: 5, description: 'Motivate people to achieve greatness' },
-  { id: 'life-changing-decision', title: 'Life-Changing Decision', icon: '/activity-icons/life-changing-decision.jpg', category: 'decision-making', points: 100, rarity: 'legendary', duration: '90 min', difficulty: 5, description: 'Make a decision that transforms your path' },
-  { id: 'master-skill', title: 'Master New Skill', icon: '/activity-icons/learn.jpg', category: 'creative', points: 85, rarity: 'legendary', duration: '120 min', difficulty: 5, description: 'Achieve mastery in a meaningful domain' }
-];
+// DEPRECATED: Hardcoded templates removed - all activities now loaded from database
+// This ensures consistent data and eliminates duplicate sources of truth
 
 const getRarityColors = (rarity: string) => {
   switch (rarity) {
@@ -103,10 +93,17 @@ const getRarityColors = (rarity: string) => {
   }
 };
 
-export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, activityPreferences = [] }: TarkovInventoryGridProps) {
+export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, activityPreferences = [], timelineActivities = [], onCreateNewActivity, onActivitiesProcessed }: TarkovInventoryGridProps) {
   const [hoveredActivity, setHoveredActivity] = useState<ActivityTemplate | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [currentLayout, setCurrentLayout] = useState<GridLayout | null>(null);
+  const [isLayoutTransitioning, setIsLayoutTransitioning] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState('my-activities');
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
+  const layoutEngine = useMemo(() => new GridLayoutEngine(10), []); // 10 columns
 
   // Fix Next.js SSR/CSR mismatch for React Beautiful DND
   if (typeof window === 'undefined') {
@@ -114,12 +111,21 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
   }
 
   const handleMouseEnter = (activity: ActivityTemplate, e: React.MouseEvent) => {
+    // Don't show tooltip during drag operations
+    if (isDragging) return;
+    
     setHoveredActivity(activity);
     setTooltipPosition({ x: e.clientX, y: e.clientY });
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (hoveredActivity) {
+    // Clear tooltip if we're dragging
+    if (isDragging && hoveredActivity) {
+      setHoveredActivity(null);
+      return;
+    }
+    
+    if (hoveredActivity && !isDragging) {
       setTooltipPosition({ x: e.clientX, y: e.clientY });
     }
   };
@@ -128,19 +134,125 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
     setHoveredActivity(null);
   };
 
-  // Apply saved preferences to template activities
+  // Close dropdown when clicking outside
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showFilterDropdown && dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        console.log('🔘 Clicking outside dropdown, closing');
+        setShowFilterDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showFilterDropdown]);
+
+  // Database-first filtered activities
+  const [filteredActivities, setFilteredActivities] = useState<ActivityTemplate[]>([]);
+  const [isLoadingActivities, setIsLoadingActivities] = useState(true);
+  
+  // Load activities from database
+  useEffect(() => {
+    const loadActivities = async () => {
+      setIsLoadingActivities(true);
+      console.log('🗄️ Loading activities from database for filter:', selectedFilter);
+      
+      if (selectedFilter === 'create-new') {
+        // Return a placeholder for creating new activity
+        setFilteredActivities([{
+          id: 'create-new-activity',
+          title: 'Create New Activity', 
+          icon: '➕',
+          category: 'custom',
+          points: 25,
+          rarity: 'uncommon' as const,
+          duration: '15 min',
+          difficulty: 2,
+          description: 'Click to create a custom activity',
+          gridSize: { w: 2, h: 1 }
+        }]);
+        setIsLoadingActivities(false);
+        return;
+      }
+      
+      try {
+        const result = await getActivitiesFromDatabase(
+          selectedFilter,
+          activityPreferences,
+          timelineActivities
+        );
+        
+        console.log(`✅ Loaded ${result.count} activities from database`);
+        
+        // Transform database activities to ActivityTemplate format
+        const activities: ActivityTemplate[] = result.activities.map(activity => ({
+          id: activity.id,
+          title: activity.title,
+          icon: activity.icon,
+          category: activity.category,
+          points: activity.points,
+          rarity: activity.rarity,
+          duration: activity.duration,
+          difficulty: activity.difficulty,
+          description: activity.description || '',
+          gridSize: activity.gridSize || { w: 1, h: 1 }
+        }));
+        
+        setFilteredActivities(activities);
+      } catch (error) {
+        console.error('❌ Error loading activities:', error);
+        setFilteredActivities([]);
+      } finally {
+        setIsLoadingActivities(false);
+      }
+    };
+    
+    loadActivities();
+  }, [selectedFilter, activityPreferences, timelineActivities]);
+
+  // Apply search filter to filtered activities
+  const searchFilteredActivities = React.useMemo(() => {
+    if (isLoadingActivities) {
+      return [];
+    }
+    
+    if (!searchQuery.trim()) {
+      return filteredActivities;
+    }
+    
+    const query = searchQuery.toLowerCase();
+    return filteredActivities.filter(activity => {
+      return activity.title.toLowerCase().includes(query) ||
+             activity.category.toLowerCase().includes(query) ||
+             (activity.description && activity.description.toLowerCase().includes(query));
+    });
+  }, [filteredActivities, searchQuery, isLoadingActivities]);
+
+  // Apply saved preferences to search-filtered activities
   const activitiesWithPreferences = React.useMemo(() => {
     console.log('🎨 TarkovInventoryGrid applying preferences:', activityPreferences.length, 'preferences');
     
     if (activityPreferences.length === 0) {
-      console.log('📝 No preferences to apply, using default templates');
-      return ACTIVITY_TEMPLATES;
+      console.log('📝 No preferences to apply, using search-filtered activities');
+      return searchFilteredActivities;
     }
     
     console.log('🔧 Activity preferences:', activityPreferences);
     
-    // Convert templates to Activity format temporarily for preferences application
-    const activitiesForPrefs = ACTIVITY_TEMPLATES.map(template => ({
+    // Use search-filtered activities instead of all templates
+    if (searchFilteredActivities.length === 0) {
+      return [];
+    }
+    
+    // If search-filtered activities already have preferences applied (from smart filter), return them
+    if (searchFilteredActivities[0]?.customized) {
+      return searchFilteredActivities;
+    }
+    
+    // Convert search-filtered activities to Activity format temporarily for preferences application
+    const activitiesForPrefs = searchFilteredActivities.map(template => ({
       id: template.id,
       title: template.title,
       description: template.description,
@@ -164,9 +276,11 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
     
     const withPreferences = applyPreferencesToActivities(activitiesForPrefs, activityPreferences);
     
-    // Convert back to template format
+    // Convert back to template format and apply custom grid sizes
     const result = withPreferences.map((activity, index) => {
-      const template = ACTIVITY_TEMPLATES[index];
+      const template = searchFilteredActivities[index];
+      const preference = activityPreferences.find(p => p.activityId === template.id);
+      
       const updated = {
         ...template,
         duration: activity.duration,
@@ -174,14 +288,51 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
         difficulty: activity.difficulty,
         title: activity.title,
         icon: activity.icon, // Apply custom images from preferences
+        gridSize: preference?.customGridSize || template.gridSize || { w: 1, h: 1 }
       };
       
-      if (template.id === 'quick-walk') {
-        console.log('🏃 Quick Walk template updated:', {
+      // Enhanced debugging for "Read" activity icon issue - ONLY during drag operations
+      if (template.title.toLowerCase().includes('read') && template.id === 'read') {
+        const gridDebugInfo = {
           templateId: template.id,
-          original: { icon: template.icon, duration: template.duration, points: template.points },
-          activityFromPrefs: { icon: activity.icon, duration: activity.duration, points: activity.points },
-          finalUpdated: { icon: updated.icon, duration: updated.duration, points: updated.points }
+          templateTitle: template.title,
+          templateIcon: template.icon,
+          activityIcon: activity.icon,
+          finalIcon: updated.icon,
+          hasPreference: !!preference,
+          preferenceImageUrl: preference?.customImageUrl,
+          iconIsCustomImage: updated.icon.startsWith('/') || updated.icon.startsWith('data:')
+        };
+        
+        // Only log once and store in window
+        if (!(window as any).readDebugLogged) {
+          console.warn('📖 TARKOV GRID READ DEBUG:', gridDebugInfo);
+          (window as any).readDebugLogged = true;
+        }
+        
+        // Store in window for manual inspection
+        (window as any).lastReadGridDebug = gridDebugInfo;
+      }
+      
+      // Debug grid size application for all activities with custom grid sizes
+      if (preference?.customGridSize) {
+        console.log(`🎯 ${template.id} grid size applied:`, {
+          templateId: template.id,
+          originalGridSize: template.gridSize,
+          preferenceGridSize: preference.customGridSize,
+          finalGridSize: updated.gridSize
+        });
+      }
+      
+      // Special debug for conflict-resolution activity (has hardcoded template size)
+      if (template.id === 'conflict-resolution') {
+        console.log(`⚔️ Conflict Resolution processing:`, {
+          templateId: template.id,
+          templateGridSize: template.gridSize,
+          hasPreference: !!preference,
+          preferenceCustomGridSize: preference?.customGridSize,
+          finalGridSize: updated.gridSize,
+          preferenceWins: !!preference?.customGridSize
         });
       }
       
@@ -189,7 +340,102 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
     });
     
     return result;
-  }, [activityPreferences]);
+  }, [activityPreferences, searchFilteredActivities]);
+
+  // Notify parent component of the processed activities with preferences
+  React.useEffect(() => {
+    if (onActivitiesProcessed && activitiesWithPreferences.length > 0) {
+      onActivitiesProcessed(activitiesWithPreferences);
+    }
+  }, [activitiesWithPreferences, onActivitiesProcessed]);
+
+  // Calculate dynamic grid layout
+  const gridLayout = useMemo(() => {
+    console.log('📐 Calculating grid layout for', activitiesWithPreferences.length, 'activities');
+    
+    // Create grid items from activities with title for alphabetical sorting
+    const gridItems = activitiesWithPreferences.map(activity => {
+      const gridItem = createGridItemFromActivity({
+        id: activity.id,
+        title: activity.title,
+        gridSize: activity.gridSize
+      });
+      
+      // Debug grid item creation
+      if (activity.gridSize && (activity.gridSize.w !== 1 || activity.gridSize.h !== 1)) {
+        console.log(`📦 Created grid item for ${activity.id}:`, {
+          activityGridSize: activity.gridSize,
+          gridItemSize: { w: gridItem.w, h: gridItem.h }
+        });
+      }
+      
+      return gridItem;
+    });
+    
+    // Calculate optimal layout
+    const layout = layoutEngine.calculateLayout(gridItems);
+    
+    console.log('✅ Grid layout calculated:', {
+      totalHeight: layout.totalHeight,
+      itemCount: layout.items.size,
+      gridWidth: layout.gridWidth
+    });
+    
+    // Debug final layout positions for custom-sized items
+    for (const [itemId, position] of layout.items) {
+      if (position.w !== 1 || position.h !== 1) {
+        console.log(`📍 Custom-sized item positioned:`, {
+          itemId,
+          position: `${position.x},${position.y}`,
+          size: `${position.w}x${position.h}`
+        });
+      }
+    }
+    
+    return layout;
+  }, [activitiesWithPreferences, layoutEngine]);
+
+  // Generate CSS styles for the grid
+  const { containerStyle, itemStyles } = useMemo(() => {
+    return generateGridStyles(gridLayout, 100); // 100px cells
+  }, [gridLayout]);
+
+  // Update current layout and handle transitions
+  useEffect(() => {
+    if (shouldReorganizeLayout(
+      currentLayout ? Array.from(currentLayout.items.entries()).map(([id, pos]) => ({ id, w: pos.w, h: pos.h })) : [],
+      Array.from(gridLayout.items.entries()).map(([id, pos]) => ({ id, w: pos.w, h: pos.h }))
+    )) {
+      console.log('🔄 Layout reorganization triggered');
+      setIsLayoutTransitioning(true);
+      
+      // Smooth transition delay
+      const transitionTimeout = setTimeout(() => {
+        setCurrentLayout(gridLayout);
+        setIsLayoutTransitioning(false);
+      }, 50);
+      
+      return () => clearTimeout(transitionTimeout);
+    } else {
+      setCurrentLayout(gridLayout);
+    }
+  }, [gridLayout, currentLayout]);
+
+  // Listen for grid layout change events from preference saves
+  useEffect(() => {
+    const handleGridLayoutChange = (event: any) => {
+      const { activityId, newGridSize, imageUrl } = event.detail;
+      console.log('🎛️ Grid layout change event received:', { activityId, newGridSize, imageUrl });
+      
+      // Force re-calculation of layout by updating state
+      // The layout will be automatically recalculated due to dependency on activitiesWithPreferences
+      setIsLayoutTransitioning(true);
+      setTimeout(() => setIsLayoutTransitioning(false), 300);
+    };
+
+    window.addEventListener('gridLayoutChanged', handleGridLayoutChange);
+    return () => window.removeEventListener('gridLayoutChanged', handleGridLayoutChange);
+  }, []);
 
   return (
     <>
@@ -203,13 +449,86 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
               ACTIVITY INVENTORY
             </h3>
             <div className="text-slate-400 font-mono text-sm">
-              [{activitiesWithPreferences.length} ITEMS]
+              {isLoadingActivities ? (
+                <span className="text-blue-400">[LOADING DATABASE...]</span>
+              ) : (
+                <>
+                  [{activitiesWithPreferences.length} ITEMS] 
+                  [{activitiesWithPreferences.filter(a => a.gridSize && (a.gridSize.w !== 1 || a.gridSize.h !== 1)).length} CUSTOM]
+                  {searchQuery && <span className="text-orange-400"> [FILTERED]</span>}
+                  <span className="text-green-400"> [DATABASE]</span>
+                </>
+              )}
             </div>
           </div>
-          <div className="text-slate-500 font-mono text-xs">
-            DRAG TO DEPLOY
+          {/* Search and Filter Controls */}
+          <div className="flex items-center space-x-2">
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search activities..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-7 pr-3 py-1 w-40 bg-slate-800 border border-slate-600 rounded-lg text-slate-300 placeholder-slate-500 focus:border-slate-400 focus:outline-none transition-colors font-mono text-xs"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-300"
+                >
+                  <div className="w-3 h-3 text-xs">×</div>
+                </button>
+              )}
+            </div>
+
+            {/* Filter Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                className="flex items-center justify-between px-3 py-1 bg-slate-800 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors font-mono text-xs"
+              >
+                <div className="flex items-center space-x-2">
+                  <span>{FILTER_OPTIONS.find(opt => opt.id === selectedFilter)?.icon}</span>
+                  <span>{FILTER_OPTIONS.find(opt => opt.id === selectedFilter)?.label}</span>
+                </div>
+                <ChevronDown className={`w-3 h-3 transition-transform ${showFilterDropdown ? 'rotate-180' : ''}`} />
+              </button>
+
+              {showFilterDropdown && (
+                <div className="absolute top-full right-0 mt-1 w-64 bg-slate-800 border border-slate-600 rounded-lg shadow-xl z-50 max-h-80 overflow-y-auto">
+                  {FILTER_OPTIONS.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('🔘 Filter option clicked:', option.id);
+                        setSelectedFilter(option.id);
+                        setShowFilterDropdown(false);
+                      }}
+                      className={`w-full px-3 py-2 text-left hover:bg-slate-700 transition-colors border-b border-slate-700 last:border-b-0 ${
+                        selectedFilter === option.id ? 'bg-slate-700 text-green-400' : 'text-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className="text-sm">{option.icon}</span>
+                        <div>
+                          <div className="font-mono text-xs font-medium">{option.label}</div>
+                          {option.description && (
+                            <div className="font-mono text-xs text-slate-500">{option.description}</div>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
+
 
         {/* Grid Container */}
         <Droppable droppableId="tarkov-inventory" type="ACTIVITY">
@@ -220,31 +539,50 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
                 provided.innerRef(el);
                 (gridRef as any).current = el;
               }}
-              className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-0 border border-slate-600"
+              className={`border border-slate-600 transition-opacity duration-200 ${
+                isLayoutTransitioning ? 'opacity-75' : 'opacity-100'
+              }`}
               style={{ 
-                gridAutoRows: '100px',
-                gridAutoFlow: 'row dense'
+                ...containerStyle,
+                gap: '1px' // Small gap for visual separation
               }}
               onMouseMove={handleMouseMove}
             >
               {activitiesWithPreferences.map((activity, index) => {
                 const colors = getRarityColors(activity.rarity);
+                const itemStyle = itemStyles.get(activity.id) || {};
+                
+                // Visual debugging - no console spam
                 
                 return (
                   <Draggable key={activity.id} draggableId={activity.id} index={index}>
-                    {(provided, snapshot) => (
+                    {(provided, snapshot) => {
+                      // Update drag state when any item is being dragged
+                      if (snapshot.isDragging && !isDragging) {
+                        setIsDragging(true);
+                        setHoveredActivity(null); // Clear any existing tooltip
+                      } else if (!snapshot.isDragging && isDragging) {
+                        // Use a small delay to prevent tooltip flashing after drag ends
+                        setTimeout(() => setIsDragging(false), 100);
+                      }
+                      
+                      return (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                         className={`
                           relative bg-black border border-slate-600
-                          flex items-center justify-center cursor-pointer transition-all duration-200
-                          ${snapshot.isDragging ? 'opacity-90 shadow-2xl z-50' : 'hover:border-slate-400'}
-                          ${!activity.gridSize ? 'aspect-square' : ''}
+                          flex items-center justify-center cursor-pointer transition-all duration-300
+                          ${activity.id === 'create-new-activity' 
+                            ? 'border-green-500 bg-green-900/20 hover:bg-green-800/30 hover:border-green-400' 
+                            : snapshot.isDragging ? 'opacity-90 shadow-2xl z-50' : 'hover:border-slate-400'
+                          }
+                          ${isLayoutTransitioning ? 'transition-all duration-500 ease-in-out' : ''}
                         `}
                         style={{
                           ...provided.draggableProps.style,
+                          ...itemStyle, // Apply calculated grid position
                           userSelect: 'none',
                           WebkitUserSelect: 'none',
                           MozUserSelect: 'none',
@@ -253,12 +591,42 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
                           transform: snapshot.isDragging 
                             ? `${provided.draggableProps.style?.transform || ''} scale(0.75)`.trim()
                             : provided.draggableProps.style?.transform,
-                          gridColumn: activity.gridSize ? `span ${activity.gridSize.w}` : undefined,
-                          gridRow: activity.gridSize ? `span ${activity.gridSize.h}` : undefined
                         }}
                         onMouseEnter={(e) => handleMouseEnter(activity, e)}
                         onMouseLeave={handleMouseLeave}
+                        onClick={activity.id === 'create-new-activity' ? (e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (onCreateNewActivity) {
+                            onCreateNewActivity();
+                          }
+                        } : undefined}
                       >
+                        {/* Grid size indicator for custom items */}
+                        {activity.gridSize && (activity.gridSize.w !== 1 || activity.gridSize.h !== 1) && (
+                          <div className="absolute top-0 left-0 bg-purple-500 text-white text-xs px-1 rounded-br z-10">
+                            {activity.gridSize.w}×{activity.gridSize.h}
+                          </div>
+                        )}
+                        
+                        {/* Timeline usage indicator */}
+                        {(() => {
+                          const timelineCount = timelineActivities.filter(ta => {
+                            const taId = ta.id || ta.name?.toLowerCase().replace(/\s+/g, '-');
+                            return taId === activity.id || ta.title === activity.title;
+                          }).length;
+                          
+                          if (timelineCount > 0) {
+                            return (
+                              <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs px-1 rounded-bl z-10 flex items-center">
+                                <div className="w-2 h-2 bg-white rounded-full mr-1"></div>
+                                {timelineCount}
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+                        
                         {/* Enhanced drop time popup when dragging */}
                         {snapshot.isDragging && (
                           <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold shadow-2xl z-[100] animate-pulse border-2 border-green-300 w-24">
@@ -272,7 +640,13 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
                         )}
                         
                         {/* Activity Image or Emoji */}
-                        {(activity.icon.startsWith('/') || activity.icon.startsWith('data:')) ? (
+                        {activity.id === 'create-new-activity' ? (
+                          <div className="flex flex-col items-center justify-center h-full text-center">
+                            <div className="text-4xl text-green-400 mb-1">➕</div>
+                            <div className="text-xs text-green-300 font-bold">CREATE</div>
+                            <div className="text-xs text-green-300 font-bold">NEW</div>
+                          </div>
+                        ) : (activity.icon.startsWith('/') || activity.icon.startsWith('data:')) ? (
                           <img 
                             src={activity.icon} 
                             alt={activity.title}
@@ -293,7 +667,8 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
                         {/* Inspection checkmark for completed items */}
                         {/* <div className="absolute top-1 right-1 text-green-400 text-xs">✓</div> */}
                       </div>
-                    )}
+                      );
+                    }}
                   </Draggable>
                 );
               })}
@@ -308,17 +683,17 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
-              className="absolute bottom-0 right-0 w-32 h-32"
+              className="absolute bottom-0 right-0 w-20 h-20"
               style={{ 
                 pointerEvents: 'auto',
-                // React Beautiful DND requires minimum dimensions for reliable drop detection
-                minWidth: '128px',
-                minHeight: '128px',
+                // Smaller drop zone to avoid UI interference
+                minWidth: '80px',
+                minHeight: '80px',
                 // Ensure drop zone is above other elements
                 zIndex: 10
               }}
             >
-              {/* Invisible Drop Target - Full 128x128 area for reliable drop detection */}
+              {/* Triangular Drop Target - Smaller and triangular to avoid UI interference */}
               <div
                 className={`absolute inset-0 w-full h-full transition-all duration-200 ${
                   snapshot.isDraggingOver 
@@ -326,7 +701,8 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
                     : 'bg-transparent'
                 }`}
                 style={{
-                  // Ensure the full area is a valid drop target
+                  // Triangular shape to match the visual indicator
+                  clipPath: 'polygon(100% 100%, 100% 50%, 50% 100%)',
                   pointerEvents: 'auto',
                   cursor: snapshot.isDraggingOver ? 'copy' : 'default'
                 }}
@@ -337,7 +713,7 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
                 src="/activity-icons/drag-here-triangle.png"
                 alt="Drag Here to Edit"
                 className={`absolute bottom-0 right-0 transition-all duration-200 pointer-events-none ${
-                  snapshot.isDraggingOver ? 'w-32 h-32 opacity-90' : 'w-24 h-24'
+                  snapshot.isDraggingOver ? 'w-20 h-20 opacity-90' : 'w-16 h-16'
                 }`}
                 style={{ zIndex: 11 }}
               />
@@ -349,8 +725,8 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
         </Droppable>
       </div>
 
-      {/* Tooltip */}
-      {hoveredActivity && (
+      {/* Tooltip - don't show during drag operations */}
+      {hoveredActivity && !isDragging && (
         <div
           className="fixed z-[9999] pointer-events-none"
           style={{

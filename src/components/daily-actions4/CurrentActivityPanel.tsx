@@ -1,4 +1,5 @@
 import React from 'react';
+import { BookOpen } from 'lucide-react';
 import { ThemeConfig } from '@/lib/theme-config';
 
 interface CurrentActivityPanelProps {
@@ -7,9 +8,19 @@ interface CurrentActivityPanelProps {
   displayTime: Date;
   liveTime: Date;
   timelineActivities?: any[];
+  onInstructionsToggle?: () => void;
+  isInstructionsOpen?: boolean;
 }
 
-const CurrentActivityPanel = ({ theme, currentActivity, displayTime, liveTime, timelineActivities = [] }: CurrentActivityPanelProps) => {
+const CurrentActivityPanel = ({ 
+  theme, 
+  currentActivity, 
+  displayTime, 
+  liveTime, 
+  timelineActivities = [], 
+  onInstructionsToggle,
+  isInstructionsOpen = false 
+}: CurrentActivityPanelProps) => {
   // Find the activity that should be displayed at the current timeline position
   const getTimelineActivity = () => {
     if (timelineActivities.length === 0) {
@@ -64,9 +75,9 @@ const CurrentActivityPanel = ({ theme, currentActivity, displayTime, liveTime, t
     <div className={`${theme?.timelineBackground || 'bg-slate-800'} rounded-xl p-6 border ${theme?.timelineBorder || 'border-slate-700'}`}>
       <h2 className={`text-xl font-semibold ${theme?.timelineText || 'text-white'} mb-4`}>Current Activity</h2>
       
-      <div className={`${theme?.cardBackground || 'bg-slate-700'} rounded-lg p-4 h-64 flex flex-col items-center`}>
-        {/* Large container for game-like graphics - properly centered */}
-        <div className="relative w-36 h-36 flex items-center justify-center overflow-hidden mt-2">
+      <div className={`${theme?.cardBackground || 'bg-slate-700'} rounded-lg p-4 h-[274px] flex flex-col items-center relative`}>
+        {/* Large container for game-like graphics - moved up more */}
+        <div className="relative w-36 h-36 flex items-center justify-center overflow-hidden -mt-3">
           {/* Black background box that maintains consistent size */}
           <div className="absolute inset-0 bg-black border border-slate-600"></div>
           
@@ -82,8 +93,8 @@ const CurrentActivityPanel = ({ theme, currentActivity, displayTime, liveTime, t
           )}
         </div>
         
-        {/* Text section - compact and higher */}
-        <div className="text-center mt-3">
+        {/* Text section - proper spacing below image */}
+        <div className="text-center mt-2">
           {/* Activity Name */}
           <h3 className={`text-base font-semibold ${theme?.timelineText || 'text-white'} leading-tight mb-1`}>
             {displayActivity?.title || displayActivity?.name || 'Free Time'}
@@ -103,6 +114,19 @@ const CurrentActivityPanel = ({ theme, currentActivity, displayTime, liveTime, t
             Points: {displayActivity?.points || 0}
           </div>
         </div>
+
+        {/* Instructions Button - positioned lower to avoid overlap */}
+        <button
+          onClick={onInstructionsToggle}
+          className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-all text-xs ${
+            isInstructionsOpen
+              ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-400'
+              : 'bg-blue-500 text-white hover:bg-blue-600'
+          }`}
+        >
+          <BookOpen className="w-3 h-3" />
+          <span className="font-medium">Instructions</span>
+        </button>
       </div>
     </div>
   );

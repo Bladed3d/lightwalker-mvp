@@ -5,6 +5,8 @@ import { ThemeConfig } from '@/lib/theme-config';
 interface GamelikeTimelineProps {
   theme?: ThemeConfig;
   onActivityAdd?: (activity: any, timeSlot: string) => void;
+  onActivityRemove?: (activity: any) => void;
+  onActivitySetRepeat?: (activity: any, position: { x: number; y: number }) => void;
   isDndActive?: boolean;
   timelineActivities?: any[];
   onDragEnd?: (result: any) => void;
@@ -13,7 +15,7 @@ interface GamelikeTimelineProps {
   onActivitiesChange?: (activities: any[]) => void;
 }
 
-const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineActivities = [], onDragEnd, hideCurrentActivity = false, onTimeChange, onActivitiesChange }: GamelikeTimelineProps) => {
+const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySetRepeat, isDndActive = false, timelineActivities = [], onDragEnd, hideCurrentActivity = false, onTimeChange, onActivitiesChange }: GamelikeTimelineProps) => {
   // Fix Next.js SSR/CSR mismatch for React Beautiful DND
   if (typeof window === 'undefined') {
     return (
@@ -38,40 +40,36 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
   const [dropIndicatorPosition, setDropIndicatorPosition] = useState<number | null>(null);
   const [draggedActivityId, setDraggedActivityId] = useState<string | null>(null);
   const [lastProcessedDrop, setLastProcessedDrop] = useState<string | null>(null);
+  
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    activity: any;
+  } | null>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Close context menu on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (contextMenu?.visible) {
+        setContextMenu(null);
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [contextMenu?.visible]);
 
   // COORDINATE SYSTEM FOUNDATION: 
   // pixelsPerMinute is the key conversion factor between time and screen position
   // This must be consistent across ALL positioning and drag calculations
   const pixelsPerMinute = zoomLevel;
 
-  // Sample activities for the full 24-hour day
-  const activities = [
-    { time: '00:30', name: 'Night Rest', icon: '🌙', duration: 30, points: 5 },
-    { time: '01:00', name: 'Deep Sleep', icon: '😴', duration: 360, points: 50 },
-    { time: '07:00', name: 'Wake', icon: '☀️', duration: 15, points: 10 },
-    { time: '07:15', name: 'Meditate', icon: '🧘', duration: 30, points: 25 },
-    { time: '07:45', name: 'Run', icon: '🏃', duration: 45, points: 40 },
-    { time: '08:30', name: 'Bath', icon: '🚿', duration: 20, points: 15 },
-    { time: '08:50', name: 'Breakfast', icon: '🍳', duration: 30, points: 20 },
-    { time: '09:20', name: 'Read', icon: '📖', duration: 40, points: 30 },
-    { time: '10:00', name: 'Deep Work', icon: '💻', duration: 120, points: 80 },
-    { time: '12:00', name: 'Lunch', icon: '🥗', duration: 45, points: 25 },
-    { time: '12:45', name: 'Walk', icon: '🚶', duration: 30, points: 20 },
-    { time: '13:15', name: 'Create', icon: '🎨', duration: 90, points: 60 },
-    { time: '14:45', name: 'Connect', icon: '👥', duration: 60, points: 35 },
-    { time: '15:45', name: 'Recharge', icon: '☕', duration: 15, points: 10 },
-    { time: '16:00', name: 'Innovate', icon: '💡', duration: 90, points: 65 },
-    { time: '17:30', name: 'Train', icon: '💪', duration: 45, points: 40 },
-    { time: '18:15', name: 'Nourish', icon: '🍽️', duration: 45, points: 25 },
-    { time: '19:00', name: 'Bond', icon: '👨‍👩‍👧', duration: 90, points: 50 },
-    { time: '20:30', name: 'Learn', icon: '📚', duration: 60, points: 35 },
-    { time: '21:30', name: 'Reflect', icon: '✍️', duration: 30, points: 20 },
-    { time: '22:00', name: 'Wind Down', icon: '🌅', duration: 60, points: 15 },
-    { time: '23:00', name: 'Prepare Sleep', icon: '🛏️', duration: 60, points: 20 },
-    { time: '23:30', name: 'Night Reading', icon: '📚', duration: 30, points: 10 }
-  ];
+  // No more hardcoded activities - timeline shows only user-added database activities
+  const activities: any[] = [];
 
   // FIXED: Update current time every 60 seconds like original working timeline
   // Frequent updates cause positioning jitter and accuracy issues
@@ -101,11 +99,10 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
     }
   }, [currentTime, selectedTime]);
 
-  // Notify parent component of all available activities (sample + timeline)
+  // Notify parent component of all available activities (only timeline activities)
   useEffect(() => {
     if (onActivitiesChange) {
-      const allActivities = [...activities, ...timelineActivities];
-      onActivitiesChange(allActivities);
+      onActivitiesChange(timelineActivities);
     }
   }, [timelineActivities]);
 
@@ -296,81 +293,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    console.log('🎯 Timeline drop:', {
-      isDragging,
-      dataTypes: Array.from(e.dataTransfer.types),
-      onActivityAdd: !!onActivityAdd
-    });
-    
-    setIsDropTarget(false);
-    setDropIndicatorPosition(null);
-    
-    if (!onActivityAdd || isDragging) {
-      console.log('❌ Drop rejected: no callback or timeline dragging');
-      return;
-    }
-    
-    try {
-      const draggedData = e.dataTransfer.getData('application/json');
-      console.log('📦 Dropped data:', draggedData);
-      
-      if (!draggedData) {
-        console.log('❌ No drag data found');
-        return;
-      }
-      
-      const activity = JSON.parse(draggedData);
-      console.log('✅ Parsed activity:', activity);
-      
-      // Calculate the time position where the activity was dropped
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const relativeX = e.clientX - rect.left;
-        const centerX = containerRef.current.clientWidth / 2;
-        
-        // Calculate what time this X position represents
-        const timelinePosition = getTimelinePosition();
-        const pixelOffsetFromCenter = relativeX - centerX;
-        const timeOffsetMinutes = -pixelOffsetFromCenter / pixelsPerMinute;
-        
-        const baseTime = selectedTime || currentTime;
-        const baseMinutes = baseTime.getHours() * 60 + baseTime.getMinutes();
-        const targetMinutes = baseMinutes + timeOffsetMinutes;
-        
-        // Normalize to 24-hour format
-        let normalizedMinutes = targetMinutes;
-        while (normalizedMinutes < 0) normalizedMinutes += 1440;
-        while (normalizedMinutes >= 1440) normalizedMinutes -= 1440;
-        
-        // Remove 5-minute snapping temporarily to test alignment
-        // normalizedMinutes = Math.round(normalizedMinutes / 5) * 5;
-        
-        // Convert to time string
-        let hours = Math.floor(normalizedMinutes / 60);
-        let mins = Math.round(normalizedMinutes % 60);
-        
-        // Handle mins = 60 case (carry over to next hour)
-        if (mins === 60) {
-          mins = 0;
-          hours = (hours + 1) % 24;
-        }
-        
-        const timeSlot = hours === 0 ? '12:00a' : 
-                        hours <= 11 ? `${hours}:${mins.toString().padStart(2, '0')}a` : 
-                        hours === 12 ? `12:${mins.toString().padStart(2, '0')}p` : 
-                        `${hours-12}:${mins.toString().padStart(2, '0')}p`;
-        
-        console.log('🕐 Calculated time slot:', timeSlot);
-        onActivityAdd(activity, timeSlot);
-      }
-    } catch (error) {
-      console.error('❌ Error handling dropped activity:', error);
-    }
-  };
 
   const resetToNow = () => {
     setCurrentTime(new Date()); // Update to actual current time immediately
@@ -513,37 +435,77 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                     const preciseTimeSlot = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
                     console.log('⏱️ Precise drop time calculated:', preciseTimeSlot);
                     
-                    // Get the activity data from the templates (must match TarkovInventoryGrid)
-                    const ACTIVITY_TEMPLATES = [
-                      { id: 'mindful-breathing', title: 'Mindful Breathing', icon: '/activity-icons/meditation.jpg', category: 'mindfulness', points: 15, rarity: 'common', duration: '5 min' },
-                      { id: 'quick-walk', title: 'Quick Walk', icon: '/activity-icons/running.jpg', category: 'physical', points: 20, rarity: 'common', duration: '10 min' },
-                      { id: 'hydrate', title: 'Hydrate', icon: '/activity-icons/hydrate.jpg', category: 'physical', points: 15, rarity: 'common', duration: '1 min' },
-                      { id: 'posture-check', title: 'Posture Check', icon: '🏃‍♂️', category: 'physical', points: 15, rarity: 'common', duration: '2 min' },
-                      { id: 'strategic-planning', title: 'Strategic Planning', icon: '/activity-icons/strategic-planning.jpg', category: 'decision-making', points: 30, rarity: 'uncommon', duration: '15 min' },
-                      { id: 'creative-thinking', title: 'Creative Thinking', icon: '💡', category: 'creative', points: 25, rarity: 'uncommon', duration: '10 min' },
-                      { id: 'gratitude-practice', title: 'Gratitude Practice', icon: '/activity-icons/gratitude.jpg', category: 'mindfulness', points: 30, rarity: 'uncommon', duration: '5 min' },
-                      { id: 'skill-practice', title: 'Skill Practice', icon: '🎨', category: 'creative', points: 35, rarity: 'uncommon', duration: '20 min' },
-                      { id: 'empathy-practice', title: 'Empathy Practice', icon: '/activity-icons/empathy.jpg', category: 'communication', points: 45, rarity: 'rare', duration: '15 min' },
-                      { id: 'deep-reflection', title: 'Deep Reflection', icon: '🏛️', category: 'reflection', points: 50, rarity: 'rare', duration: '30 min' },
-                      { id: 'problem-solving', title: 'Problem Solving', icon: '🧩', category: 'decision-making', points: 40, rarity: 'rare', duration: '25 min' },
-                      { id: 'mentoring', title: 'Mentoring Others', icon: '👨‍🏫', category: 'communication', points: 55, rarity: 'rare', duration: '30 min' },
-                      { id: 'leadership-moment', title: 'Leadership Moment', icon: '👑', category: 'communication', points: 70, rarity: 'epic', duration: '45 min' },
-                      { id: 'innovation-session', title: 'Innovation Session', icon: '/activity-icons/innovation-session.jpg', category: 'creative', points: 65, rarity: 'epic', duration: '60 min' },
-                      { id: 'conflict-resolution', title: 'Conflict Resolution', icon: '/activity-icons/conflict-resolution.jpg', category: 'communication', points: 75, rarity: 'epic', duration: '30 min' },
-                      { id: 'life-changing-decision', title: 'Life-Changing Decision', icon: '🌟', category: 'decision-making', points: 100, rarity: 'legendary', duration: '90 min' },
-                      { id: 'inspire-others', title: 'Inspire Others', icon: '✨', category: 'communication', points: 90, rarity: 'legendary', duration: '60 min' },
-                      { id: 'master-skill', title: 'Master New Skill', icon: '/activity-icons/learn.jpg', category: 'creative', points: 85, rarity: 'legendary', duration: '120 min' }
-                    ];
+                    // Database-first activity lookup - Enhanced ID matching for timeline rescheduling
+                    const matchesActivityId = (storedActivity: any, targetId: string) => {
+                      if (!storedActivity) return false;
+                      const storedId = storedActivity.id || storedActivity.name?.toLowerCase().replace(/\s+/g, '-');
+                      return storedId === targetId || 
+                             storedId?.includes(targetId) || 
+                             targetId?.includes(storedId) ||
+                             storedActivity.title?.toLowerCase().replace(/\s+/g, '-') === targetId;
+                    };
                     
-                    const activityData = ACTIVITY_TEMPLATES.find(a => a.id === activityId) || { id: activityId, title: 'Activity', icon: '⭐' };
+                    // Get activity data from processed database activities (no async calls)
+                    let activityData;
+                    const preferenceAppliedActivity = (window as any).currentDraggedActivity;
+                    const databaseActivities = (window as any).databaseActivities || [];
+                    
+                    console.log('🔍 TIMELINE FIRST LOCATION - Activity lookup:', {
+                      activityId,
+                      hasPreferenceApplied: !!preferenceAppliedActivity,
+                      preferenceId: preferenceAppliedActivity?.id,
+                      originalIdMatch: preferenceAppliedActivity?.id === activityId,
+                      enhancedMatch: matchesActivityId(preferenceAppliedActivity, activityId),
+                      databaseActivitiesCount: databaseActivities.length
+                    });
+                    
+                    if (preferenceAppliedActivity && matchesActivityId(preferenceAppliedActivity, activityId)) {
+                      console.log('✅ Using preference-applied activity data for:', activityId);
+                      activityData = preferenceAppliedActivity;
+                    } else {
+                      // Use processed database activities from grid
+                      console.log('🔄 Using database activities from grid:', activityId);
+                      const dbActivity = databaseActivities.find((a: any) => a.id === activityId);
+                      if (dbActivity) {
+                        activityData = {
+                          id: dbActivity.id,
+                          title: dbActivity.title,
+                          icon: dbActivity.icon, // Already processed with preferences
+                          category: dbActivity.category,
+                          points: dbActivity.points,
+                          rarity: dbActivity.rarity,
+                          duration: dbActivity.duration
+                        };
+                      }
+                    }
+                    
+                    // Final fallback if database activities not available
+                    if (!activityData) {
+                      activityData = { id: activityId, title: 'Activity', icon: '⭐', category: 'custom', points: 25, rarity: 'common', duration: '15 min' };
+                    }
+                    
+                    // Debug logging for Read activity
+                    if (activityId.toLowerCase().includes('read')) {
+                      console.error('🎬 TIMELINE USING ACTIVITY DATA:', {
+                        activityId,
+                        hasPreferenceApplied: !!preferenceAppliedActivity,
+                        preferenceIcon: preferenceAppliedActivity?.icon,
+                        finalActivityData: activityData,
+                        finalIcon: activityData.icon,
+                        iconType: activityData.icon?.startsWith('/') || activityData.icon?.startsWith('data:') ? 'CUSTOM_IMAGE' : 'EMOJI_OR_FALLBACK'
+                      });
+                    }
                     
                     // Call onActivityAdd with full activity data and precise time
                     onActivityAdd(activityData, preciseTimeSlot);
                     
-                    // Clear drop indicators
+                    // Clear drop indicators and drag data
                     setIsDropTarget(false);
                     setDropIndicatorPosition(null);
                     setDraggedActivityId(null);
+                    
+                    // Clear the stored drag data to prevent stale data issues
+                    (window as any).currentDraggedActivity = null;
                   }
                 }
               };
@@ -627,30 +589,70 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                     
                     console.log('🕐 Timeline calculated drop time:', timeSlot);
                     
-                    // Create activity object from dragged item
-                    const ACTIVITY_TEMPLATES = [
-                      { id: 'mindful-breathing', title: 'Mindful Breathing', icon: '/activity-icons/meditation.jpg', category: 'mindfulness', points: 15, rarity: 'common', duration: '5 min', difficulty: 1 },
-                      { id: 'quick-walk', title: 'Quick Walk', icon: '/activity-icons/running.jpg', category: 'physical', points: 20, rarity: 'common', duration: '10 min', difficulty: 1 },
-                      { id: 'hydrate', title: 'Hydrate', icon: '/activity-icons/hydrate.jpg', category: 'physical', points: 15, rarity: 'common', duration: '1 min', difficulty: 1 },
-                      { id: 'posture-check', title: 'Posture Check', icon: '🏃‍♂️', category: 'physical', points: 15, rarity: 'common', duration: '2 min', difficulty: 1 },
-                      { id: 'strategic-planning', title: 'Strategic Planning', icon: '/activity-icons/strategic-planning.jpg', category: 'decision-making', points: 30, rarity: 'uncommon', duration: '15 min', difficulty: 2 },
-                      { id: 'creative-thinking', title: 'Creative Thinking', icon: '💡', category: 'creative', points: 25, rarity: 'uncommon', duration: '10 min', difficulty: 2 },
-                      { id: 'gratitude-practice', title: 'Gratitude Practice', icon: '/activity-icons/gratitude.jpg', category: 'mindfulness', points: 30, rarity: 'uncommon', duration: '5 min', difficulty: 2 },
-                      { id: 'skill-practice', title: 'Skill Practice', icon: '🎨', category: 'creative', points: 35, rarity: 'uncommon', duration: '20 min', difficulty: 2 },
-                      { id: 'empathy-practice', title: 'Empathy Practice', icon: '/activity-icons/empathy.jpg', category: 'communication', points: 45, rarity: 'rare', duration: '15 min', difficulty: 3 },
-                      { id: 'deep-reflection', title: 'Deep Reflection', icon: '🏛️', category: 'reflection', points: 50, rarity: 'rare', duration: '30 min', difficulty: 3 },
-                      { id: 'problem-solving', title: 'Problem Solving', icon: '🧩', category: 'decision-making', points: 40, rarity: 'rare', duration: '25 min', difficulty: 3 },
-                      { id: 'mentoring', title: 'Mentoring Others', icon: '👨‍🏫', category: 'communication', points: 55, rarity: 'rare', duration: '30 min', difficulty: 3 },
-                      { id: 'leadership-moment', title: 'Leadership Moment', icon: '👑', category: 'communication', points: 70, rarity: 'epic', duration: '45 min', difficulty: 4 },
-                      { id: 'innovation-session', title: 'Innovation Session', icon: '/activity-icons/innovation-session.jpg', category: 'creative', points: 65, rarity: 'epic', duration: '60 min', difficulty: 4 },
-                      { id: 'conflict-resolution', title: 'Conflict Resolution', icon: '/activity-icons/conflict-resolution.jpg', category: 'communication', points: 75, rarity: 'epic', duration: '30 min', difficulty: 4 },
-                      { id: 'life-changing-decision', title: 'Life-Changing Decision', icon: '🌟', category: 'decision-making', points: 100, rarity: 'legendary', duration: '90 min', difficulty: 5 },
-                      { id: 'inspire-others', title: 'Inspire Others', icon: '✨', category: 'communication', points: 90, rarity: 'legendary', duration: '60 min', difficulty: 5 },
-                      { id: 'master-skill', title: 'Master New Skill', icon: '/activity-icons/learn.jpg', category: 'creative', points: 85, rarity: 'legendary', duration: '120 min', difficulty: 5 }
-                    ];
+                    // Database-first activity lookup - Enhanced ID matching for timeline rescheduling (same logic as above)
+                    const matchesActivityId2 = (storedActivity: any, targetId: string) => {
+                      if (!storedActivity) return false;
+                      const storedId = storedActivity.id || storedActivity.name?.toLowerCase().replace(/\s+/g, '-');
+                      return storedId === targetId || 
+                             storedId?.includes(targetId) || 
+                             targetId?.includes(storedId) ||
+                             storedActivity.title?.toLowerCase().replace(/\s+/g, '-') === targetId;
+                    };
                     
-                    const activity = ACTIVITY_TEMPLATES.find(a => a.id === activityId);
+                    // Database-first activity lookup - no more hardcoded templates
+                    let activity;
+                    const preferenceAppliedActivity2 = (window as any).currentDraggedActivity;
+                    const databaseActivities2 = (window as any).databaseActivities || [];
+                    
+                    console.log('🔍 TIMELINE SECOND LOCATION - Activity lookup:', {
+                      activityId,
+                      hasPreferenceApplied: !!preferenceAppliedActivity2,
+                      preferenceId: preferenceAppliedActivity2?.id,
+                      originalIdMatch: preferenceAppliedActivity2?.id === activityId,
+                      enhancedMatch: matchesActivityId2(preferenceAppliedActivity2, activityId),
+                      databaseActivitiesCount: databaseActivities2.length
+                    });
+                    
+                    if (preferenceAppliedActivity2 && matchesActivityId2(preferenceAppliedActivity2, activityId)) {
+                      console.log('✅ Using preference-applied activity data for:', activityId);
+                      activity = preferenceAppliedActivity2;
+                    } else {
+                      // Use processed database activities from grid
+                      console.log('🔄 Using database activities from grid:', activityId);
+                      const dbActivity = databaseActivities2.find((a: any) => a.id === activityId);
+                      if (dbActivity) {
+                        activity = {
+                          id: dbActivity.id,
+                          title: dbActivity.title,
+                          icon: dbActivity.icon, // Already processed with preferences
+                          category: dbActivity.category,
+                          points: dbActivity.points,
+                          rarity: dbActivity.rarity,
+                          duration: dbActivity.duration,
+                          difficulty: dbActivity.difficulty || 1
+                        };
+                      }
+                    }
+                    
+                    // Final fallback if database activities not available
+                    if (!activity) {
+                      activity = { id: activityId, title: 'Activity', icon: '⭐', category: 'custom', points: 25, rarity: 'common', duration: '15 min', difficulty: 1 };
+                    }
+                    
                     console.log('🔍 Looking for activity:', activityId, 'Found:', !!activity);
+                    
+                    // Debug logging for Read activity
+                    if (activityId.toLowerCase().includes('read')) {
+                      console.error('🎬 TIMELINE SECOND LOCATION - ACTIVITY DATA:', {
+                        activityId,
+                        hasPreferenceApplied: !!preferenceAppliedActivity,
+                        preferenceIcon: preferenceAppliedActivity?.icon,
+                        finalActivity: activity,
+                        finalIcon: activity?.icon,
+                        iconType: activity?.icon?.startsWith('/') || activity?.icon?.startsWith('data:') ? 'CUSTOM_IMAGE' : 'EMOJI_OR_FALLBACK'
+                      });
+                    }
+                    
                     if (activity) {
                       console.log('✅ Calling onActivityAdd with:', activity, timeSlot);
                       console.log('🎯 onActivityAdd function exists:', !!onActivityAdd);
@@ -660,6 +662,9 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                       setDraggedActivityId(null);
                       setIsDropTarget(false);
                       setDropIndicatorPosition(null);
+                      
+                      // Clear the stored drag data to prevent stale data issues
+                      (window as any).currentDraggedActivity = null;
                     } else {
                       console.log('❌ Activity not found in templates for ID:', activityId);
                     }
@@ -913,12 +918,8 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                 </div>
               ))}
 
-              {/* Activity Icons */}
-              {(() => {
-                const allActivities = [...activities, ...timelineActivities];
-                // Debug log removed - too much console noise
-                return allActivities;
-              })().map((activity, index) => {
+              {/* Activity Icons - Only show user-added timeline activities */}
+              {timelineActivities.map((activity, index) => {
                 // Handle both formats: "07:00" and "7:00a"
                 let hours, mins;
                 if (activity.time) {
@@ -968,6 +969,8 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                 // Use the appropriate icon and name
                 const activityIcon = activity.icon || '⭐';
                 const activityName = activity.name || activity.title || 'Activity';
+                
+                // Debug logging removed - drag and drop fix is working correctly
                 const isDroppedActivity = !!activity.scheduledTime;
                 
                 // Only make dropped activities (user-placed) draggable to edit zone
@@ -1004,6 +1007,33 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                       {/* Underline highlight for current activity */}
                       {isCurrent && (
                         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-blue-400 shadow-lg shadow-blue-400/50"></div>
+                      )}
+                      
+                      {/* Tactical Crosshair Target - Right-click menu indicator */}
+                      {isDroppedActivity && (
+                        <div 
+                          className="absolute -top-1 -right-1 w-4 h-4 bg-transparent flex items-center justify-center cursor-pointer group"
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            console.log('🎯 Right-click on activity:', activityName, 'at coordinates:', e.clientX, e.clientY);
+                            const menuData = {
+                              visible: true,
+                              x: e.clientX,
+                              y: e.clientY,
+                              activity: activity
+                            };
+                            console.log('🎯 Setting context menu:', menuData);
+                            setContextMenu(menuData);
+                          }}
+                          title="Right-click for actions"
+                        >
+                          <div className="text-red-500 text-xs font-bold leading-none hover:text-red-400 transition-colors">⊕</div>
+                          
+                          {/* Hover tooltip */}
+                          <div className="absolute left-6 top-0 bg-slate-800 text-white text-xs px-2 py-1 rounded border border-slate-600 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                            Right-click for menu
+                          </div>
+                        </div>
                       )}
                     </div>
                     
@@ -1071,6 +1101,33 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
                             {isCurrent && (
                               <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-blue-400 shadow-lg shadow-blue-400/50"></div>
                             )}
+                            
+                            {/* Tactical Crosshair Target - Right-click menu indicator */}
+                            {isDroppedActivity && (
+                              <div 
+                                className="absolute -top-1 -right-1 w-4 h-4 bg-transparent flex items-center justify-center cursor-pointer group"
+                                onContextMenu={(e) => {
+                                  e.preventDefault();
+                                  console.log('🎯 Right-click on activity:', activityName, 'at coordinates:', e.clientX, e.clientY);
+                                  const menuData = {
+                                    visible: true,
+                                    x: e.clientX,
+                                    y: e.clientY,
+                                    activity: activity
+                                  };
+                                  console.log('🎯 Setting context menu:', menuData);
+                                  setContextMenu(menuData);
+                                }}
+                                title="Right-click for actions"
+                              >
+                                <div className="text-red-500 text-xs font-bold leading-none hover:text-red-400 transition-colors">⊕</div>
+                                
+                                {/* Hover tooltip */}
+                                <div className="absolute left-6 top-0 bg-slate-800 text-white text-xs px-2 py-1 rounded border border-slate-600 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                                  Right-click for menu
+                                </div>
+                              </div>
+                            )}
                           </div>
                           
                           {/* Activity Name (below icon for dropped activities) */}
@@ -1096,6 +1153,50 @@ const GamelikeTimeline = ({ theme, onActivityAdd, isDndActive = false, timelineA
               );
             }}
           </Droppable>
+
+          {/* Context Menu - Portal to document body for proper rendering */}
+          {contextMenu?.visible && (
+            <div>
+              {console.log('🎯 Context menu should be visible at:', contextMenu.x, contextMenu.y)}
+              <div 
+                className="fixed bg-slate-800 border-2 border-red-500 rounded-lg shadow-xl min-w-40"
+                style={{ 
+                  left: `${contextMenu.x}px`, 
+                  top: `${contextMenu.y - 60}px`, // Position above cursor
+                  zIndex: 9999 // Ensure it's above everything
+                }}
+              >
+                <div className="py-1">
+                  <button
+                    className="w-full px-4 py-2 text-left text-sm text-blue-400 hover:bg-slate-700 hover:text-blue-300 transition-colors flex items-center gap-2"
+                    onClick={() => {
+                      console.log('🔄 Setting repeat for activity:', contextMenu.activity);
+                      if (onActivitySetRepeat) {
+                        onActivitySetRepeat(contextMenu.activity, { x: contextMenu.x, y: contextMenu.y });
+                      }
+                      setContextMenu(null);
+                    }}
+                  >
+                    <span className="text-blue-500">🔄</span>
+                    Set Repeat
+                  </button>
+                  <button
+                    className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-slate-700 hover:text-red-300 transition-colors flex items-center gap-2"
+                    onClick={() => {
+                      console.log('🗑️ Removing activity from timeline:', contextMenu.activity);
+                      if (onActivityRemove) {
+                        onActivityRemove(contextMenu.activity);
+                      }
+                      setContextMenu(null);
+                    }}
+                  >
+                    <span className="text-red-500">⊗</span>
+                    Remove from Timeline
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Timeline Zoom Control with NOW button */}
           <div className="mt-2">

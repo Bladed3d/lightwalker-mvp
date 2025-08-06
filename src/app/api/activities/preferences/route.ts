@@ -69,7 +69,8 @@ export async function GET(request: NextRequest) {
       whereClause.activityId = validatedQuery.activityId
     }
 
-    const preferences = await prisma.activityPreference.findMany({
+    // Get user/session preferences
+    const userPreferences = await prisma.activityPreference.findMany({
       where: whereClause,
       orderBy: [
         { lastUsedAt: 'desc' },
@@ -77,6 +78,24 @@ export async function GET(request: NextRequest) {
         { createdAt: 'desc' }
       ]
     })
+
+    // Also get system default activities (timeline emoji activities)
+    const systemDefaults = await prisma.activityPreference.findMany({
+      where: {
+        sessionId: 'system-default',
+        isActive: true
+      },
+      orderBy: [
+        { activityTitle: 'asc' }
+      ]
+    })
+
+    // Combine user preferences with system defaults
+    // User preferences override system defaults for same activityId
+    const userActivityIds = new Set(userPreferences.map(p => p.activityId))
+    const filteredSystemDefaults = systemDefaults.filter(def => !userActivityIds.has(def.activityId))
+    
+    const preferences = [...userPreferences, ...filteredSystemDefaults]
 
     return NextResponse.json({
       success: true,

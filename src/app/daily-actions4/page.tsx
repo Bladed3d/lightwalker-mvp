@@ -9,7 +9,8 @@ import {
   Calendar,
   Sparkles,
   Menu,
-  X
+  X,
+  Image as ImageIcon
 } from 'lucide-react';
 import { DragDropContext } from 'react-beautiful-dnd';
 
@@ -21,21 +22,58 @@ import AttributeContainer from '@/components/daily-actions4/AttributeContainer';
 import RoleModelInfluences from '@/components/daily-actions4/RoleModelInfluences';
 import QuickActions from '@/components/daily-actions4/QuickActions';
 import GamelikeTimeline from '@/components/daily-actions4/GamelikeTimeline';
-import TarkovInventoryGrid from '@/components/daily-actions4/TarkovInventoryGrid';
+import TarkovInventoryGrid, { ActivityTemplate } from '@/components/daily-actions4/TarkovInventoryGrid';
 import CurrentActivityPanel from '@/components/daily-actions4/CurrentActivityPanel';
 import UpNextPanel from '@/components/daily-actions4/UpNextPanel';
 import ActivityEditZone from '@/components/daily-actions4/ActivityEditZone';
 import DurationScreen from '@/components/daily-actions4/DurationScreen';
+import QuickActionsPanel from '@/components/daily-actions4/QuickActionsPanel';
+import InstructionsWindow from '@/components/daily-actions4/InstructionsWindow';
+import RepeatActivityModal from '@/components/daily-actions4/RepeatActivityModal';
+
+// Utilities
+import { getSessionId, getUserId } from '@/lib/session-utils';
 // import ActivityModal from '@/components/daily-actions4/ActivityModal';
 
 // Hooks and utilities
 import { useDailyActivities } from '@/hooks/useDailyActivities';
+
+// Helper function to snap time to 5-minute intervals
+function snapToFiveMinutes(timeString: string): string {
+  // Parse time string (e.g., "8:23a" or "3:47p")
+  const match = timeString.match(/^(\d+):(\d+)([ap])$/);
+  if (!match) return timeString; // Return original if can't parse
+  
+  let hours = parseInt(match[1]);
+  const minutes = parseInt(match[2]);
+  const period = match[3];
+  
+  // Convert to 24-hour format for calculation
+  if (period === 'p' && hours !== 12) hours += 12;
+  if (period === 'a' && hours === 12) hours = 0;
+  
+  // Calculate total minutes and snap to 5-minute intervals
+  const totalMinutes = hours * 60 + minutes;
+  const snappedMinutes = Math.round(totalMinutes / 5) * 5;
+  
+  // Convert back to hours and minutes
+  let snappedHours = Math.floor(snappedMinutes / 60) % 24;
+  const snappedMins = snappedMinutes % 60;
+  
+  // Convert back to 12-hour format
+  const newPeriod = snappedHours >= 12 ? 'p' : 'a';
+  if (snappedHours === 0) snappedHours = 12;
+  else if (snappedHours > 12) snappedHours -= 12;
+  
+  return `${snappedHours}:${snappedMins.toString().padStart(2, '0')}${newPeriod}`;
+}
 import { Activity, DailyUseUIState, ActivityPreference } from '@/types/daily-use';
 import { getTheme } from '@/lib/theme-config';
 import { 
   saveActivityPreference, 
   loadActivityPreferences, 
-  applyPreferencesToActivities 
+  applyPreferencesToActivities,
+  saveActivityImageAndGridPreference
 } from '@/lib/activity-preferences';
 
 export default function DailyActions2Page() {
@@ -67,7 +105,7 @@ export default function DailyActions2Page() {
     lightwalkerView: 'avatar'
   });
 
-  const [viewMode, setViewMode] = useState<'classic' | 'gamified'>('classic');
+  const [viewMode, setViewMode] = useState<'classic' | 'gamified'>('gamified');
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
@@ -75,11 +113,129 @@ export default function DailyActions2Page() {
   const [activityPreferences, setActivityPreferences] = useState<ActivityPreference[]>([]);
   const [preferencesLoading, setPreferencesLoading] = useState(true);
   
+  // Database Activities State - passed to timeline to avoid async calls in render
+  const [processedActivities, setProcessedActivities] = useState<ActivityTemplate[]>([]);
+  
+  // Timeline Activities State - must be declared before useEffect that references it
+  const [allTimelineActivities, setAllTimelineActivities] = useState<any[]>([]);
+  
+  // Repeat Activity Modal State
+  const [repeatModal, setRepeatModal] = useState<{
+    isVisible: boolean;
+    activity: any;
+    position: { x: number; y: number };
+  }>({
+    isVisible: false,
+    activity: null,
+    position: { x: 0, y: 0 }
+  });
+  
   // Fix React Strict Mode interference with drag and drop
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
+    console.log('🔧 Setting mounted to true');
     setMounted(true);
   }, []);
+
+  // Load timeline activities from database on mount
+  useEffect(() => {
+    async function loadTimelineActivities() {
+      try {
+        const sessionId = getSessionId();
+        const userId = getUserId();
+        
+        console.log('📊 Loading timeline activities from database');
+        
+        const response = await fetch(`/api/timeline-activities?sessionId=${sessionId}${userId ? `&userId=${userId}` : ''}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to load timeline activities');
+        }
+
+        const result = await response.json();
+        const activities = result.timelineActivities || [];
+        
+        console.log(`✅ Loaded ${activities.length} timeline activities from database`);
+        
+        // Apply activity preferences to timeline activities to get custom images
+        let processedActivities = activities;
+        if (activityPreferences.length > 0) {
+          processedActivities = activities.map(timelineActivity => {
+            // Find matching preference by activityId
+            const preference = activityPreferences.find(pref => pref.activityId === timelineActivity.activityId);
+            
+            if (preference && preference.customImageUrl) {
+              console.log('🎨 Applying custom image to timeline activity:', {
+                activityTitle: timelineActivity.title,
+                originalIcon: timelineActivity.icon,
+                customImage: preference.customImageUrl
+              });
+              
+              return {
+                ...timelineActivity,
+                icon: preference.customImageUrl // Use custom image instead of base icon
+              };
+            }
+            
+            return timelineActivity;
+          });
+          
+          console.log(`🎨 Applied preferences to ${processedActivities.filter(a => activityPreferences.find(p => p.activityId === a.activityId && p.customImageUrl)).length} timeline activities`);
+        }
+        
+        // Update both timeline state arrays
+        setTimelineActivities(processedActivities);
+        setAllTimelineActivities(processedActivities);
+        
+      } catch (error) {
+        console.error('❌ Error loading timeline activities:', error);
+        // Don't show alert on load failure, just continue with empty state
+      }
+    }
+
+    if (mounted) {
+      loadTimelineActivities();
+    }
+  }, [mounted]);
+
+  // Reprocess timeline activities when preferences change to apply custom images
+  useEffect(() => {
+    if (allTimelineActivities.length > 0 && activityPreferences.length > 0) {
+      console.log('🔄 Reprocessing timeline activities with updated preferences');
+      
+      let hasChanges = false;
+      const processedActivities = allTimelineActivities.map(timelineActivity => {
+        // Find matching preference by activityId
+        const preference = activityPreferences.find(pref => pref.activityId === timelineActivity.activityId);
+        
+        if (preference && preference.customImageUrl && timelineActivity.icon !== preference.customImageUrl) {
+          console.log('🎨 Applying custom image to timeline activity:', {
+            activityTitle: timelineActivity.title,
+            originalIcon: timelineActivity.icon,
+            customImage: preference.customImageUrl
+          });
+          
+          hasChanges = true;
+          return {
+            ...timelineActivity,
+            icon: preference.customImageUrl // Use custom image instead of base icon
+          };
+        }
+        
+        return timelineActivity;
+      });
+      
+      // Only update if there are actual changes to prevent infinite loops
+      if (hasChanges) {
+        const customizedCount = processedActivities.filter(a => 
+          activityPreferences.find(p => p.activityId === a.activityId && p.customImageUrl)
+        ).length;
+        
+        console.log(`🎨 Applied preferences to ${customizedCount} timeline activities`);
+        setTimelineActivities(processedActivities);
+      }
+    }
+  }, [activityPreferences, allTimelineActivities]);
 
   // Load activity preferences on mount
   useEffect(() => {
@@ -101,6 +257,29 @@ export default function DailyActions2Page() {
     }
   }, [mounted]);
 
+  // Listen for preference updates and reload them
+  useEffect(() => {
+    const handlePreferenceUpdate = async (event: any) => {
+      console.log('🔄 Preference update event received, reloading preferences...');
+      try {
+        const preferences = await loadActivityPreferences();
+        setActivityPreferences(preferences);
+        console.log(`📊 Reloaded ${preferences.length} activity preferences`);
+      } catch (error) {
+        console.error('❌ Error reloading activity preferences:', error);
+      }
+    };
+
+    // Listen for both events
+    window.addEventListener('activityImageUpdated', handlePreferenceUpdate);
+    window.addEventListener('gridLayoutChanged', handlePreferenceUpdate);
+    
+    return () => {
+      window.removeEventListener('activityImageUpdated', handlePreferenceUpdate);
+      window.removeEventListener('gridLayoutChanged', handlePreferenceUpdate);
+    };
+  }, []);
+
   // Apply preferences to activities when they change
   const activitiesWithPreferences = React.useMemo(() => {
     if (!schedule?.activities || preferencesLoading) {
@@ -115,11 +294,17 @@ export default function DailyActions2Page() {
   // Local state for dropped activities (grid and timeline)
   const [droppedActivities, setDroppedActivities] = useState<Activity[]>([]);
   const [timelineActivities, setTimelineActivities] = useState<Activity[]>([]);
-  const [allTimelineActivities, setAllTimelineActivities] = useState<any[]>([]);
+  const [preferenceAppliedActivities, setPreferenceAppliedActivities] = useState<any[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState<Date | null>(null);
   const [liveTime, setLiveTime] = useState(new Date());
   const [editingActivities, setEditingActivities] = useState<any[]>([]);
+  
+  // Quick Actions Panel State
+  const [showQuickActionsPanel, setShowQuickActionsPanel] = useState(false);
+  
+  // Instructions Window State
+  const [showInstructions, setShowInstructions] = useState(false);
   
   // Update live time for server status
   useEffect(() => {
@@ -192,8 +377,11 @@ export default function DailyActions2Page() {
       type: result.type
     });
     
+    // Debug alerts removed - drag and drop is working correctly
+    
     if (!result.destination) {
       console.log('❌ No destination - drag cancelled or dropped outside valid drop zone');
+      // Debug removed - drag and drop fix complete
       return;
     }
     
@@ -205,43 +393,72 @@ export default function DailyActions2Page() {
     
     // Check if dropped on timeline, grid, duration screen, or edit zone
     if (result.destination && (result.destination.droppableId === 'timeline-drop-zone' || result.destination.droppableId.startsWith('slot-') || result.destination.droppableId === 'activity-grid' || result.destination.droppableId === 'duration-screen-drop' || result.destination.droppableId === 'activity-edit-zone')) {
-      const activityId = result.draggableId;
+      let activityId = result.draggableId;
+      
+      // Handle timeline activity drags (strip timeline-activity- prefix)
+      const isTimelineDrag = activityId.startsWith('timeline-activity-');
+      if (isTimelineDrag) {
+        activityId = activityId.replace('timeline-activity-', '');
+        console.log('🔄 Timeline reschedule detected:', {
+          originalId: result.draggableId,
+          cleanedId: activityId,
+          from: result.source?.droppableId,
+          to: result.destination?.droppableId
+        });
+      }
       
       // CRITICAL FIX: Use the same preference application logic as TarkovInventoryGrid
       console.log('🔍 Looking for preference-applied activity:', activityId);
       
-      // Get base template activity
-      const ACTIVITY_TEMPLATES = [
-        { id: 'mindful-breathing', title: 'Mindful Breathing', icon: '/activity-icons/meditation.jpg', category: 'mindfulness', points: 15, rarity: 'common', duration: '5 min', difficulty: 1 },
-        { id: 'quick-walk', title: 'Quick Walk', icon: '/activity-icons/running.jpg', category: 'physical', points: 20, rarity: 'common', duration: '10 min', difficulty: 1 },
-        { id: 'hydrate', title: 'Hydrate', icon: '/activity-icons/hydrate.jpg', category: 'physical', points: 15, rarity: 'common', duration: '1 min', difficulty: 1 },
-        { id: 'posture-check', title: 'Posture Check', icon: '/activity-icons/posture-check.jpg', category: 'physical', points: 15, rarity: 'common', duration: '2 min', difficulty: 1 },
-        { id: 'strategic-planning', title: 'Strategic Planning', icon: '/activity-icons/strategic-planning.jpg', category: 'decision-making', points: 30, rarity: 'uncommon', duration: '15 min', difficulty: 2 },
-        { id: 'creative-thinking', title: 'Creative Thinking', icon: '/activity-icons/creative-thinking.jpg', category: 'creative', points: 25, rarity: 'uncommon', duration: '10 min', difficulty: 2 },
-        { id: 'gratitude-practice', title: 'Gratitude Practice', icon: '/activity-icons/gratitude.jpg', category: 'mindfulness', points: 30, rarity: 'uncommon', duration: '5 min', difficulty: 2 },
-        { id: 'skill-practice', title: 'Skill Practice', icon: '/activity-icons/skill-practice.jpg', category: 'creative', points: 35, rarity: 'uncommon', duration: '20 min', difficulty: 2 },
-        { id: 'empathy-practice', title: 'Empathy Practice', icon: '/activity-icons/empathy.jpg', category: 'communication', points: 45, rarity: 'rare', duration: '15 min', difficulty: 3 },
-        { id: 'deep-reflection', title: 'Deep Reflection', icon: '/activity-icons/deep-reflection.jpg', category: 'reflection', points: 50, rarity: 'rare', duration: '30 min', difficulty: 3 },
-        { id: 'problem-solving', title: 'Problem Solving', icon: '/activity-icons/problem-solving.jpg', category: 'decision-making', points: 40, rarity: 'rare', duration: '25 min', difficulty: 3 },
-        { id: 'mentoring', title: 'Mentoring Others', icon: '/activity-icons/mentoring.jpg', category: 'communication', points: 55, rarity: 'rare', duration: '30 min', difficulty: 3 },
-        { id: 'leadership-moment', title: 'Leadership Moment', icon: '/activity-icons/leadership-moment.jpg', category: 'communication', points: 70, rarity: 'epic', duration: '45 min', difficulty: 4 },
-        { id: 'innovation-session', title: 'Innovation Session', icon: '/activity-icons/innovation-session.jpg', category: 'creative', points: 65, rarity: 'epic', duration: '60 min', difficulty: 4 },
-        { id: 'conflict-resolution', title: 'Conflict Resolution', icon: '/activity-icons/conflict-resolution.jpg', category: 'communication', points: 75, rarity: 'epic', duration: '30 min', difficulty: 4 },
-        { id: 'life-changing-decision', title: 'Life-Changing Decision', icon: '/activity-icons/life-changing-decision.jpg', category: 'decision-making', points: 100, rarity: 'legendary', duration: '90 min', difficulty: 5 },
-        { id: 'inspire-others', title: 'Inspire Others', icon: '/activity-icons/inspire-others.jpg', category: 'communication', points: 90, rarity: 'legendary', duration: '60 min', difficulty: 5 },
-        { id: 'master-skill', title: 'Master New Skill', icon: '/activity-icons/learn.jpg', category: 'creative', points: 85, rarity: 'legendary', duration: '120 min', difficulty: 5 }
-      ];
+      // Database-first activity lookup - use processed activities from grid
+      console.log('🗄️ Using database-processed activities:', processedActivities.length);
       
-      const baseTemplate = ACTIVITY_TEMPLATES.find(t => t.id === activityId);
+      // First try to find in processed activities (includes custom images and preferences)
+      let baseTemplate = processedActivities.find(t => t.id === activityId);
+      
+      // Fallback to preference-applied activities (old data structure)
       if (!baseTemplate) {
-        console.log('❌ Base template not found:', activityId);
+        baseTemplate = preferenceAppliedActivities.find(t => t.id === activityId);
+      }
+      let isTimelineActivity = false;
+      
+      // If not found in templates, check if it's a timeline activity
+      if (!baseTemplate) {
+        console.log('🔍 Not found in templates, checking timeline activities:', activityId);
+        
+        // Check directly in timeline activities
+        const timelineActivity = allTimelineActivities.find((a: any) => {
+          const timelineId = a.id || a.name?.toLowerCase().replace(/\s+/g, '-');
+          return timelineId === activityId;
+        });
+        
+        if (timelineActivity) {
+          // Convert timeline activity to template format
+          baseTemplate = {
+            id: activityId,
+            title: timelineActivity.title || timelineActivity.name,
+            icon: timelineActivity.icon,
+            category: 'physical', // Default category, can be refined
+            points: timelineActivity.points || 20,
+            rarity: 'common' as const,
+            duration: timelineActivity.duration ? `${timelineActivity.duration} min` : '15 min',
+            difficulty: 2,
+            description: `${timelineActivity.title || timelineActivity.name} from timeline`
+          };
+          isTimelineActivity = true;
+          console.log('✅ Found and converted timeline activity:', baseTemplate.title);
+        }
+      }
+      
+      if (!baseTemplate) {
+        console.log('❌ Activity not found in templates or timeline activities:', activityId);
         return;
       }
       
-      // Apply preferences using the same logic as TarkovInventoryGrid
+      // Apply preferences - ALWAYS manually apply preferences to ensure custom images are used
       let activity = { ...baseTemplate };
       
-      // Check for saved preferences and apply them
+      // Always try to apply preferences manually first (this is the primary method)
       const preference = activityPreferences.find(p => p.activityId === activityId);
       if (preference) {
         console.log('✅ Found preference for activity:', activityId, preference);
@@ -250,14 +467,32 @@ export default function DailyActions2Page() {
           duration: preference.customDuration ?? activity.duration,
           points: preference.customPoints ?? activity.points,
           difficulty: preference.customDifficulty ?? activity.difficulty,
-          title: preference.customIcon ?? activity.title, // Note: customIcon is stored as title
+          icon: preference.customImageUrl ?? activity.icon, // Apply custom image if available
+          title: activity.title, // Keep original title
+          gridSize: preference.customGridSize ?? { w: 1, h: 1 },
+          originalDuration: activity.duration, // Store original for comparison
+          instructions: preference.instructions || activity.description || ''
         };
         console.log('🎨 Applied preferences to drag activity:', {
-          before: { duration: baseTemplate.duration, points: baseTemplate.points },
-          after: { duration: activity.duration, points: activity.points }
+          before: { duration: baseTemplate.duration, points: baseTemplate.points, icon: baseTemplate.icon },
+          after: { duration: activity.duration, points: activity.points, icon: activity.icon },
+          preferenceImageUrl: preference.customImageUrl,
+          hasCustomImage: activity.icon.startsWith('/') || activity.icon.startsWith('data:')
         });
       } else {
-        console.log('ℹ️ No preferences found for activity:', activityId, 'using template defaults');
+        // Fallback: check if already processed by TarkovInventoryGrid
+        const foundInPreferenceApplied = preferenceAppliedActivities.find(t => t.id === activityId);
+        if (foundInPreferenceApplied && foundInPreferenceApplied.icon !== baseTemplate.icon) {
+          // Use TarkovInventoryGrid processed version only if it has a different icon (custom image)
+          activity = { ...foundInPreferenceApplied };
+          console.log('✅ Using TarkovInventoryGrid processed activity (has custom image):', {
+            activityId,
+            icon: activity.icon,
+            iconType: activity.icon.startsWith('/') || activity.icon.startsWith('data:') ? 'custom-image' : 'emoji'
+          });
+        } else {
+          console.log('ℹ️ No preferences found for activity:', activityId, 'using template defaults');
+        }
       }
       
       console.log('✅ Final activity for drag operation:', {
@@ -265,8 +500,105 @@ export default function DailyActions2Page() {
         title: activity.title,
         duration: activity.duration,
         points: activity.points,
-        difficulty: activity.difficulty
+        difficulty: activity.difficulty,
+        icon: activity.icon,
+        iconType: activity.icon.startsWith('/') || activity.icon.startsWith('data:') ? 'custom-image' : 'emoji'
       });
+      
+      // CRITICAL FIX: Handle timeline-to-timeline rescheduling with proper state management
+      if (isTimelineDrag && result.destination.droppableId === 'timeline-drop-zone') {
+        console.log('🔄 Processing timeline reschedule for activity:', activityId);
+        
+        // Find the existing timeline activity being moved using multiple matching criteria
+        const existingActivity = allTimelineActivities.find(ta => {
+          const taId = ta.id || ta.name?.toLowerCase().replace(/\s+/g, '-');
+          const titleId = ta.title?.toLowerCase().replace(/\s+/g, '-');
+          
+          return taId === activityId || 
+                 titleId === activityId ||
+                 ta.title === activityId ||
+                 ta.name === activityId;
+        });
+        
+        if (existingActivity) {
+          console.log('✅ Found existing timeline activity for reschedule:', {
+            activity: existingActivity.title || existingActivity.name,
+            currentTime: existingActivity.scheduledTime,
+            id: existingActivity.id
+          });
+          
+          // ATOMIC OPERATION: Remove the existing activity immediately and store it for re-placement
+          setAllTimelineActivities(prev => {
+            const filtered = prev.filter(ta => {
+              // Enhanced matching - must match on BOTH id AND time to ensure exact removal
+              const isExactMatch = (ta.id === existingActivity.id && ta.scheduledTime === existingActivity.scheduledTime) ||
+                                 (ta === existingActivity) || // Reference equality
+                                 (ta.title === existingActivity.title && ta.scheduledTime === existingActivity.scheduledTime && ta.id === existingActivity.id);
+              
+              if (isExactMatch) {
+                console.log('🗑️ REMOVING activity for reschedule:', {
+                  title: ta.title || ta.name,
+                  time: ta.scheduledTime,
+                  id: ta.id
+                });
+              }
+              
+              return !isExactMatch;
+            });
+            
+            console.log('📊 Timeline activities after reschedule removal:', {
+              before: prev.length,
+              after: filtered.length,
+              removedCount: prev.length - filtered.length,
+              removedActivity: existingActivity.title || existingActivity.name
+            });
+            
+            return filtered;
+          });
+          
+          // Also remove from the main timelineActivities state to prevent duplication
+          setTimelineActivities(prev => {
+            const filtered = prev.filter(ta => {
+              const isExactMatch = (ta.id === existingActivity.id && ta.scheduledTime === existingActivity.scheduledTime) ||
+                                 (ta === existingActivity) ||
+                                 (ta.title === existingActivity.title && ta.scheduledTime === existingActivity.scheduledTime);
+              return !isExactMatch;
+            });
+            
+            if (filtered.length !== prev.length) {
+              console.log('📊 Also removed from timelineActivities state');
+            }
+            
+            return filtered;
+          });
+          
+          // Store the activity data for the timeline component to re-add at new position
+          (window as any).currentDraggedActivity = {
+            ...existingActivity,
+            // Mark this as a reschedule operation
+            isReschedule: true,
+            originalTime: existingActivity.scheduledTime
+          };
+          
+          console.log('🔄 Timeline reschedule prepared - activity removed, ready for re-placement');
+          
+          // CRITICAL: Return early to let timeline component handle the re-addition
+          // Do not process this as a regular drop
+          return;
+          
+        } else {
+          console.error('❌ Could not find timeline activity to reschedule:', {
+            activityId,
+            availableActivities: allTimelineActivities.map(ta => ({
+              id: ta.id,
+              title: ta.title || ta.name,
+              time: ta.scheduledTime
+            }))
+          });
+          return;
+        }
+      }
+      
       if (activity) {
         if (result.destination.droppableId === 'activity-grid') {
           // Dropped on the general grid (not a specific slot)
@@ -343,7 +675,15 @@ export default function DailyActions2Page() {
             rarity: activity.rarity
           };
           
-          console.log('✅ Grid activity created:', newActivity);
+          console.log('✅ Grid activity created for timeline:', {
+            id: newActivity.id,
+            title: newActivity.title,
+            icon: newActivity.icon,
+            iconType: newActivity.icon.startsWith('/') || newActivity.icon.startsWith('data:') ? 'custom-image' : 'emoji',
+            timeSlot: timeSlot
+          });
+          
+          // Debug logging removed - drag and drop fix working correctly
           
           // Add to local state
           setDroppedActivities(prev => [...prev, newActivity]);
@@ -351,15 +691,19 @@ export default function DailyActions2Page() {
           console.log('📝 Activity added to state for slot:', timeSlot);
           
         } else if (result.destination.droppableId === 'timeline-drop-zone') {
-          // Timeline component handles this via onActivityAdd - main handler ignores timeline drops
-          console.log('✅ Timeline drop detected - letting timeline component handle it');
+          // Pass the preference-applied activity to timeline component
+          console.log('✅ Timeline drop detected - passing preference-applied activity');
+          
+          // Store the preference-applied activity for timeline to use
+          (window as any).currentDraggedActivity = activity;
+          
           return; // Timeline component will handle this drop
         } else if (result.destination.droppableId === 'duration-screen-drop') {
           // Handle dropping activity to duration screen
           console.log('🔧 Activity dropped in duration screen:', result.draggableId);
           
           const activityId = result.draggableId;
-          const activity = ACTIVITY_TEMPLATES.find(a => a.id === activityId);
+          const activity = processedActivities.find(a => a.id === activityId);
           
           if (activity) {
             console.log('✅ Found library activity for duration screen:', activity);
@@ -376,7 +720,9 @@ export default function DailyActions2Page() {
                 icon: activity.icon,
                 category: activity.category,
                 difficulty: activity.difficulty, // Fix: Include difficulty field
-                originalDuration: activity.duration
+                originalDuration: activity.duration,
+                gridSize: activity.gridSize || { w: 1, h: 1 },
+                instructions: activity.instructions || activity.description || ''
               }
             }));
           } else {
@@ -408,7 +754,13 @@ export default function DailyActions2Page() {
               icon: activity.icon,
               category: activity.category,
               difficulty: activity.difficulty,
-              originalDuration: baseTemplate.duration // CRITICAL: Use original template duration for comparison
+              originalDuration: isTimelineActivity ? activity.duration : baseTemplate.duration, // Use timeline duration for timeline activities
+              gridSize: activity.gridSize || { w: 1, h: 1 },
+              instructions: activity.instructions || activity.description || '',
+              // Preserve repeat settings if this is a timeline activity
+              isRecurring: isTimelineActivity ? activity.isRecurring || false : false,
+              recurringPattern: isTimelineActivity ? activity.recurringPattern : undefined,
+              scheduledTime: isTimelineActivity ? (activity.time || activity.scheduledTime) : undefined
             }
           }));
           
@@ -421,6 +773,7 @@ export default function DailyActions2Page() {
 
   // Fix React Strict Mode - prevent rendering until mounted
   if (!mounted) {
+    console.log('🔄 Component not mounted yet, showing loading screen');
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
@@ -433,6 +786,8 @@ export default function DailyActions2Page() {
       </div>
     );
   }
+  
+  console.log('✅ Component mounted, checking other loading states');
 
   // Loading and error states
   if (loading) {
@@ -482,6 +837,15 @@ export default function DailyActions2Page() {
   }
 
   const theme = getTheme(viewMode);
+  
+  // Callback to receive processed activities from TarkovInventoryGrid
+  const handleActivitiesProcessed = (activities: ActivityTemplate[]) => {
+    console.log('📦 Received processed activities from grid:', activities.length);
+    setProcessedActivities(activities);
+    
+    // Store in window for timeline access (avoid async calls in render)
+    (window as any).databaseActivities = activities;
+  };
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
@@ -642,12 +1006,26 @@ export default function DailyActions2Page() {
               displayTime={selectedTime || currentTime}
               liveTime={liveTime}
               timelineActivities={allTimelineActivities}
+              onInstructionsToggle={() => setShowInstructions(!showInstructions)}
+              isInstructionsOpen={showInstructions}
             />
             <UpNextPanel 
               theme={theme}
               currentTime={liveTime}
               timelineActivities={allTimelineActivities}
             />
+            
+            {/* Manage Images Button - Right after Up Next */}
+            <div className="mt-3">
+              <button
+                onClick={() => setShowQuickActionsPanel(true)}
+                className="w-full flex items-center space-x-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 border-2 border-purple-500 rounded-lg transition-colors shadow-lg"
+              >
+                <ImageIcon className="w-5 h-5 text-white" />
+                <span className="text-sm font-bold text-white">Manage Images</span>
+              </button>
+            </div>
+            
             <QuickActions
               onAction={handleQuickAction}
               activePanel={uiState.quickActionPanel}
@@ -667,50 +1045,158 @@ export default function DailyActions2Page() {
             onDragEnd={handleDragEnd}
             onTimeChange={handleTimeChange}
             onActivitiesChange={handleActivitiesChange}
-            onActivityAdd={(activity, preciseTimeSlot) => {
+            onActivityAdd={async (activity, preciseTimeSlot) => {
               try {
-                console.log('🎯 onActivityAdd called with PRECISE time:', { activityId: activity.id, preciseTimeSlot });
+                // Apply 5-minute snap to the time slot
+                const snappedTimeSlot = snapToFiveMinutes(preciseTimeSlot);
+                console.log('🎯 onActivityAdd called:', { 
+                  activityId: activity.id, 
+                  preciseTimeSlot, 
+                  snappedTimeSlot,
+                  isReschedule: activity.isReschedule,
+                  originalTime: activity.originalTime 
+                });
                 
-                // Use the precise time slot from timeline
-                const timeSlot = preciseTimeSlot;
+                // Check if this is a reschedule operation
+                if (activity.isReschedule) {
+                  console.log('🔄 Processing timeline reschedule - updating database:', {
+                    activity: activity.title,
+                    from: activity.originalTime,
+                    to: snappedTimeSlot
+                  });
+                  
+                  // Update existing timeline activity in database
+                  const response = await fetch('/api/timeline-activities', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      id: activity.id,
+                      scheduledTime: snappedTimeSlot
+                    })
+                  });
+
+                  if (!response.ok) {
+                    throw new Error('Failed to update timeline activity');
+                  }
+
+                  const result = await response.json();
+                  const updatedActivity = result.timelineActivity;
+                  
+                  // Update local state
+                  setTimelineActivities(prev => prev.map(ta => 
+                    ta.id === activity.id ? updatedActivity : ta
+                  ));
+                  
+                  setAllTimelineActivities(prev => prev.map(ta => 
+                    ta.id === activity.id ? updatedActivity : ta
+                  ));
+                  
+                  console.log('✅ Timeline reschedule completed successfully');
+                  return;
+                }
                 
-                // Simple activity object
-                const newActivity = {
-                  id: `timeline-${Date.now()}`,
-                  title: activity.title,
-                  scheduledTime: timeSlot,
-                  icon: activity.icon,
-                  points: activity.points,
-                  category: activity.category,
-                  duration: activity.duration,
-                  difficulty: activity.difficulty,
-                  isCompleted: false,
-                  // Required fields for Activity type
-                  description: `${activity.title} scheduled via timeline`,
-                  roleModel: 'Custom',
-                  roleModelId: 'custom',
-                  attribute: 'Personal Growth',
-                  timeOfDay: 'anytime',
-                  method: 'Practice with intention',
-                  benefit: 'Builds character',
-                  successCriteria: 'Complete with focus',
-                  roleModelColor: '#6B73FF',
-                  roleModelArchetype: 'guide' as const
-                };
+                // Regular new activity creation - save to database
+                console.log('📝 Creating new timeline activity in database');
                 
-                console.log('✅ Created timeline activity');
+                const response = await fetch('/api/timeline-activities', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    activityId: activity.id,
+                    scheduledTime: snappedTimeSlot,
+                    scheduledDate: new Date().toISOString(),
+                    customDuration: activity.duration,
+                    customPoints: activity.points,
+                    sessionId: getSessionId(),
+                    userId: getUserId(),
+                    notes: null
+                  })
+                });
+
+                if (!response.ok) {
+                  throw new Error('Failed to create timeline activity');
+                }
+
+                const result = await response.json();
+                const newActivity = result.timelineActivity;
+                
+                console.log('✅ Timeline activity created in database:', newActivity.id);
+                
+                // Add to local state
                 setTimelineActivities(prev => {
                   const updated = [...prev, newActivity];
-                  console.log('📊 State update:', prev.length, '→', updated.length);
+                  console.log('📊 Added new activity to timelineActivities:', prev.length, '→', updated.length);
                   return updated;
                 });
-                console.log('✅ State update completed');
+                
+                setAllTimelineActivities(prev => {
+                  const updated = [...prev, newActivity];
+                  console.log('📊 Added new activity to allTimelineActivities:', prev.length, '→', updated.length);
+                  return updated;
+                });
+                
+                console.log('✅ New activity creation completed');
               } catch (error) {
                 console.error('❌ Error in onActivityAdd:', error);
+                alert('Failed to create timeline activity. Please try again.');
               }
+            }}
+            onActivityRemove={async (activity) => {
+              console.log('🗑️ onActivityRemove called:', activity);
+              
+              try {
+                // Delete from database
+                const response = await fetch(`/api/timeline-activities?id=${activity.id}`, {
+                  method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                  throw new Error('Failed to delete timeline activity');
+                }
+
+                console.log('✅ Timeline activity deleted from database:', activity.id);
+                
+                // Remove from local state
+                setTimelineActivities(prev => {
+                  const updated = prev.filter(ta => ta !== activity && ta.id !== activity.id);
+                  console.log('📊 Removed activity from timelineActivities:', prev.length, '→', updated.length);
+                  return updated;
+                });
+                
+                setAllTimelineActivities(prev => {
+                  const updated = prev.filter(ta => ta !== activity && ta.id !== activity.id);
+                  console.log('📊 Removed activity from allTimelineActivities:', prev.length, '→', updated.length);
+                  return updated;
+                });
+                
+                console.log('✅ Activity removal completed successfully');
+              } catch (error) {
+                console.error('❌ Error removing timeline activity:', error);
+                alert('Failed to remove timeline activity. Please try again.');
+              }
+            }}
+            onActivitySetRepeat={(activity, position) => {
+              console.log('🔄 onActivitySetRepeat called:', activity, 'at position:', position);
+              
+              // Show the focused repeat modal at click position
+              setRepeatModal({
+                isVisible: true,
+                activity: activity,
+                position: position
+              });
             }}
                 hideCurrentActivity={true}
               />
+            
+            {/* Instructions Window - between timeline and Activity Grid */}
+            <InstructionsWindow
+              theme={theme}
+              isVisible={showInstructions}
+              onClose={() => setShowInstructions(false)}
+              activity={getCurrentActivity()}
+              timelineActivities={allTimelineActivities}
+              displayTime={selectedTime || currentTime}
+            />
             
             {/* Activity Grid below timeline zoom controls */}
             <div className="mt-4">
@@ -718,6 +1204,33 @@ export default function DailyActions2Page() {
                 theme={theme}
                 onDragEnd={handleDragEnd}
                 activityPreferences={activityPreferences}
+                timelineActivities={allTimelineActivities}
+                onActivitiesProcessed={handleActivitiesProcessed}
+                onCreateNewActivity={() => {
+                  console.log('🆕 Create new activity clicked');
+                  // Open Duration Screen with a blank activity
+                  setUIState(prev => ({ ...prev, quickActionPanel: 'edit' }));
+                  
+                  // Create a blank activity template
+                  const blankActivity = {
+                    id: `new-activity-${Date.now()}`,
+                    title: 'New Activity',
+                    duration: '15 min',
+                    points: 25,
+                    icon: '⭐',
+                    category: 'custom',
+                    difficulty: 2,
+                    originalDuration: '15 min',
+                    instructions: '',
+                    gridSize: { w: 1, h: 1 },
+                    isRecurring: false
+                  };
+                  
+                  // Pass the blank activity to the DurationScreen
+                  window.dispatchEvent(new CustomEvent('activityDropped', {
+                    detail: blankActivity
+                  }));
+                }}
               />
               
               {/* Duration Screen - shows when Edit Activities panel is active */}
@@ -743,56 +1256,60 @@ export default function DailyActions2Page() {
                     
                     console.log('🔍 Final base activity ID:', baseActivityId);
                     
-                    // Find the original template activity from TarkovInventoryGrid
-                    const ACTIVITY_TEMPLATES = [
-                      { id: 'mindful-breathing', title: 'Mindful Breathing', icon: '/activity-icons/meditation.jpg', category: 'mindfulness', points: 15, rarity: 'common', duration: '5 min', difficulty: 1 },
-                      { id: 'quick-walk', title: 'Quick Walk', icon: '/activity-icons/running.jpg', category: 'physical', points: 20, rarity: 'common', duration: '10 min', difficulty: 1 },
-                      { id: 'hydrate', title: 'Hydrate', icon: '/activity-icons/hydrate.jpg', category: 'physical', points: 15, rarity: 'common', duration: '1 min', difficulty: 1 },
-                      { id: 'posture-check', title: 'Posture Check', icon: '/activity-icons/posture-check.jpg', category: 'physical', points: 15, rarity: 'common', duration: '2 min', difficulty: 1 },
-                      { id: 'strategic-planning', title: 'Strategic Planning', icon: '/activity-icons/strategic-planning.jpg', category: 'decision-making', points: 30, rarity: 'uncommon', duration: '15 min', difficulty: 2 },
-                      { id: 'creative-thinking', title: 'Creative Thinking', icon: '/activity-icons/creative-thinking.jpg', category: 'creative', points: 25, rarity: 'uncommon', duration: '10 min', difficulty: 2 },
-                      { id: 'gratitude-practice', title: 'Gratitude Practice', icon: '/activity-icons/gratitude.jpg', category: 'mindfulness', points: 30, rarity: 'uncommon', duration: '5 min', difficulty: 2 },
-                      { id: 'skill-practice', title: 'Skill Practice', icon: '/activity-icons/skill-practice.jpg', category: 'creative', points: 35, rarity: 'uncommon', duration: '20 min', difficulty: 2 },
-                      { id: 'empathy-practice', title: 'Empathy Practice', icon: '/activity-icons/empathy.jpg', category: 'communication', points: 45, rarity: 'rare', duration: '15 min', difficulty: 3 },
-                      { id: 'deep-reflection', title: 'Deep Reflection', icon: '/activity-icons/deep-reflection.jpg', category: 'reflection', points: 50, rarity: 'rare', duration: '30 min', difficulty: 3 },
-                      { id: 'problem-solving', title: 'Problem Solving', icon: '/activity-icons/problem-solving.jpg', category: 'decision-making', points: 40, rarity: 'rare', duration: '25 min', difficulty: 3 },
-                      { id: 'mentoring', title: 'Mentoring Others', icon: '/activity-icons/mentoring.jpg', category: 'communication', points: 55, rarity: 'rare', duration: '30 min', difficulty: 3 },
-                      { id: 'leadership-moment', title: 'Leadership Moment', icon: '/activity-icons/leadership-moment.jpg', category: 'communication', points: 70, rarity: 'epic', duration: '45 min', difficulty: 4 },
-                      { id: 'innovation-session', title: 'Innovation Session', icon: '/activity-icons/innovation-session.jpg', category: 'creative', points: 65, rarity: 'epic', duration: '60 min', difficulty: 4 },
-                      { id: 'conflict-resolution', title: 'Conflict Resolution', icon: '/activity-icons/conflict-resolution.jpg', category: 'communication', points: 75, rarity: 'epic', duration: '30 min', difficulty: 4 },
-                      { id: 'life-changing-decision', title: 'Life-Changing Decision', icon: '/activity-icons/life-changing-decision.jpg', category: 'decision-making', points: 100, rarity: 'legendary', duration: '90 min', difficulty: 5 },
-                      { id: 'inspire-others', title: 'Inspire Others', icon: '/activity-icons/inspire-others.jpg', category: 'communication', points: 90, rarity: 'legendary', duration: '60 min', difficulty: 5 },
-                      { id: 'master-skill', title: 'Master New Skill', icon: '/activity-icons/learn.jpg', category: 'creative', points: 85, rarity: 'legendary', duration: '120 min', difficulty: 5 }
-                    ];
+                    // Find the original database activity from processed activities
+                    console.log('🗄️ Using database-processed activities for duration screen:', processedActivities.length);
                     
-                    // Find original template or use schedule activity
-                    const templateActivity = ACTIVITY_TEMPLATES.find(t => t.id === baseActivityId);
+                    // Find original template, schedule activity, or timeline activity
+                    const templateActivity = processedActivities.find(t => t.id === baseActivityId);
                     const scheduleActivity = schedule?.activities.find(a => a.id === baseActivityId);
-                    const originalActivity = templateActivity || scheduleActivity;
+                    
+                    // Check timeline activities if not found in templates or schedule
+                    let timelineActivity = null;
+                    if (!templateActivity && !scheduleActivity) {
+                      timelineActivity = allTimelineActivities.find((a: any) => {
+                        const timelineId = a.id || a.name?.toLowerCase().replace(/\s+/g, '-');
+                        return timelineId === baseActivityId;
+                      });
+                      console.log('🔍 Checking timeline activities for ID:', baseActivityId, timelineActivity ? 'Found!' : 'Not found');
+                    }
+                    
+                    const originalActivity = templateActivity || scheduleActivity || timelineActivity;
                     
                     if (!originalActivity) {
                       console.error('❌ Could not find original activity for ID:', baseActivityId);
+                      console.log('Available timeline activities:', allTimelineActivities.map((a: any) => ({
+                        id: a.id,
+                        name: a.name,
+                        computedId: a.id || a.name?.toLowerCase().replace(/\s+/g, '-')
+                      })));
                       return;
                     }
                     
-                    console.log('📋 Original activity found:', originalActivity.title, 'Duration:', originalActivity.duration, 'Points:', originalActivity.points);
+                    console.log('📋 Original activity found:', originalActivity.title || originalActivity.name, 'Duration:', originalActivity.duration, 'Points:', originalActivity.points);
                     
                     // Create a proper Activity object for comparison
+                    // Handle both template activities and timeline activities (which may have different field names)
+                    const activityTitle = originalActivity.title || originalActivity.name;
+                    const activityDuration = originalActivity.duration || '15 min';
+                    const activityPoints = originalActivity.points || 20;
+                    const activityCategory = originalActivity.category || 'physical';
+                    const activityIcon = originalActivity.icon;
+                    
                     const baseActivity: Activity = {
                       id: baseActivityId,
-                      title: originalActivity.title,
-                      description: templateActivity?.description || `${originalActivity.title} activity`,
-                      roleModel: 'Template Activity',
-                      roleModelId: 'template',
+                      title: activityTitle,
+                      description: templateActivity?.description || timelineActivity?.description || `${activityTitle} activity`,
+                      roleModel: timelineActivity ? 'Timeline Activity' : 'Template Activity',
+                      roleModelId: timelineActivity ? 'timeline' : 'template',
                       attribute: 'Personal Growth',
-                      duration: originalActivity.duration,
-                      difficulty: originalActivity.difficulty || 3,
+                      duration: activityDuration,
+                      difficulty: originalActivity.difficulty || 2,
                       timeOfDay: 'anytime',
-                      category: originalActivity.category as Activity['category'],
+                      category: activityCategory as Activity['category'],
                       scheduledTime: '12:00p',
                       isCompleted: false,
-                      points: originalActivity.points,
-                      icon: originalActivity.icon,
+                      points: activityPoints,
+                      icon: activityIcon,
                       method: 'Practice with intention',
                       benefit: 'Builds character',
                       successCriteria: 'Complete with focus',
@@ -804,6 +1321,8 @@ export default function DailyActions2Page() {
                     const customizations: Partial<Activity> = {};
                     console.log('🔍 Comparing activity duration:', activity.duration, 'vs base:', baseActivity.duration);
                     console.log('🔍 Comparing activity points:', activity.points, 'vs base:', baseActivity.points);
+                    console.log('🔍 Activity has gridSize:', activity.gridSize);
+                    console.log('🔍 Base template gridSize:', originalActivity.gridSize);
                     
                     if (activity.duration !== baseActivity.duration) {
                       customizations.duration = activity.duration;
@@ -836,7 +1355,45 @@ export default function DailyActions2Page() {
                       console.log('🎨 Icon changed:', originalActivity.icon, '->', iconPreview);
                     }
                     
+                    // Check for grid size changes
+                    let hasGridSizeChange = false;
+                    if (activity.gridSize) {
+                      const originalGridSize = originalActivity.gridSize || { w: 1, h: 1 };
+                      if (activity.gridSize.w !== originalGridSize.w || activity.gridSize.h !== originalGridSize.h) {
+                        hasGridSizeChange = true;
+                        console.log('🔄 Grid size changed:', originalGridSize, '->', activity.gridSize);
+                      }
+                    }
+                    
                     console.log('📝 Customizations to save:', customizations);
+                    console.log('📐 Grid size change detected:', hasGridSizeChange);
+                    
+                    // Save grid size change using the image preference API
+                    if (hasGridSizeChange) {
+                      try {
+                        const result = await saveActivityImageAndGridPreference(
+                          baseActivityId,
+                          activity.title,
+                          activity.icon || originalActivity.icon, // Keep existing image
+                          activity.gridSize,
+                          'upload', // Keep as upload source
+                          undefined,
+                          {
+                            gridSizeUpdate: true,
+                            previousGridSize: originalActivity.gridSize || { w: 1, h: 1 },
+                            newGridSize: activity.gridSize
+                          }
+                        );
+                        
+                        if (result.success) {
+                          console.log('✅ Grid size preference saved successfully');
+                        } else {
+                          console.error('❌ Failed to save grid size preference:', result.error);
+                        }
+                      } catch (error) {
+                        console.error('❌ Error saving grid size preference:', error);
+                      }
+                    }
                     
                     // Only save if there are actual customizations
                     if (Object.keys(customizations).length > 0) {
@@ -865,38 +1422,64 @@ export default function DailyActions2Page() {
                     console.error('❌ Error saving activity preference:', error);
                   }
                 }}
-                onActivityPlace={(activity, timePosition) => {
+                onActivityPlace={async (activity, timePosition) => {
                   console.log('📅 Placing activity on timeline:', { activity, timePosition });
                   
-                  // Convert edited activity to timeline format
-                  const timelineActivity = {
-                    id: `timeline-${Date.now()}`,
-                    title: activity.title,
-                    scheduledTime: timePosition,
-                    icon: activity.icon,
-                    points: activity.points,
-                    category: activity.category,
-                    duration: activity.duration,
-                    difficulty: 2,
-                    isCompleted: false,
-                    // Required fields for Activity type
-                    description: `${activity.title} - Customized settings`,
-                    roleModel: 'Custom',
-                    roleModelId: 'custom',
-                    attribute: 'Personal Growth',
-                    timeOfDay: 'anytime',
-                    method: 'Practice with intention',
-                    benefit: 'Builds character',
-                    successCriteria: 'Complete with focus',
-                    roleModelColor: '#6B73FF',
-                    roleModelArchetype: 'guide' as const
-                  };
-                  
-                  // Add to timeline
-                  setTimelineActivities(prev => [...prev, timelineActivity]);
-                  
-                  // Close edit panel
-                  setUIState(prev => ({ ...prev, quickActionPanel: 'hidden' }));
+                  try {
+                    // Extract base activity ID
+                    let baseActivityId = activity.id;
+                    if (activity.id.startsWith('edit-') && activity.id.includes('-')) {
+                      const parts = activity.id.split('-');
+                      if (parts.length >= 3) {
+                        baseActivityId = parts.slice(2).join('-');
+                      }
+                    }
+                    
+                    // Create timeline activity in database with repeat settings
+                    const response = await fetch('/api/timeline-activities', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        activityId: baseActivityId,
+                        scheduledTime: timePosition,
+                        scheduledDate: new Date().toISOString(),
+                        customDuration: activity.duration,
+                        customPoints: activity.points,
+                        sessionId: getSessionId(),
+                        userId: getUserId(),
+                        notes: null,
+                        // Include repeat settings from Duration Screen
+                        isRecurring: activity.isRecurring || false,
+                        recurringPattern: activity.recurringPattern || null
+                      })
+                    });
+
+                    if (!response.ok) {
+                      throw new Error('Failed to create timeline activity');
+                    }
+
+                    const result = await response.json();
+                    const newActivity = result.timelineActivity;
+                    
+                    console.log('✅ Timeline activity created in database with repeat settings:', {
+                      id: newActivity.id,
+                      title: newActivity.title,
+                      time: newActivity.scheduledTime,
+                      isRecurring: newActivity.isRecurring,
+                      recurringPattern: newActivity.recurringPattern
+                    });
+                    
+                    // Add to local state
+                    setTimelineActivities(prev => [...prev, newActivity]);
+                    setAllTimelineActivities(prev => [...prev, newActivity]);
+                    
+                    // Close edit panel
+                    setUIState(prev => ({ ...prev, quickActionPanel: 'hidden' }));
+                    
+                  } catch (error) {
+                    console.error('❌ Error placing activity on timeline:', error);
+                    alert('Failed to place activity on timeline. Please try again.');
+                  }
                 }}
                 onBack={() => {
                   // Close edit panel
@@ -1106,6 +1689,74 @@ export default function DailyActions2Page() {
           </div>
         </div>
       )}
+
+      {/* Quick Actions Panel */}
+      <QuickActionsPanel
+        theme={theme}
+        isVisible={showQuickActionsPanel}
+        onClose={() => setShowQuickActionsPanel(false)}
+        activityTemplates={processedActivities}
+        activityPreferences={activityPreferences}
+        timelineActivities={allTimelineActivities}
+      />
+
+      {/* Repeat Activity Modal */}
+      <RepeatActivityModal
+        theme={theme}
+        isVisible={repeatModal.isVisible}
+        activity={repeatModal.activity}
+        position={repeatModal.position}
+        onSave={async (activity, repeatConfig) => {
+          console.log('💾 Saving repeat config to database:', activity, repeatConfig);
+          
+          try {
+            // Update timeline activity in database
+            const response = await fetch('/api/timeline-activities', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                id: activity.id,
+                customDuration: repeatConfig.duration,
+                isRecurring: repeatConfig.isRecurring,
+                recurringPattern: repeatConfig.recurringPattern
+              })
+            });
+
+            if (!response.ok) {
+              throw new Error('Failed to update timeline activity');
+            }
+
+            const result = await response.json();
+            console.log('✅ Timeline activity updated in database:', result);
+
+            // Update local state to reflect database changes
+            const updatedActivity = result.timelineActivity;
+            
+            setTimelineActivities(prev => prev.map(ta => 
+              ta.id === activity.id ? updatedActivity : ta
+            ));
+            
+            setAllTimelineActivities(prev => prev.map(ta => 
+              ta.id === activity.id ? updatedActivity : ta
+            ));
+            
+            // Close modal
+            setRepeatModal({ isVisible: false, activity: null, position: { x: 0, y: 0 } });
+            
+            console.log('✅ Repeat configuration saved to database successfully');
+            
+          } catch (error) {
+            console.error('❌ Error saving repeat config:', error);
+            alert('Failed to save repeat configuration. Please try again.');
+          }
+        }}
+        onCancel={() => {
+          console.log('❌ Repeat configuration cancelled');
+          setRepeatModal({ isVisible: false, activity: null, position: { x: 0, y: 0 } });
+        }}
+      />
       </div>
     </DragDropContext>
   );

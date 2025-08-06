@@ -265,17 +265,37 @@ export async function saveActivityImageAndGridPreference(
 
     const result: ActivityPreferencesApiResponse = await response.json()
     
-    if (!result.success) {
-      console.error('Failed to save activity image and grid preference:', result.error)
+    if (result.success) {
+      console.log('✅ Activity image and grid preference saved successfully!');
+      
+      // Trigger grid reorganization event
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('gridLayoutChanged', {
+          detail: { 
+            activityId, 
+            newGridSize: gridSize,
+            imageUrl,
+            timestamp: Date.now() 
+          }
+        }));
+      }
+      
+      return { 
+        success: true, 
+        data: result.data, 
+        message: `Custom image and ${gridSize.w}×${gridSize.h} grid saved! 🎨📐` 
+      };
+    } else {
+      console.error('❌ Failed to save activity image and grid preference:', result.error);
+      return result;
     }
-    
-    return result
   } catch (error) {
-    console.error('Error saving activity image and grid preference:', error)
-    return {
-      success: false,
-      error: 'Network error while saving image and grid preference'
-    }
+    console.error('❌ Error in saveActivityImageAndGridPreference:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
+      message: 'Failed to save activity image and grid preference' 
+    };
   }
 }
 

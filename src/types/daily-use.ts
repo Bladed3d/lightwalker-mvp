@@ -35,6 +35,21 @@ export interface Activity {
   // Gamification
   streakBonus?: number;
   perfectDayBonus?: number;
+  
+  // Recurring schedule
+  isRecurring?: boolean;
+  recurringPattern?: RecurringPattern;
+}
+
+export interface RecurringPattern {
+  type: 'daily' | 'weekly' | 'monthly' | 'custom';
+  interval?: number; // Every N days/weeks/months
+  daysOfWeek?: number[]; // 0=Sunday, 1=Monday, etc. For weekly patterns
+  daysOfMonth?: number[]; // 1-31, for monthly patterns
+  endDate?: string; // YYYY-MM-DD, when to stop recurring
+  maxOccurrences?: number; // Maximum number of times to repeat
+  skipHolidays?: boolean;
+  customDates?: string[]; // YYYY-MM-DD for custom patterns
 }
 
 export interface DailySchedule {
