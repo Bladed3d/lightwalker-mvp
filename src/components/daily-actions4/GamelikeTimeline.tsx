@@ -33,6 +33,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
   const [selectedTime, setSelectedTime] = useState<Date | null>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  
   const [dragStartX, setDragStartX] = useState(0);
   const [dragStartTime, setDragStartTime] = useState<Date | null>(null);
   const [zoomLevel, setZoomLevel] = useState(4); // 1-8 zoom levels (pixels per minute)
@@ -40,6 +41,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
   const [dropIndicatorPosition, setDropIndicatorPosition] = useState<number | null>(null);
   const [draggedActivityId, setDraggedActivityId] = useState<string | null>(null);
   const [lastProcessedDrop, setLastProcessedDrop] = useState<string | null>(null);
+  const [lastZoomOffset, setLastZoomOffset] = useState<number | null>(null);
   
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{
@@ -111,7 +113,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
     // Only reset if user hasn't manually positioned the timeline
     if (!selectedTime && !isPaused) {
       setScrollOffset(0);
-      console.log('🔄 Timeline reset due to zoom change:', zoomLevel + 'x');
+      setLastZoomOffset(0);
     } else if (selectedTime) {
       // Recalculate scroll offset to keep the selected time centered at new zoom level
       const selectedMinutes = selectedTime.getHours() * 60 + selectedTime.getMinutes();
@@ -120,22 +122,22 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
       
       // Calculate the scroll offset needed to center the selected time at the new zoom level
       const newScrollOffset = -(minutesDifference * pixelsPerMinute);
-      setScrollOffset(newScrollOffset);
       
-      console.log('🔒 Adjusting position for zoom change:', {
-        zoomLevel: zoomLevel + 'x',
-        selectedTime: selectedTime.toLocaleTimeString(),
-        minutesDifference,
-        newScrollOffset
-      });
+      // Prevent infinite loop by checking if offset actually changed
+      if (lastZoomOffset !== newScrollOffset) {
+        setScrollOffset(newScrollOffset);
+        setLastZoomOffset(newScrollOffset);
+      }
     } else if (isPaused) {
       // If timeline is paused but no specific selectedTime, maintain current view by using currentTime
       const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
       // Keep the current time centered by maintaining zero offset relative to current time
-      setScrollOffset(0);
-      console.log('🔒 Maintaining paused position at zoom change:', zoomLevel + 'x');
+      if (lastZoomOffset !== 0) {
+        setScrollOffset(0);
+        setLastZoomOffset(0);
+      }
     }
-  }, [zoomLevel, pixelsPerMinute, selectedTime, isPaused]);
+  }, [zoomLevel, pixelsPerMinute, selectedTime, isPaused, lastZoomOffset]);
 
   // Prevent text selection while dragging
   useEffect(() => {
@@ -159,6 +161,68 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
     };
   }, [isDragging]);
 
+  // Robust drag state coordination with React Beautiful DND
+  useEffect(() => {
+    if (isDndActive && isDragging) {
+      handleDragEnd(); // Use the proper cleanup function
+    }
+  }, [isDndActive, isDragging]);
+
+  // Monitor React Beautiful DND completion and force cleanup if timeline drag state persists
+  useEffect(() => {
+    // Detect React Beautiful DND completion by monitoring DOM state changes
+    const checkDndCompletion = () => {
+      const isDndDragging = document.querySelector('[data-rbd-dragging]');
+      const isDndDropAnimating = document.querySelector('[data-rbd-drop-animation]');
+      
+      // If no DND elements are active but timeline is still dragging, force cleanup
+      if (!isDndDragging && !isDndDropAnimating && isDragging && !isDndActive) {
+        handleDragEnd();
+      }
+    };
+    
+    // Check immediately and after a short delay
+    const timeoutId = setTimeout(checkDndCompletion, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, [timelineActivities.length]); // Trigger when timeline activities change (drop occurred)
+
+  // Enhanced global event listener for robust cleanup
+  useEffect(() => {
+    const forceCleanupDragState = () => {
+      if (isDragging) {
+        const dragMetadata = (window as any).timelineDragMetadata;
+        const isDndActive = document.querySelector('[data-rbd-dragging], [data-rbd-drop-animation]');
+        
+        // If React Beautiful DND is active or drag has been going too long, force cleanup
+        if (isDndActive || (dragMetadata && Date.now() - dragMetadata.startTime > 2000)) {
+            handleDragEnd();
+        }
+      }
+    };
+
+    // Listen for multiple events that can indicate React Beautiful DND completion
+    document.addEventListener('mouseup', forceCleanupDragState);
+    document.addEventListener('touchend', forceCleanupDragState);
+    document.addEventListener('dragend', forceCleanupDragState);
+    
+    // Safety interval to catch any missed cleanup
+    const intervalId = setInterval(() => {
+      if (isDragging) {
+        const dragMetadata = (window as any).timelineDragMetadata;
+        if (dragMetadata && Date.now() - dragMetadata.startTime > 3000) {
+          handleDragEnd();
+        }
+      }
+    }, 1000);
+
+    return () => {
+      document.removeEventListener('mouseup', forceCleanupDragState);
+      document.removeEventListener('touchend', forceCleanupDragState);
+      document.removeEventListener('dragend', forceCleanupDragState);
+      clearInterval(intervalId);
+    };
+  }, [isDragging]);
 
   // FIXED TIMELINE POSITION - ensures proper centering at all zoom levels
   const getTimelinePosition = () => {
@@ -199,18 +263,49 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
     return closestActivity;
   };
 
-  // Drag handlers
+  // Enhanced drag start with React Beautiful DND coordination
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    // Enhanced DND detection - check for draggable elements
+    const target = e.target as HTMLElement;
+    const isDraggableElement = target.closest('[data-rbd-draggable-context-id], [data-rbd-draggable-id]');
+    
+    // Don't start timeline drag if React Beautiful DND is active OR if clicking on draggable elements
+    if (isDndActive || isDraggableElement) {
+      return;
+    }
+    
     e.preventDefault();
+    
+    // Set drag state with safety timestamp for cleanup
+    const dragStartTime = Date.now();
     setIsDragging(true);
+    setDragStartTime(new Date(dragStartTime));
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    // WORKING DRAG START (from working code)
     setDragStartX(clientX - scrollOffset);
     setIsPaused(true);
+    
+    // Store drag metadata for cleanup logic
+    (window as any).timelineDragMetadata = {
+      startTime: dragStartTime,
+      startX: clientX,
+      initialOffset: scrollOffset
+    };
   };
 
   const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDragging) return;
+    // Enhanced validation for drag move
+    if (!isDragging || isDndActive) return;
+    
+    // Additional safety check - if React Beautiful DND started, abort immediately
+    const dragMetadata = (window as any).timelineDragMetadata;
+    if (dragMetadata && Date.now() - dragMetadata.startTime > 100) {
+      // If drag has been going for >100ms and React Beautiful DND might be interfering
+      const isDndInterference = document.querySelector('[data-rbd-dragging]');
+      if (isDndInterference) {
+        handleDragEnd();
+        return;
+      }
+    }
     
     e.preventDefault();
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
@@ -244,6 +339,16 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
 
   const handleDragEnd = () => {
     setIsDragging(false);
+    
+    // Clear drag metadata
+    delete (window as any).timelineDragMetadata;
+    
+    // Additional safety: ensure no lingering drag state
+    setTimeout(() => {
+      if (isDragging) {
+        setIsDragging(false);
+      }
+    }, 50);
   };
 
   // Activity drop handlers
@@ -251,11 +356,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('🔄 Timeline dragOver:', {
-      isDragging,
-      dataTypes: Array.from(e.dataTransfer.types),
-      hasData: e.dataTransfer.types.includes('application/json')
-    });
     
     if (!isDragging && e.dataTransfer.types.includes('application/json')) { 
       // Only allow drops when not dragging timeline and we have activity data
@@ -274,17 +374,12 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('➡️ Timeline dragEnter:', {
-      isDragging,
-      dataTypes: Array.from(e.dataTransfer.types)
-    });
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('⬅️ Timeline dragLeave');
     
     // Only hide drop indicator if we're leaving the timeline container entirely
     if (containerRef.current && !containerRef.current.contains(e.relatedTarget as Node)) {
@@ -376,12 +471,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
           {/* Timeline Container with React Beautiful DND Drop Zone */}
           <Droppable droppableId="timeline-drop-zone" type="ACTIVITY">
             {(provided, snapshot) => {
-              // Only log when dragging state changes (reduced logging)
-              if (snapshot.isDraggingOver && !isDropTarget) {
-                console.log('✅ Timeline: DRAG START', snapshot.draggingOverWith);
-              } else if (!snapshot.isDraggingOver && isDropTarget) {
-                console.log('🏁 Timeline: DRAG END');
-              }
               
               // Clear drop indicators when drag ends
               useEffect(() => {
@@ -391,7 +480,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                     setIsDropTarget(false);
                     setDropIndicatorPosition(null);
                     setDraggedActivityId(null);
-                    console.log('🧹 Cleared drop indicators after drag end');
                   }, 100);
                 }
               }, [snapshot.isDraggingOver]);
@@ -401,7 +489,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                 const activityId = result.draggableId || draggedActivityId;
                 
                 if (result.destination?.droppableId === 'timeline-drop-zone' && onActivityAdd && isDropTarget && dropIndicatorPosition !== null && activityId) {
-                  console.log('🎯 Processing precise drop at position:', dropIndicatorPosition);
                   
                   // Calculate the exact time for the drop position (same logic as drop indicator)
                   if (containerRef.current) {
@@ -433,7 +520,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                     }
                     
                     const preciseTimeSlot = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-                    console.log('⏱️ Precise drop time calculated:', preciseTimeSlot);
                     
                     // Database-first activity lookup - Enhanced ID matching for timeline rescheduling
                     const matchesActivityId = (storedActivity: any, targetId: string) => {
@@ -450,21 +536,11 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                     const preferenceAppliedActivity = (window as any).currentDraggedActivity;
                     const databaseActivities = (window as any).databaseActivities || [];
                     
-                    console.log('🔍 TIMELINE FIRST LOCATION - Activity lookup:', {
-                      activityId,
-                      hasPreferenceApplied: !!preferenceAppliedActivity,
-                      preferenceId: preferenceAppliedActivity?.id,
-                      originalIdMatch: preferenceAppliedActivity?.id === activityId,
-                      enhancedMatch: matchesActivityId(preferenceAppliedActivity, activityId),
-                      databaseActivitiesCount: databaseActivities.length
-                    });
                     
                     if (preferenceAppliedActivity && matchesActivityId(preferenceAppliedActivity, activityId)) {
-                      console.log('✅ Using preference-applied activity data for:', activityId);
                       activityData = preferenceAppliedActivity;
                     } else {
                       // Use processed database activities from grid
-                      console.log('🔄 Using database activities from grid:', activityId);
                       const dbActivity = databaseActivities.find((a: any) => a.id === activityId);
                       if (dbActivity) {
                         activityData = {
@@ -484,17 +560,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                       activityData = { id: activityId, title: 'Activity', icon: '⭐', category: 'custom', points: 25, rarity: 'common', duration: '15 min' };
                     }
                     
-                    // Debug logging for Read activity
-                    if (activityId.toLowerCase().includes('read')) {
-                      console.error('🎬 TIMELINE USING ACTIVITY DATA:', {
-                        activityId,
-                        hasPreferenceApplied: !!preferenceAppliedActivity,
-                        preferenceIcon: preferenceAppliedActivity?.icon,
-                        finalActivityData: activityData,
-                        finalIcon: activityData.icon,
-                        iconType: activityData.icon?.startsWith('/') || activityData.icon?.startsWith('data:') ? 'CUSTOM_IMAGE' : 'EMOJI_OR_FALLBACK'
-                      });
-                    }
                     
                     // Call onActivityAdd with full activity data and precise time
                     onActivityAdd(activityData, preciseTimeSlot);
@@ -521,31 +586,18 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                 }
               }, [snapshot.isDraggingOver, onDragEnd, draggedActivityId, isDropTarget]);
               
-              // Original detailed function kept for reference
+              // Legacy detailed function - kept as backup (logging removed for production)
               const handleReactDNDDropDetailed = (result: any) => {
                 const activityId = result.draggableId || draggedActivityId;
                 const dropKey = `${activityId}-${Math.round(dropIndicatorPosition || 0)}`;
                 
                 // Prevent duplicate processing
                 if (lastProcessedDrop === dropKey) {
-                  console.log('🚫 Skipping duplicate drop processing for:', dropKey);
                   return;
                 }
                 
-                console.log('🎯 Timeline React DND drop attempt:', {
-                  hasDestination: !!result.destination,
-                  droppableId: result.destination?.droppableId,
-                  hasOnActivityAdd: !!onActivityAdd,
-                  isDropTarget,
-                  dropIndicatorPosition,
-                  activityId,
-                  draggedActivityId,
-                  dropKey
-                });
-                
                 if (result.destination?.droppableId === 'timeline-drop-zone' && onActivityAdd && isDropTarget && dropIndicatorPosition !== null && activityId) {
                   setLastProcessedDrop(dropKey);
-                  console.log('🎯 Timeline React DND drop with position:', dropIndicatorPosition);
                   
                   // Calculate the exact time for the drop position
                   if (containerRef.current) {
@@ -557,15 +609,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                     const timelinePos = getTimelinePosition();
                     const absolutePixelPosition = dropIndicatorPosition - timelinePos;
                     const targetMinutes = absolutePixelPosition / pixelsPerMinute;
-                    
-                    console.log('🔍 DROP POSITION DEBUG:', {
-                      dropIndicatorPosition,
-                      centerX,
-                      timelinePos,
-                      absolutePixelPosition,
-                      targetMinutes,
-                      pixelsPerMinute
-                    });
                     
                     // Normalize to 24-hour format
                     let normalizedMinutes = targetMinutes;
@@ -587,9 +630,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                                     hours === 12 ? `12:${mins.toString().padStart(2, '0')}p` : 
                                     `${hours-12}:${mins.toString().padStart(2, '0')}p`;
                     
-                    console.log('🕐 Timeline calculated drop time:', timeSlot);
-                    
-                    // Database-first activity lookup - Enhanced ID matching for timeline rescheduling (same logic as above)
+                    // Database-first activity lookup - Enhanced ID matching for timeline rescheduling
                     const matchesActivityId2 = (storedActivity: any, targetId: string) => {
                       if (!storedActivity) return false;
                       const storedId = storedActivity.id || storedActivity.name?.toLowerCase().replace(/\s+/g, '-');
@@ -599,26 +640,15 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                              storedActivity.title?.toLowerCase().replace(/\s+/g, '-') === targetId;
                     };
                     
-                    // Database-first activity lookup - no more hardcoded templates
+                    // Database-first activity lookup
                     let activity;
                     const preferenceAppliedActivity2 = (window as any).currentDraggedActivity;
                     const databaseActivities2 = (window as any).databaseActivities || [];
                     
-                    console.log('🔍 TIMELINE SECOND LOCATION - Activity lookup:', {
-                      activityId,
-                      hasPreferenceApplied: !!preferenceAppliedActivity2,
-                      preferenceId: preferenceAppliedActivity2?.id,
-                      originalIdMatch: preferenceAppliedActivity2?.id === activityId,
-                      enhancedMatch: matchesActivityId2(preferenceAppliedActivity2, activityId),
-                      databaseActivitiesCount: databaseActivities2.length
-                    });
-                    
                     if (preferenceAppliedActivity2 && matchesActivityId2(preferenceAppliedActivity2, activityId)) {
-                      console.log('✅ Using preference-applied activity data for:', activityId);
                       activity = preferenceAppliedActivity2;
                     } else {
                       // Use processed database activities from grid
-                      console.log('🔄 Using database activities from grid:', activityId);
                       const dbActivity = databaseActivities2.find((a: any) => a.id === activityId);
                       if (dbActivity) {
                         activity = {
@@ -639,34 +669,16 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                       activity = { id: activityId, title: 'Activity', icon: '⭐', category: 'custom', points: 25, rarity: 'common', duration: '15 min', difficulty: 1 };
                     }
                     
-                    console.log('🔍 Looking for activity:', activityId, 'Found:', !!activity);
-                    
-                    // Debug logging for Read activity
-                    if (activityId.toLowerCase().includes('read')) {
-                      console.error('🎬 TIMELINE SECOND LOCATION - ACTIVITY DATA:', {
-                        activityId,
-                        hasPreferenceApplied: !!preferenceAppliedActivity,
-                        preferenceIcon: preferenceAppliedActivity?.icon,
-                        finalActivity: activity,
-                        finalIcon: activity?.icon,
-                        iconType: activity?.icon?.startsWith('/') || activity?.icon?.startsWith('data:') ? 'CUSTOM_IMAGE' : 'EMOJI_OR_FALLBACK'
-                      });
-                    }
-                    
                     if (activity) {
-                      console.log('✅ Calling onActivityAdd with:', activity, timeSlot);
-                      console.log('🎯 onActivityAdd function exists:', !!onActivityAdd);
                       onActivityAdd(activity, timeSlot);
                       
-                      // Clear all drop-related states to prevent polling
+                      // Clear all drop-related states
                       setDraggedActivityId(null);
                       setIsDropTarget(false);
                       setDropIndicatorPosition(null);
                       
-                      // Clear the stored drag data to prevent stale data issues
+                      // Clear the stored drag data
                       (window as any).currentDraggedActivity = null;
-                    } else {
-                      console.log('❌ Activity not found in templates for ID:', activityId);
                     }
                   }
                 }
@@ -705,7 +717,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                       if (snapshot.draggingOverWith && !draggedActivityId) {
                         setDraggedActivityId(snapshot.draggingOverWith);
                         setLastProcessedDrop(null); // Clear previous drop
-                        console.log('📝 Stored dragged activity ID:', snapshot.draggingOverWith);
                       }
                       
                       // Calculate and update drop time in the dragging card
@@ -757,8 +768,8 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                         }
                       }
                     }
-                    // Call original drag handler if not in DND mode
-                    if (!snapshot.isDraggingOver) {
+                    // Call original drag handler if not in DND mode AND actually dragging timeline
+                    if (!snapshot.isDraggingOver && isDragging) {
                       handleDragMove(e);
                     }
                   }}
@@ -768,8 +779,17 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                     setDropIndicatorPosition(null);
                     setDraggedActivityId(null);
                     
+                    // Clear timeline drag state to prevent erratic movement after React Beautiful DND
+                    setIsDragging(false);
+                    
+                    // CRITICAL FIX: Reset selectedTime to prevent timeline jumping after React Beautiful DND
+                    // This ensures mouse movements after drop don't use the drop position for calculations
+                    if (snapshot.isDraggingOver || isDndActive) {
+                      setSelectedTime(null);
+                    }
+                    
                     // Only call handleDragEnd for non-React-Beautiful-DND drags
-                    if (!snapshot.isDraggingOver) {
+                    if (!snapshot.isDraggingOver && isDragging) {
                       handleDragEnd();
                     }
                   }}
@@ -1015,14 +1035,12 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                           className="absolute -top-1 -right-1 w-4 h-4 bg-transparent flex items-center justify-center cursor-pointer group"
                           onContextMenu={(e) => {
                             e.preventDefault();
-                            console.log('🎯 Right-click on activity:', activityName, 'at coordinates:', e.clientX, e.clientY);
                             const menuData = {
                               visible: true,
                               x: e.clientX,
                               y: e.clientY,
                               activity: activity
                             };
-                            console.log('🎯 Setting context menu:', menuData);
                             setContextMenu(menuData);
                           }}
                           title="Right-click for actions"
@@ -1108,14 +1126,12 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                                 className="absolute -top-1 -right-1 w-4 h-4 bg-transparent flex items-center justify-center cursor-pointer group"
                                 onContextMenu={(e) => {
                                   e.preventDefault();
-                                  console.log('🎯 Right-click on activity:', activityName, 'at coordinates:', e.clientX, e.clientY);
                                   const menuData = {
                                     visible: true,
                                     x: e.clientX,
                                     y: e.clientY,
                                     activity: activity
                                   };
-                                  console.log('🎯 Setting context menu:', menuData);
                                   setContextMenu(menuData);
                                 }}
                                 title="Right-click for actions"
@@ -1157,7 +1173,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
           {/* Context Menu - Portal to document body for proper rendering */}
           {contextMenu?.visible && (
             <div>
-              {console.log('🎯 Context menu should be visible at:', contextMenu.x, contextMenu.y)}
               <div 
                 className="fixed bg-slate-800 border-2 border-red-500 rounded-lg shadow-xl min-w-40"
                 style={{ 
@@ -1170,7 +1185,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                   <button
                     className="w-full px-4 py-2 text-left text-sm text-blue-400 hover:bg-slate-700 hover:text-blue-300 transition-colors flex items-center gap-2"
                     onClick={() => {
-                      console.log('🔄 Setting repeat for activity:', contextMenu.activity);
                       if (onActivitySetRepeat) {
                         onActivitySetRepeat(contextMenu.activity, { x: contextMenu.x, y: contextMenu.y });
                       }
@@ -1183,7 +1197,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                   <button
                     className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-slate-700 hover:text-red-300 transition-colors flex items-center gap-2"
                     onClick={() => {
-                      console.log('🗑️ Removing activity from timeline:', contextMenu.activity);
                       if (onActivityRemove) {
                         onActivityRemove(contextMenu.activity);
                       }

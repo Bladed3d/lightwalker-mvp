@@ -4,6 +4,113 @@
 
 ---
 
+## 🔧 TIMELINE ACTIVITY CUSTOM IMAGES - DATABASE INTEGRATION ✅
+
+### Timeline Activities Showing Star Emojis Instead of Custom Images ✅
+**Use when**: Timeline activities display generic star emojis instead of beautiful custom images set in preferences
+
+**Problem Symptoms**:
+- Activities in inventory show custom images correctly
+- Same activities on timeline show green star emoji fallbacks
+- Database stores custom images properly in activity_preferences table
+- Console shows timeline activities loading without custom image data
+
+**Root Cause**: 
+Timeline activities fetch from database separately from activity preferences, so custom images aren't applied to timeline data
+
+**Proven Solution - Activity Preference Processing**:
+```javascript
+// Apply activity preferences to timeline activities in useEffect
+useEffect(() => {
+  if (allTimelineActivities.length > 0 && activityPreferences.length > 0) {
+    let hasChanges = false;
+    const processedActivities = allTimelineActivities.map(timelineActivity => {
+      const preference = activityPreferences.find(pref => 
+        pref.activityId === timelineActivity.activityId
+      );
+      
+      if (preference && preference.customImageUrl && 
+          timelineActivity.icon !== preference.customImageUrl) {
+        hasChanges = true;
+        return {
+          ...timelineActivity,
+          icon: preference.customImageUrl // Apply custom image
+        };
+      }
+      return timelineActivity;
+    });
+    
+    if (hasChanges) {
+      setTimelineActivities(processedActivities);
+    }
+  }
+}, [activityPreferences, allTimelineActivities]);
+```
+
+**Key Success Factors**:
+- Use `hasChanges` check to prevent infinite loops
+- Match on `activityId` between timeline and preferences
+- Update only when both data sources are loaded
+- Place `useEffect` after state declarations to avoid hoisting issues
+
+---
+
+## 🎯 REACT BEAUTIFUL DND - 5-MINUTE SNAP FUNCTIONALITY ✅
+
+### Activities Don't Snap to Clean Time Intervals ✅
+**Use when**: Dropped activities land at awkward times like 8:23a, 9:47p instead of clean 5-minute intervals
+
+**Problem Symptoms**:
+- Activities drop successfully but at precise pixel-calculated times
+- Timeline becomes cluttered with odd minute values
+- Hard to create clean, organized schedules
+
+**Proven Solution - Time String Snapping in onActivityAdd**:
+```javascript
+// Helper function for 5-minute snap
+function snapToFiveMinutes(timeString: string): string {
+  const match = timeString.match(/^(\d+):(\d+)([ap])$/);
+  if (!match) return timeString;
+  
+  let hours = parseInt(match[1]);
+  const minutes = parseInt(match[2]);
+  const period = match[3];
+  
+  // Convert to 24-hour for calculation
+  if (period === 'p' && hours !== 12) hours += 12;
+  if (period === 'a' && hours === 12) hours = 0;
+  
+  // Snap to 5-minute intervals
+  const totalMinutes = hours * 60 + minutes;
+  const snappedMinutes = Math.round(totalMinutes / 5) * 5;
+  
+  // Convert back to 12-hour format
+  let snappedHours = Math.floor(snappedMinutes / 60) % 24;
+  const snappedMins = snappedMinutes % 60;
+  
+  const newPeriod = snappedHours >= 12 ? 'p' : 'a';
+  if (snappedHours === 0) snappedHours = 12;
+  else if (snappedHours > 12) snappedHours -= 12;
+  
+  return `${snappedHours}:${snappedMins.toString().padStart(2, '0')}${newPeriod}`;
+}
+
+// Apply in onActivityAdd callback
+onActivityAdd={async (activity, preciseTimeSlot) => {
+  const snappedTimeSlot = snapToFiveMinutes(preciseTimeSlot);
+  // Use snappedTimeSlot in database calls
+  scheduledTime: snappedTimeSlot,
+}}
+```
+
+**Key Success Factors**:
+- Apply snapping in React Beautiful DND flow, not HTML5 drag handlers
+- Handle 12-hour format conversion properly (12:00a = 0, 12:00p = 12)
+- Use snapped time in ALL database calls for consistency
+- Remove conflicting HTML5 drag event handlers
+
+---
+
 ## 🎯 ICON POSITIONING & TIMELINE ALIGNMENT - CSS TRANSFORM CENTERING ✅
 
 ### Icon Offset in Timeline Problem Pattern ✅
@@ -314,6 +421,109 @@ style={{
 4. Test both edge cases and normal usage patterns
 
 **Files Fixed**: `src/components/daily-use/GamelikeTimeline.tsx`
+
+---
+
+---
+
+## 🔄 TIMELINE ACTIVITY RESCHEDULING - DUPLICATION BUG FIX ✅
+
+### Timeline-to-Timeline Move Duplication Bug (RESOLVED August 5, 2025)
+**Problem**: When dragging timeline activities to new time slots, activities appeared at BOTH old and new locations instead of moving from old to new location.
+
+**Root Cause Analysis**:
+1. **Multiple State Arrays**: Code maintained both `timelineActivities` and `allTimelineActivities` arrays that could get out of sync
+2. **Incomplete Removal Logic**: Timeline reschedule detection worked but removal from original position was inconsistent due to loose matching criteria
+3. **Add Without Remove Check**: `onActivityAdd` callback always created new activities without checking if it was a move operation
+4. **Race Conditions**: State updates for removal and addition happened independently, creating timing windows for duplication
+
+**Proven Solution - Atomic Move Operation**:
+```javascript
+// ✅ CORRECT: Enhanced activity matching for precise removal
+const existingActivity = allTimelineActivities.find(ta => {
+  const taId = ta.id || ta.name?.toLowerCase().replace(/\s+/g, '-');
+  const titleId = ta.title?.toLowerCase().replace(/\s+/g, '-');
+  
+  return taId === activityId || 
+         titleId === activityId ||
+         ta.title === activityId ||
+         ta.name === activityId;
+});
+
+// ✅ CORRECT: Atomic removal from ALL state arrays before re-addition
+setAllTimelineActivities(prev => {
+  const filtered = prev.filter(ta => {
+    // Enhanced matching - must match on BOTH id AND time to ensure exact removal
+    const isExactMatch = (ta.id === existingActivity.id && ta.scheduledTime === existingActivity.scheduledTime) ||
+                       (ta === existingActivity) || // Reference equality
+                       (ta.title === existingActivity.title && ta.scheduledTime === existingActivity.scheduledTime && ta.id === existingActivity.id);
+    return !isExactMatch;
+  });
+  return filtered;
+});
+
+// ✅ CORRECT: Also remove from secondary state array
+setTimelineActivities(prev => {
+  const filtered = prev.filter(ta => {
+    const isExactMatch = (ta.id === existingActivity.id && ta.scheduledTime === existingActivity.scheduledTime) ||
+                       (ta === existingActivity) ||
+                       (ta.title === existingActivity.title && ta.scheduledTime === existingActivity.scheduledTime);
+    return !isExactMatch;
+  });
+  return filtered;
+});
+
+// ✅ CORRECT: Mark activity as reschedule for proper handling
+(window as any).currentDraggedActivity = {
+  ...existingActivity,
+  isReschedule: true,
+  originalTime: existingActivity.scheduledTime
+};
+```
+
+**Enhanced onActivityAdd Handler**:
+```javascript
+// ✅ CORRECT: Detect and handle reschedule operations differently
+onActivityAdd={(activity, preciseTimeSlot) => {
+  if (activity.isReschedule) {
+    console.log('🔄 Processing timeline reschedule');
+    
+    // For reschedule, preserve original activity structure but update time
+    const rescheduledActivity = {
+      ...activity,
+      scheduledTime: preciseTimeSlot,
+      isReschedule: undefined,
+      originalTime: undefined
+    };
+    
+    // Add to BOTH state arrays for consistency
+    setTimelineActivities(prev => [...prev, rescheduledActivity]);
+    setAllTimelineActivities(prev => [...prev, rescheduledActivity]);
+    return;
+  }
+  
+  // Regular new activity creation...
+}
+```
+
+**Prevention Rules (MUST follow)**:
+1. **Always remove from ALL state arrays** when handling move operations, not just one
+2. **Use enhanced matching criteria** - match on ID AND time AND reference equality for precise removal
+3. **Mark move operations explicitly** with flags like `isReschedule` to distinguish from new activity creation
+4. **Implement atomic operations** - remove first, then add, never the reverse
+5. **Maintain state consistency** across multiple timeline state arrays
+6. **Test both visual results AND state counts** to ensure no duplication occurs
+
+**Key Insight**: Timeline moves are fundamentally different from new activity creation and must be handled with atomic remove-then-add operations across all state management layers.
+
+**Files Fixed**: 
+- `/src/app/daily-actions4/page.tsx` (drag handler logic and onActivityAdd callback)
+- Enhanced state management for multiple timeline activity arrays
+
+**Time Spent**: ~2 hours of analysis and implementation
+**Impact**: Timeline rescheduling now works perfectly - activities move instead of duplicate
+
+**System Context**: React Beautiful DND timeline with multiple state arrays managing user-dropped activities
 
 ---
 

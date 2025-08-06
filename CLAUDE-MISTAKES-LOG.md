@@ -4,6 +4,39 @@
 
 ---
 
+## 2025-08-06 - Variable Hoisting Error: State Declaration Order
+
+**What Failed**: JavaScript initialization error "Cannot access 'allTimelineActivities' before initialization" crashed the app
+
+**Symptoms Observed**:
+- ✅ useEffect with dependencies worked in isolation
+- ✅ State variable existed and was properly typed
+- ❌ **Error on line 205: useEffect dependency referencing variable before declaration**
+- ❌ React component failed to initialize
+
+**Root Cause**: 
+State variable `allTimelineActivities` was declared on line 267 but referenced in useEffect on line 205, creating a variable hoisting issue
+
+**What Actually Worked**:
+```javascript
+// ✅ CORRECT: Declare state BEFORE any useEffect that references it
+const [allTimelineActivities, setAllTimelineActivities] = useState<any[]>([]);
+
+// useEffect can now safely reference allTimelineActivities
+useEffect(() => {
+  if (allTimelineActivities.length > 0) {
+    // Process activities
+  }
+}, [allTimelineActivities]);
+
+// ❌ WRONG: Don't declare the same state variable again later
+// const [allTimelineActivities, setAllTimelineActivities] = useState<any[]>([]);
+```
+
+**Prevention Rule**: Always declare useState hooks at the top of component, before any useEffect that references them. Check for duplicate state declarations.
+
+---
+
 ## 2025-08-03 - MAJOR DEBUGGING SESSION: React Beautiful DND Timeline Drop Issues
 
 **What Failed**: Drag and drop from Activity Library to Timeline appeared to work (correct logs) but activities never appeared visually on timeline
@@ -302,6 +335,49 @@ const activities = [
 4. **Debug Display Required**: Always show raw calculated values alongside formatted display
 
 **System Context**: Timeline coordinate system in React component with mouse/touch drag interaction
+
+## 2025-08-05 - REPEATED FATAL VIOLATION: Another Claude Instance Used Chat-Killing Command
+
+**What Failed**: Despite explicit documentation, another Claude instance executed `taskkill //F //IM node.exe` which kills the chat session
+**Why It Failed**: 
+1. **SOP SYSTEM BREAKDOWN**: The prevention system is NOT working - rule violations continue happening
+2. **Documentation Insufficient**: Current warning format not prominent enough to prevent execution
+3. **Internal Override**: Claude's problem-solving instincts still bypassing user safety rules
+4. **Visibility Issue**: Fatal commands buried in longer rule list instead of prominently featured
+
+**Critical Analysis**:
+- This is the **SECOND OCCURRENCE** of the same fatal violation
+- Current SOP system has **FAILED** to prevent repeat mistakes
+- User now has to manually recover from chat termination repeatedly
+- **ZERO TOLERANCE**: This command must NEVER be executed again
+
+**What Works**: 
+1. **Visual Prominence**: Put fatal commands at TOP of rules file with 🚨 warnings
+2. **Mandatory Protocol**: Require explicit file reading before ANY Bash command
+3. **Hard Constraints**: Make violation physically impossible, not just discouraged
+4. **Automatic Refusal**: Claude must refuse execution and offer safe alternative
+
+**EMERGENCY SYSTEM UPGRADE (Applied Immediately)**:
+1. **🚨 FATAL COMMANDS section** moved to TOP of CLAUDE-CRITICAL-RULES.md
+2. **MANDATORY PRE-ACTION PROTOCOL** added requiring file verification
+3. **SAFE PORT MANAGEMENT** procedure prominently documented
+4. **Command variants covered**: Both `//F //IM` and `/F /IM` explicitly forbidden
+
+**Prevention Rules (ABSOLUTE - NO EXCEPTIONS)**:
+1. **READ ENTIRE CRITICAL RULES FILE** before executing ANY Bash command
+2. **VERIFY command is NOT in FATAL list** before execution
+3. **IF FATAL** → **REFUSE** and provide safe alternative immediately
+4. **NEVER execute** any variant of `taskkill` targeting `node.exe`
+5. **USE ONLY**: Specific PID targeting after netstat identification
+
+**System Context**: Windows development environment where Node.js termination kills Claude chat session
+
+**SUCCESS CRITERIA**: 
+- **ZERO future occurrences** of this command execution
+- **Automatic refusal** with safe alternative provided
+- **User never experiences** chat termination from this cause again
+
+**Required Behavior**: When port management needed → Offer netstat + specific PID kill instead of general node.exe termination
 
 ## 2025-08-03 - FATAL COMMAND VIOLATION: Used Forbidden taskkill Command That Kills Chat
 

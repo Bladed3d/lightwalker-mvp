@@ -133,7 +133,6 @@ export default function DailyActions2Page() {
   // Fix React Strict Mode interference with drag and drop
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    console.log('🔧 Setting mounted to true');
     setMounted(true);
   }, []);
 
@@ -144,8 +143,6 @@ export default function DailyActions2Page() {
         const sessionId = getSessionId();
         const userId = getUserId();
         
-        console.log('📊 Loading timeline activities from database');
-        
         const response = await fetch(`/api/timeline-activities?sessionId=${sessionId}${userId ? `&userId=${userId}` : ''}`);
         
         if (!response.ok) {
@@ -155,8 +152,6 @@ export default function DailyActions2Page() {
         const result = await response.json();
         const activities = result.timelineActivities || [];
         
-        console.log(`✅ Loaded ${activities.length} timeline activities from database`);
-        
         // Apply activity preferences to timeline activities to get custom images
         let processedActivities = activities;
         if (activityPreferences.length > 0) {
@@ -165,12 +160,6 @@ export default function DailyActions2Page() {
             const preference = activityPreferences.find(pref => pref.activityId === timelineActivity.activityId);
             
             if (preference && preference.customImageUrl) {
-              console.log('🎨 Applying custom image to timeline activity:', {
-                activityTitle: timelineActivity.title,
-                originalIcon: timelineActivity.icon,
-                customImage: preference.customImageUrl
-              });
-              
               return {
                 ...timelineActivity,
                 icon: preference.customImageUrl // Use custom image instead of base icon
@@ -180,7 +169,6 @@ export default function DailyActions2Page() {
             return timelineActivity;
           });
           
-          console.log(`🎨 Applied preferences to ${processedActivities.filter(a => activityPreferences.find(p => p.activityId === a.activityId && p.customImageUrl)).length} timeline activities`);
         }
         
         // Update both timeline state arrays
@@ -201,20 +189,12 @@ export default function DailyActions2Page() {
   // Reprocess timeline activities when preferences change to apply custom images
   useEffect(() => {
     if (allTimelineActivities.length > 0 && activityPreferences.length > 0) {
-      console.log('🔄 Reprocessing timeline activities with updated preferences');
-      
       let hasChanges = false;
       const processedActivities = allTimelineActivities.map(timelineActivity => {
         // Find matching preference by activityId
         const preference = activityPreferences.find(pref => pref.activityId === timelineActivity.activityId);
         
         if (preference && preference.customImageUrl && timelineActivity.icon !== preference.customImageUrl) {
-          console.log('🎨 Applying custom image to timeline activity:', {
-            activityTitle: timelineActivity.title,
-            originalIcon: timelineActivity.icon,
-            customImage: preference.customImageUrl
-          });
-          
           hasChanges = true;
           return {
             ...timelineActivity,
@@ -227,11 +207,6 @@ export default function DailyActions2Page() {
       
       // Only update if there are actual changes to prevent infinite loops
       if (hasChanges) {
-        const customizedCount = processedActivities.filter(a => 
-          activityPreferences.find(p => p.activityId === a.activityId && p.customImageUrl)
-        ).length;
-        
-        console.log(`🎨 Applied preferences to ${customizedCount} timeline activities`);
         setTimelineActivities(processedActivities);
       }
     }
@@ -244,7 +219,6 @@ export default function DailyActions2Page() {
         setPreferencesLoading(true);
         const preferences = await loadActivityPreferences();
         setActivityPreferences(preferences);
-        console.log(`📊 Loaded ${preferences.length} activity preferences`);
       } catch (error) {
         console.error('❌ Error loading activity preferences:', error);
       } finally {
@@ -260,11 +234,9 @@ export default function DailyActions2Page() {
   // Listen for preference updates and reload them
   useEffect(() => {
     const handlePreferenceUpdate = async (event: any) => {
-      console.log('🔄 Preference update event received, reloading preferences...');
       try {
         const preferences = await loadActivityPreferences();
         setActivityPreferences(preferences);
-        console.log(`📊 Reloaded ${preferences.length} activity preferences`);
       } catch (error) {
         console.error('❌ Error reloading activity preferences:', error);
       }
@@ -287,7 +259,6 @@ export default function DailyActions2Page() {
     }
     
     const activitiesWithPrefs = applyPreferencesToActivities(schedule.activities, activityPreferences);
-    console.log(`🎨 Applied preferences to ${activitiesWithPrefs.length} activities`);
     return activitiesWithPrefs;
   }, [schedule?.activities, activityPreferences, preferencesLoading]);
 
@@ -306,11 +277,11 @@ export default function DailyActions2Page() {
   // Instructions Window State
   const [showInstructions, setShowInstructions] = useState(false);
   
-  // Update live time for server status
+  // Update live time for server status (reduced frequency to minimize console noise)
   useEffect(() => {
     const timer = setInterval(() => {
       setLiveTime(new Date());
-    }, 1000);
+    }, 60000); // Changed from 1000ms to 60000ms (1 minute)
     return () => clearInterval(timer);
   }, []);
 
@@ -325,10 +296,6 @@ export default function DailyActions2Page() {
     setAllTimelineActivities(activities);
   };
   
-  // Debug timeline activities changes
-  useEffect(() => {
-    console.log('📊 Timeline activities state changed:', timelineActivities.length, timelineActivities.map(a => a.title));
-  }, [timelineActivities]);
 
   // Event handlers
   const handleActivitySelect = (activity: Activity) => {
@@ -368,28 +335,17 @@ export default function DailyActions2Page() {
     }));
   };
 
+  // Enhanced React Beautiful DND state tracking
+  const [isDndActive, setIsDndActive] = useState(false);
+  
   // Handle drag and drop from activity library to timeline
   const handleDragEnd = (result: any) => {
-    console.log('🎯 React Beautiful DND - Drag end result:', {
-      draggableId: result.draggableId,
-      source: result.source,
-      destination: result.destination,
-      type: result.type
-    });
-    
-    // Debug alerts removed - drag and drop is working correctly
+    // Signal that React Beautiful DND operation is complete
+    setIsDndActive(false);
     
     if (!result.destination) {
-      console.log('❌ No destination - drag cancelled or dropped outside valid drop zone');
-      // Debug removed - drag and drop fix complete
       return;
     }
-    
-    console.log('✅ Valid drop detected:', {
-      from: result.source.droppableId,
-      to: result.destination.droppableId,
-      activityId: result.draggableId
-    });
     
     // Check if dropped on timeline, grid, duration screen, or edit zone
     if (result.destination && (result.destination.droppableId === 'timeline-drop-zone' || result.destination.droppableId.startsWith('slot-') || result.destination.droppableId === 'activity-grid' || result.destination.droppableId === 'duration-screen-drop' || result.destination.droppableId === 'activity-edit-zone')) {
@@ -399,19 +355,7 @@ export default function DailyActions2Page() {
       const isTimelineDrag = activityId.startsWith('timeline-activity-');
       if (isTimelineDrag) {
         activityId = activityId.replace('timeline-activity-', '');
-        console.log('🔄 Timeline reschedule detected:', {
-          originalId: result.draggableId,
-          cleanedId: activityId,
-          from: result.source?.droppableId,
-          to: result.destination?.droppableId
-        });
       }
-      
-      // CRITICAL FIX: Use the same preference application logic as TarkovInventoryGrid
-      console.log('🔍 Looking for preference-applied activity:', activityId);
-      
-      // Database-first activity lookup - use processed activities from grid
-      console.log('🗄️ Using database-processed activities:', processedActivities.length);
       
       // First try to find in processed activities (includes custom images and preferences)
       let baseTemplate = processedActivities.find(t => t.id === activityId);
@@ -424,8 +368,6 @@ export default function DailyActions2Page() {
       
       // If not found in templates, check if it's a timeline activity
       if (!baseTemplate) {
-        console.log('🔍 Not found in templates, checking timeline activities:', activityId);
-        
         // Check directly in timeline activities
         const timelineActivity = allTimelineActivities.find((a: any) => {
           const timelineId = a.id || a.name?.toLowerCase().replace(/\s+/g, '-');
@@ -446,12 +388,10 @@ export default function DailyActions2Page() {
             description: `${timelineActivity.title || timelineActivity.name} from timeline`
           };
           isTimelineActivity = true;
-          console.log('✅ Found and converted timeline activity:', baseTemplate.title);
         }
       }
       
       if (!baseTemplate) {
-        console.log('❌ Activity not found in templates or timeline activities:', activityId);
         return;
       }
       
@@ -461,7 +401,6 @@ export default function DailyActions2Page() {
       // Always try to apply preferences manually first (this is the primary method)
       const preference = activityPreferences.find(p => p.activityId === activityId);
       if (preference) {
-        console.log('✅ Found preference for activity:', activityId, preference);
         activity = {
           ...activity,
           duration: preference.customDuration ?? activity.duration,
@@ -473,42 +412,17 @@ export default function DailyActions2Page() {
           originalDuration: activity.duration, // Store original for comparison
           instructions: preference.instructions || activity.description || ''
         };
-        console.log('🎨 Applied preferences to drag activity:', {
-          before: { duration: baseTemplate.duration, points: baseTemplate.points, icon: baseTemplate.icon },
-          after: { duration: activity.duration, points: activity.points, icon: activity.icon },
-          preferenceImageUrl: preference.customImageUrl,
-          hasCustomImage: activity.icon.startsWith('/') || activity.icon.startsWith('data:')
-        });
       } else {
         // Fallback: check if already processed by TarkovInventoryGrid
         const foundInPreferenceApplied = preferenceAppliedActivities.find(t => t.id === activityId);
         if (foundInPreferenceApplied && foundInPreferenceApplied.icon !== baseTemplate.icon) {
           // Use TarkovInventoryGrid processed version only if it has a different icon (custom image)
           activity = { ...foundInPreferenceApplied };
-          console.log('✅ Using TarkovInventoryGrid processed activity (has custom image):', {
-            activityId,
-            icon: activity.icon,
-            iconType: activity.icon.startsWith('/') || activity.icon.startsWith('data:') ? 'custom-image' : 'emoji'
-          });
-        } else {
-          console.log('ℹ️ No preferences found for activity:', activityId, 'using template defaults');
         }
       }
       
-      console.log('✅ Final activity for drag operation:', {
-        id: activity.id,
-        title: activity.title,
-        duration: activity.duration,
-        points: activity.points,
-        difficulty: activity.difficulty,
-        icon: activity.icon,
-        iconType: activity.icon.startsWith('/') || activity.icon.startsWith('data:') ? 'custom-image' : 'emoji'
-      });
-      
       // CRITICAL FIX: Handle timeline-to-timeline rescheduling with proper state management
       if (isTimelineDrag && result.destination.droppableId === 'timeline-drop-zone') {
-        console.log('🔄 Processing timeline reschedule for activity:', activityId);
-        
         // Find the existing timeline activity being moved using multiple matching criteria
         const existingActivity = allTimelineActivities.find(ta => {
           const taId = ta.id || ta.name?.toLowerCase().replace(/\s+/g, '-');
@@ -521,11 +435,6 @@ export default function DailyActions2Page() {
         });
         
         if (existingActivity) {
-          console.log('✅ Found existing timeline activity for reschedule:', {
-            activity: existingActivity.title || existingActivity.name,
-            currentTime: existingActivity.scheduledTime,
-            id: existingActivity.id
-          });
           
           // ATOMIC OPERATION: Remove the existing activity immediately and store it for re-placement
           setAllTimelineActivities(prev => {
@@ -535,22 +444,7 @@ export default function DailyActions2Page() {
                                  (ta === existingActivity) || // Reference equality
                                  (ta.title === existingActivity.title && ta.scheduledTime === existingActivity.scheduledTime && ta.id === existingActivity.id);
               
-              if (isExactMatch) {
-                console.log('🗑️ REMOVING activity for reschedule:', {
-                  title: ta.title || ta.name,
-                  time: ta.scheduledTime,
-                  id: ta.id
-                });
-              }
-              
               return !isExactMatch;
-            });
-            
-            console.log('📊 Timeline activities after reschedule removal:', {
-              before: prev.length,
-              after: filtered.length,
-              removedCount: prev.length - filtered.length,
-              removedActivity: existingActivity.title || existingActivity.name
             });
             
             return filtered;
@@ -565,10 +459,6 @@ export default function DailyActions2Page() {
               return !isExactMatch;
             });
             
-            if (filtered.length !== prev.length) {
-              console.log('📊 Also removed from timelineActivities state');
-            }
-            
             return filtered;
           });
           
@@ -580,21 +470,11 @@ export default function DailyActions2Page() {
             originalTime: existingActivity.scheduledTime
           };
           
-          console.log('🔄 Timeline reschedule prepared - activity removed, ready for re-placement');
-          
           // CRITICAL: Return early to let timeline component handle the re-addition
           // Do not process this as a regular drop
           return;
           
         } else {
-          console.error('❌ Could not find timeline activity to reschedule:', {
-            activityId,
-            availableActivities: allTimelineActivities.map(ta => ({
-              id: ta.id,
-              title: ta.title || ta.name,
-              time: ta.scheduledTime
-            }))
-          });
           return;
         }
       }
@@ -602,17 +482,12 @@ export default function DailyActions2Page() {
       if (activity) {
         if (result.destination.droppableId === 'activity-grid') {
           // Dropped on the general grid (not a specific slot)
-          console.log('📊 Activity dropped on grid container:', activity.title);
-          console.log('💡 TIP: Try dropping directly on a time slot (e.g., 8:00a) for precise scheduling');
-          
           // For now, find the first empty slot or use current time
           const currentHour = new Date().getHours();
           const timeSlot = currentHour === 0 ? '12:00a' : 
                           currentHour <= 11 ? `${currentHour}:00a` : 
                           currentHour === 12 ? '12:00p' : 
                           `${currentHour-12}:00p`;
-          
-          console.log('⏰ Auto-scheduling to:', timeSlot);
           
           // Create activity for auto-scheduled time
           const newActivity: Activity = {
@@ -646,7 +521,6 @@ export default function DailyActions2Page() {
         } else if (result.destination.droppableId.startsWith('slot-')) {
           // Dropped on a specific grid slot
           const timeSlot = result.destination.droppableId.replace('slot-', '');
-          console.log('📊 Adding activity to grid slot:', { activity: activity.title, timeSlot });
           
           // Create the full activity object for the grid
           const newActivity: Activity = {
@@ -675,38 +549,21 @@ export default function DailyActions2Page() {
             rarity: activity.rarity
           };
           
-          console.log('✅ Grid activity created for timeline:', {
-            id: newActivity.id,
-            title: newActivity.title,
-            icon: newActivity.icon,
-            iconType: newActivity.icon.startsWith('/') || newActivity.icon.startsWith('data:') ? 'custom-image' : 'emoji',
-            timeSlot: timeSlot
-          });
-          
-          // Debug logging removed - drag and drop fix working correctly
-          
           // Add to local state
           setDroppedActivities(prev => [...prev, newActivity]);
           
-          console.log('📝 Activity added to state for slot:', timeSlot);
-          
         } else if (result.destination.droppableId === 'timeline-drop-zone') {
           // Pass the preference-applied activity to timeline component
-          console.log('✅ Timeline drop detected - passing preference-applied activity');
-          
           // Store the preference-applied activity for timeline to use
           (window as any).currentDraggedActivity = activity;
           
           return; // Timeline component will handle this drop
         } else if (result.destination.droppableId === 'duration-screen-drop') {
           // Handle dropping activity to duration screen
-          console.log('🔧 Activity dropped in duration screen:', result.draggableId);
-          
           const activityId = result.draggableId;
           const activity = processedActivities.find(a => a.id === activityId);
           
           if (activity) {
-            console.log('✅ Found library activity for duration screen:', activity);
             
             // Pass the activity to the DurationScreen component
             // This will be handled by updating the DurationScreen to accept dropped activities
@@ -726,20 +583,10 @@ export default function DailyActions2Page() {
               }
             }));
           } else {
-            console.log('❌ Library activity not found:', activityId);
           }
           
         } else if (result.destination.droppableId === 'activity-edit-zone') {
           // Handle dropping activity to the orange triangle edit zone
-          console.log('🔧 Activity dropped in edit zone:', result.draggableId);
-          
-          // Use the preference-applied activity (already found above)
-          console.log('✅ Using preference-applied activity for edit zone:', {
-            title: activity.title,
-            duration: activity.duration,
-            points: activity.points,
-            difficulty: activity.difficulty
-          });
           
           // Open the Duration Screen and pass the preference-applied activity data
           setUIState(prev => ({ ...prev, quickActionPanel: 'edit' }));
@@ -764,8 +611,6 @@ export default function DailyActions2Page() {
             }
           }));
           
-        } else {
-          console.log('📅 Unknown drop destination:', result.destination.droppableId);
         }
       }
     }
@@ -773,7 +618,6 @@ export default function DailyActions2Page() {
 
   // Fix React Strict Mode - prevent rendering until mounted
   if (!mounted) {
-    console.log('🔄 Component not mounted yet, showing loading screen');
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
@@ -787,7 +631,7 @@ export default function DailyActions2Page() {
     );
   }
   
-  console.log('✅ Component mounted, checking other loading states');
+  // Component initialization - debug logs removed for cleaner console
 
   // Loading and error states
   if (loading) {
@@ -840,7 +684,6 @@ export default function DailyActions2Page() {
   
   // Callback to receive processed activities from TarkovInventoryGrid
   const handleActivitiesProcessed = (activities: ActivityTemplate[]) => {
-    console.log('📦 Received processed activities from grid:', activities.length);
     setProcessedActivities(activities);
     
     // Store in window for timeline access (avoid async calls in render)
@@ -848,7 +691,16 @@ export default function DailyActions2Page() {
   };
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
+    <DragDropContext 
+      onDragEnd={handleDragEnd}
+      onDragStart={() => {
+        setIsDndActive(true);
+      }}
+      onDragUpdate={() => {
+        // Keep DND active during updates
+        if (!isDndActive) setIsDndActive(true);
+      }}
+    >
       <div className={`min-h-screen ${theme.pageBackground} ${viewMode === 'gamified' ? 'text-white' : 'text-gray-900'}`}>
       {/* Header */}
       <header className={`${theme.headerBackground} border-b ${theme.headerBorder} sticky top-0 z-40`}>
@@ -1042,6 +894,7 @@ export default function DailyActions2Page() {
             key="main-timeline"
             theme={theme}
             timelineActivities={timelineActivities}
+            isDndActive={isDndActive}
             onDragEnd={handleDragEnd}
             onTimeChange={handleTimeChange}
             onActivitiesChange={handleActivitiesChange}
@@ -1049,21 +902,9 @@ export default function DailyActions2Page() {
               try {
                 // Apply 5-minute snap to the time slot
                 const snappedTimeSlot = snapToFiveMinutes(preciseTimeSlot);
-                console.log('🎯 onActivityAdd called:', { 
-                  activityId: activity.id, 
-                  preciseTimeSlot, 
-                  snappedTimeSlot,
-                  isReschedule: activity.isReschedule,
-                  originalTime: activity.originalTime 
-                });
                 
                 // Check if this is a reschedule operation
                 if (activity.isReschedule) {
-                  console.log('🔄 Processing timeline reschedule - updating database:', {
-                    activity: activity.title,
-                    from: activity.originalTime,
-                    to: snappedTimeSlot
-                  });
                   
                   // Update existing timeline activity in database
                   const response = await fetch('/api/timeline-activities', {
@@ -1082,21 +923,14 @@ export default function DailyActions2Page() {
                   const result = await response.json();
                   const updatedActivity = result.timelineActivity;
                   
-                  // Update local state
-                  setTimelineActivities(prev => prev.map(ta => 
-                    ta.id === activity.id ? updatedActivity : ta
-                  ));
+                  // Add rescheduled activity back to local state (since it was removed during drag)
+                  setTimelineActivities(prev => [...prev, updatedActivity]);
+                  setAllTimelineActivities(prev => [...prev, updatedActivity]);
                   
-                  setAllTimelineActivities(prev => prev.map(ta => 
-                    ta.id === activity.id ? updatedActivity : ta
-                  ));
-                  
-                  console.log('✅ Timeline reschedule completed successfully');
                   return;
                 }
                 
                 // Regular new activity creation - save to database
-                console.log('📝 Creating new timeline activity in database');
                 
                 const response = await fetch('/api/timeline-activities', {
                   method: 'POST',
@@ -1120,30 +954,22 @@ export default function DailyActions2Page() {
                 const result = await response.json();
                 const newActivity = result.timelineActivity;
                 
-                console.log('✅ Timeline activity created in database:', newActivity.id);
-                
                 // Add to local state
                 setTimelineActivities(prev => {
                   const updated = [...prev, newActivity];
-                  console.log('📊 Added new activity to timelineActivities:', prev.length, '→', updated.length);
                   return updated;
                 });
                 
                 setAllTimelineActivities(prev => {
                   const updated = [...prev, newActivity];
-                  console.log('📊 Added new activity to allTimelineActivities:', prev.length, '→', updated.length);
                   return updated;
                 });
-                
-                console.log('✅ New activity creation completed');
               } catch (error) {
                 console.error('❌ Error in onActivityAdd:', error);
                 alert('Failed to create timeline activity. Please try again.');
               }
             }}
             onActivityRemove={async (activity) => {
-              console.log('🗑️ onActivityRemove called:', activity);
-              
               try {
                 // Delete from database
                 const response = await fetch(`/api/timeline-activities?id=${activity.id}`, {
@@ -1153,31 +979,23 @@ export default function DailyActions2Page() {
                 if (!response.ok) {
                   throw new Error('Failed to delete timeline activity');
                 }
-
-                console.log('✅ Timeline activity deleted from database:', activity.id);
                 
                 // Remove from local state
                 setTimelineActivities(prev => {
                   const updated = prev.filter(ta => ta !== activity && ta.id !== activity.id);
-                  console.log('📊 Removed activity from timelineActivities:', prev.length, '→', updated.length);
                   return updated;
                 });
                 
                 setAllTimelineActivities(prev => {
                   const updated = prev.filter(ta => ta !== activity && ta.id !== activity.id);
-                  console.log('📊 Removed activity from allTimelineActivities:', prev.length, '→', updated.length);
                   return updated;
                 });
-                
-                console.log('✅ Activity removal completed successfully');
               } catch (error) {
                 console.error('❌ Error removing timeline activity:', error);
                 alert('Failed to remove timeline activity. Please try again.');
               }
             }}
             onActivitySetRepeat={(activity, position) => {
-              console.log('🔄 onActivitySetRepeat called:', activity, 'at position:', position);
-              
               // Show the focused repeat modal at click position
               setRepeatModal({
                 isVisible: true,
@@ -1207,7 +1025,6 @@ export default function DailyActions2Page() {
                 timelineActivities={allTimelineActivities}
                 onActivitiesProcessed={handleActivitiesProcessed}
                 onCreateNewActivity={() => {
-                  console.log('🆕 Create new activity clicked');
                   // Open Duration Screen with a blank activity
                   setUIState(prev => ({ ...prev, quickActionPanel: 'edit' }));
                   
@@ -1238,26 +1055,16 @@ export default function DailyActions2Page() {
                 theme={theme}
                 isVisible={uiState.quickActionPanel === 'edit'}
                 onActivitySave={async (activity) => {
-                  console.log('💾 Activity settings saved:', activity);
-                  
                   try {
                     // Extract the base activity ID from the edit ID (e.g., "edit-123456-conflict-resolution" -> "conflict-resolution")
                     let baseActivityId = activity.id;
-                    console.log('🏷️ Original activity ID:', activity.id);
                     
                     if (activity.id.startsWith('edit-') && activity.id.includes('-')) {
                       const parts = activity.id.split('-');
-                      console.log('🔧 ID parts:', parts);
                       if (parts.length >= 3) {
                         baseActivityId = parts.slice(2).join('-'); // Get everything after "edit-timestamp-"
-                        console.log('✂️ Extracted base ID from parts:', baseActivityId);
                       }
                     }
-                    
-                    console.log('🔍 Final base activity ID:', baseActivityId);
-                    
-                    // Find the original database activity from processed activities
-                    console.log('🗄️ Using database-processed activities for duration screen:', processedActivities.length);
                     
                     // Find original template, schedule activity, or timeline activity
                     const templateActivity = processedActivities.find(t => t.id === baseActivityId);
@@ -1270,22 +1077,13 @@ export default function DailyActions2Page() {
                         const timelineId = a.id || a.name?.toLowerCase().replace(/\s+/g, '-');
                         return timelineId === baseActivityId;
                       });
-                      console.log('🔍 Checking timeline activities for ID:', baseActivityId, timelineActivity ? 'Found!' : 'Not found');
                     }
                     
                     const originalActivity = templateActivity || scheduleActivity || timelineActivity;
                     
                     if (!originalActivity) {
-                      console.error('❌ Could not find original activity for ID:', baseActivityId);
-                      console.log('Available timeline activities:', allTimelineActivities.map((a: any) => ({
-                        id: a.id,
-                        name: a.name,
-                        computedId: a.id || a.name?.toLowerCase().replace(/\s+/g, '-')
-                      })));
                       return;
                     }
-                    
-                    console.log('📋 Original activity found:', originalActivity.title || originalActivity.name, 'Duration:', originalActivity.duration, 'Points:', originalActivity.points);
                     
                     // Create a proper Activity object for comparison
                     // Handle both template activities and timeline activities (which may have different field names)
@@ -1319,40 +1117,25 @@ export default function DailyActions2Page() {
                     
                     // Determine what changed
                     const customizations: Partial<Activity> = {};
-                    console.log('🔍 Comparing activity duration:', activity.duration, 'vs base:', baseActivity.duration);
-                    console.log('🔍 Comparing activity points:', activity.points, 'vs base:', baseActivity.points);
-                    console.log('🔍 Activity has gridSize:', activity.gridSize);
-                    console.log('🔍 Base template gridSize:', originalActivity.gridSize);
                     
                     if (activity.duration !== baseActivity.duration) {
                       customizations.duration = activity.duration;
-                      console.log('🔄 Duration changed:', baseActivity.duration, '->', activity.duration);
                     }
                     if (activity.points !== baseActivity.points) {
                       customizations.points = activity.points;
-                      console.log('🔄 Points changed:', baseActivity.points, '->', activity.points);
                     }
                     if (activity.difficulty !== baseActivity.difficulty && activity.difficulty !== undefined && activity.difficulty !== null) {
                       customizations.difficulty = activity.difficulty;
-                      console.log('🔄 Difficulty changed:', baseActivity.difficulty, '->', activity.difficulty);
-                    } else if (activity.difficulty === undefined || activity.difficulty === null) {
-                      console.log('⚠️ Skipping undefined/null difficulty:', activity.difficulty);
                     }
                     if (activity.category !== baseActivity.category) {
                       customizations.category = activity.category;
-                      console.log('🔄 Category changed:', baseActivity.category, '->', activity.category);
                     }
                     if (activity.title !== baseActivity.title) {
                       customizations.title = activity.title;
-                      console.log('🔄 Title changed:', baseActivity.title, '->', activity.title);
                     }
                     // Check for icon changes (custom images from Art Studio)
                     if (activity.icon && activity.icon !== originalActivity.icon) {
                       customizations.icon = activity.icon;
-                      const iconPreview = activity.icon.startsWith('data:') 
-                        ? `${activity.icon.substring(0, 50)}...` 
-                        : activity.icon;
-                      console.log('🎨 Icon changed:', originalActivity.icon, '->', iconPreview);
                     }
                     
                     // Check for grid size changes
@@ -1361,12 +1144,8 @@ export default function DailyActions2Page() {
                       const originalGridSize = originalActivity.gridSize || { w: 1, h: 1 };
                       if (activity.gridSize.w !== originalGridSize.w || activity.gridSize.h !== originalGridSize.h) {
                         hasGridSizeChange = true;
-                        console.log('🔄 Grid size changed:', originalGridSize, '->', activity.gridSize);
                       }
                     }
-                    
-                    console.log('📝 Customizations to save:', customizations);
-                    console.log('📐 Grid size change detected:', hasGridSizeChange);
                     
                     // Save grid size change using the image preference API
                     if (hasGridSizeChange) {
@@ -1385,9 +1164,7 @@ export default function DailyActions2Page() {
                           }
                         );
                         
-                        if (result.success) {
-                          console.log('✅ Grid size preference saved successfully');
-                        } else {
+                        if (!result.success) {
                           console.error('❌ Failed to save grid size preference:', result.error);
                         }
                       } catch (error) {
@@ -1397,33 +1174,21 @@ export default function DailyActions2Page() {
                     
                     // Only save if there are actual customizations
                     if (Object.keys(customizations).length > 0) {
-                      console.log('💾 Calling saveActivityPreference with:', { baseActivity: baseActivity.id, customizations });
                       const result = await saveActivityPreference(baseActivity, customizations);
-                      console.log('📡 Save result:', result);
                       
                       if (result.success) {
-                        console.log('✅ Activity preference saved successfully to database');
-                        
                         // Refresh preferences list
-                        console.log('🔄 Refreshing preferences from database...');
                         const updatedPreferences = await loadActivityPreferences();
-                        console.log('📥 Loaded preferences:', updatedPreferences);
                         setActivityPreferences(updatedPreferences);
-                        
-                        // Show success message
-                        console.log('🎉 Custom settings saved! They will be remembered for future use.');
                       } else {
                         console.error('❌ Failed to save activity preference:', result.error);
                       }
-                    } else {
-                      console.log('ℹ️ No changes detected, skipping save');
                     }
                   } catch (error) {
                     console.error('❌ Error saving activity preference:', error);
                   }
                 }}
                 onActivityPlace={async (activity, timePosition) => {
-                  console.log('📅 Placing activity on timeline:', { activity, timePosition });
                   
                   try {
                     // Extract base activity ID
@@ -1460,14 +1225,6 @@ export default function DailyActions2Page() {
 
                     const result = await response.json();
                     const newActivity = result.timelineActivity;
-                    
-                    console.log('✅ Timeline activity created in database with repeat settings:', {
-                      id: newActivity.id,
-                      title: newActivity.title,
-                      time: newActivity.scheduledTime,
-                      isRecurring: newActivity.isRecurring,
-                      recurringPattern: newActivity.recurringPattern
-                    });
                     
                     // Add to local state
                     setTimelineActivities(prev => [...prev, newActivity]);
@@ -1707,7 +1464,6 @@ export default function DailyActions2Page() {
         activity={repeatModal.activity}
         position={repeatModal.position}
         onSave={async (activity, repeatConfig) => {
-          console.log('💾 Saving repeat config to database:', activity, repeatConfig);
           
           try {
             // Update timeline activity in database
@@ -1729,7 +1485,6 @@ export default function DailyActions2Page() {
             }
 
             const result = await response.json();
-            console.log('✅ Timeline activity updated in database:', result);
 
             // Update local state to reflect database changes
             const updatedActivity = result.timelineActivity;
@@ -1745,15 +1500,12 @@ export default function DailyActions2Page() {
             // Close modal
             setRepeatModal({ isVisible: false, activity: null, position: { x: 0, y: 0 } });
             
-            console.log('✅ Repeat configuration saved to database successfully');
-            
           } catch (error) {
             console.error('❌ Error saving repeat config:', error);
             alert('Failed to save repeat configuration. Please try again.');
           }
         }}
         onCancel={() => {
-          console.log('❌ Repeat configuration cancelled');
           setRepeatModal({ isVisible: false, activity: null, position: { x: 0, y: 0 } });
         }}
       />

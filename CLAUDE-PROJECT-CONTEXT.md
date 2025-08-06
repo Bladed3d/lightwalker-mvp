@@ -9,14 +9,39 @@
 
 ## Current Development Status
 
-**🎯 Current Phase**: AI-Powered Character Creation ✅ LIVE IN PRODUCTION (July 30, 2025)
+**🎯 Current Phase**: Daily Actions4 Timeline System ✅ LIVE IN PRODUCTION (August 6, 2025)
 
-**📅 Latest Deployment**: Web Research System - Commits `9f0e48c` + `7092494` + `adc8bef` - ✅ LIVE
-**🔗 Production URL**: https://lightwalker-mvp.vercel.app/ai-character-creation-hybrid
+**📅 Latest Deployment**: Timeline Activity System Fixes - Multiple fixes to daily-actions4 - ✅ LIVE
+**🔗 Production URLs**: 
+- **Character Creation**: https://lightwalker-mvp.vercel.app/ai-character-creation-hybrid
+- **Daily Actions (Current)**: https://lightwalker-mvp.vercel.app/daily-actions4
+- **Daily Actions (Legacy)**: https://lightwalker-mvp.vercel.app/daily-actions3
 
 ---
 
 ## ✅ COMPLETED FEATURES (Ready for Users)
+
+### 🎮 Daily Actions4 Timeline System - LIVE (August 6, 2025)
+- **Database-First Architecture**: Complete timeline activities API with PostgreSQL persistence
+- **Custom Image Support**: Timeline activities display beautiful custom images instead of emoji fallbacks
+- **5-minute Snap Functionality**: Activities automatically snap to 5-minute intervals when dropped (8:00, 8:05, 8:10, etc.)
+- **Gamified Mode Default**: Interface starts in gamified mode for better user experience
+- **Recurring Activity Support**: Users can set daily/weekly patterns AND add one-off instances
+- **Drag State Management**: Fixed tooltip interference during drag operations
+- **React Beautiful DND Integration**: Seamless drag-and-drop from inventory to timeline
+- **Real-time Activity Processing**: Activities with preferences applied show custom images and grid sizes
+
+### 🎮 Daily Actions3 Experimental Interface - LEGACY (August 2-4, 2025)
+- **Game-Like Timeline System**: Full 24-hour timeline with 8 zoom levels (1x-8x)
+- **Tarkov-Style Activity Inventory**: Drag-and-drop activity grid with rarity-based styling
+- **Perfect Icon Alignment**: Solved critical positioning issues with CSS transform centering
+- **Dual Activity Libraries**: SimpleActivityLibrary + TarkovInventoryGrid for different UX preferences
+- **Advanced Drag & Drop**: React Beautiful DND with visual feedback, scaling, and precise positioning
+- **Current Activity Panel**: Game-like 144px graphics containers with live time tracking
+- **Comprehensive Theme System**: Classic/Gamified mode switching throughout interface
+- **Performance Optimized**: Eliminated render loops, 28.7 kB bundle size, stable production build
+- **18 Custom Activities**: From mindful breathing to life-changing decisions with custom .jpg icons
+- **Mobile Responsive**: Fixed hover windows, proper scaling across orientations
 
 ### 🤖 AI Character Creation System - LIVE
 - **Hybrid Interface**: `/ai-character-creation-hybrid` page fully functional
@@ -72,11 +97,20 @@
 
 ## 🚀 NEXT DEVELOPMENT PRIORITIES
 
-### Phase 2: Post-Creation Experience (Next Sprint)
-1. **Daily Behavior System**: Enhanced Daily-Do items with first-person examples
-2. **Situation-Based Guidance**: Context-aware coaching conversations
-3. **Achievement System**: Progress tracking and milestone rewards
-4. **Real-Time Coaching**: Interactive behavior copying sessions
+### Phase 3: SCALE - User Accounts & Achievement System (Current Sprint)
+1. **Timeline Reschedule Fix**: Fix issue where dragging existing timeline activities causes them to disappear (Next Session)
+2. **User Account System**: Authentication, profiles, and personal data persistence
+3. **Achievement System**: Points, streaks, levels, and progression tracking with emotional graphics candy
+4. **User Profile Integration**: Link activities to user's created Lightwalker™ character
+5. **Activity Completion Flow**: Check-off system with reflection and rating components
+6. **Emotional Graphics**: Reward animations, achievement badges, progress celebrations
+7. **Mobile Optimization**: Enhanced touch interactions and responsive timeline controls
+
+### Phase 4: Advanced Daily Experience (Next Sprint)
+1. **Smart Scheduling**: AI-powered optimal timing suggestions based on user patterns
+2. **Context-Aware Coaching**: Situation-based guidance during activity execution
+3. **Social Features**: Share achievements and activity templates with community
+4. **Analytics Dashboard**: Personal insights and progress visualization
 
 ### Infrastructure Scaling (50+ Users)
 - **Supabase Migration**: Plan documented in PRD for database scaling
@@ -108,11 +142,17 @@
 - **AI Model Selection Critical**: DeepSeek R1 8-hour debugging nightmare vs GPT-4o-mini instant success
 - **Semantic Alignment**: User language must match database structure ("forgiveness" vs "forgiving")
 - **Systematic Testing**: Test model reliability before deep debugging UI issues
+- **CSS Transform > Hard-coded Pixels**: Browser calculations more accurate than manual positioning math
+- **Complex State Debugging**: React Beautiful DND requires careful state management to avoid visual inconsistencies
+- **Performance First**: Eliminate render loops early - they compound into major UX issues
 
 ### Development Patterns
 - **Enhanced Project Manager**: Mandatory UX flow planning prevents scope creep
 - **Smart Categorization**: Solves template scaling issues
 - **Windows Development**: Complete dependency installation in subdirectory required
+- **Session Continuity**: Multi-day development sessions require careful context preservation
+- **Documentation-Driven Learning**: Success patterns prevent repeating same debugging cycles
+- **Visual-First Development**: Game-like interfaces need graphics assets before functionality
 
 ### User Research Insights
 - **Discovery Triage Works**: 4-pathway system addresses 90% of user uncertainty
@@ -123,10 +163,28 @@
 
 ## 🔮 VISION: POST-MVP ROADMAP
 
+**Next 3 Months**:
+- Complete daily actions system with full persistence and user accounts
+- Advanced gamification with achievements, levels, and social features
+- Mobile app development with offline capability
+- AI coaching system for real-time behavioral guidance
+
 **Next 6 Months**:
-- Daily behavior copying system with AI coach
 - Community features and shared Lightwalker™ templates
-- Mobile app development
-- Advanced personality trait combinations
+- Advanced personality trait combinations and dynamic character evolution
+- Enterprise features for teams and organizations
+- API platform for third-party integrations
 
 **Strategic Goal**: Become the definitive platform for personal development through AI-powered behavioral modeling.
+
+---
+
+## 📊 CURRENT TECHNICAL STACK
+
+**Frontend**: Next.js 14, TypeScript, Tailwind CSS, React Beautiful DND
+**Backend**: PostgreSQL, Prisma ORM, Vercel deployment
+**AI Integration**: GPT-4o-mini via OpenRouter
+**Game Assets**: Custom Tarkov-style .jpg icons, rarity-based styling
+**Development**: Windows 11, pnpm, Git workflow with session documentation
+
+**Key Components**: GamelikeTimeline, TarkovInventoryGrid, SimpleActivityLibrary, CurrentActivityPanel, UpNextPanel, comprehensive theme system
