@@ -1,4 +1,5 @@
 import { ActivityPreference, ActivityPreferenceSaveRequest, ActivityPreferencesApiResponse, Activity } from '@/types/daily-use'
+import { getEffectiveSessionId, CONFIG } from './dev-config'
 
 /**
  * Activity Preferences Utility Functions
@@ -12,13 +13,24 @@ export function generateSessionId(): string {
 
 // Get current user/session identifier
 export function getCurrentUserIdentifier(): { userId?: string; sessionId: string } {
-  // For now, we'll use session-based storage since user auth isn't implemented
-  // In the future, this would check for authenticated user
+  // Check if we should force global mode (development)
+  if (CONFIG.forceGlobalPreferences) {
+    if (CONFIG.logSessionMode) {
+      console.log('🔧 DEV MODE: Using system-default sessionId - all changes apply globally');
+    }
+    return { sessionId: 'system-default' }
+  }
+  
+  // Beta/production mode: use individual sessions
   let sessionId = localStorage.getItem('lightwalker_session_id')
   
   if (!sessionId) {
     sessionId = generateSessionId()
     localStorage.setItem('lightwalker_session_id', sessionId)
+  }
+  
+  if (CONFIG.logSessionMode) {
+    console.log('👤 BETA MODE: Using individual sessionId:', sessionId.substring(0, 20) + '...');
   }
   
   return { sessionId }

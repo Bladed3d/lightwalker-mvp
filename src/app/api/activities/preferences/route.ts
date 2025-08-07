@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { z } from 'zod'
+import { getEffectiveSessionId, CONFIG } from '@/lib/dev-config'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -132,18 +133,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = savePreferenceSchema.parse(body)
 
-    // Require either userId or sessionId
-    if (!validatedData.userId && !validatedData.sessionId) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Either userId or sessionId is required' 
-        },
-        { status: 400 }
-      )
-    }
-
-    // If user is provided, verify they exist
+    // 🌟 FORCE ALL CHANGES TO BE SYSTEM DEFAULTS (until user accounts implemented)
+    // Until user authentication is implemented, save all preferences as system defaults
+    // so changes apply to everyone globally
+    
+    // If user is provided, verify they exist (for future when auth is implemented)
     if (validatedData.userId) {
       const user = await prisma.user.findUnique({
         where: { id: validatedData.userId },
@@ -161,22 +155,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Build where clause for upsert
-    const whereClause: any = {
-      activityId: validatedData.activityId
-    }
+    // 🔧 DEV MODE: Use configuration to determine session behavior
+    const effectiveSessionId = getEffectiveSessionId(validatedData.sessionId, validatedData.userId);
+    const effectiveUserId = validatedData.userId || null;
 
-    if (validatedData.userId) {
-      whereClause.userId = validatedData.userId
-    } else if (validatedData.sessionId) {
-      whereClause.sessionId = validatedData.sessionId
+    if (CONFIG.logSessionMode) {
+      console.log(`💾 Saving preference for ${validatedData.activityTitle} as ${effectiveUserId ? 'user preference' : (effectiveSessionId === 'system-default' ? 'SYSTEM DEFAULT' : 'session preference')}`);
     }
 
     // Upsert the activity preference
     const preference = await prisma.activityPreference.upsert({
-      where: validatedData.userId 
-        ? { unique_user_activity_preference: { userId: validatedData.userId, activityId: validatedData.activityId } }
-        : { unique_session_activity_preference: { sessionId: validatedData.sessionId!, activityId: validatedData.activityId } },
+      where: effectiveUserId 
+        ? { unique_user_activity_preference: { userId: effectiveUserId, activityId: validatedData.activityId } }
+        : { unique_session_activity_preference: { sessionId: effectiveSessionId!, activityId: validatedData.activityId } },
       update: {
         activityTitle: validatedData.activityTitle,
         customDuration: validatedData.customDuration,
@@ -197,8 +188,8 @@ export async function POST(request: NextRequest) {
         updatedAt: new Date()
       },
       create: {
-        userId: validatedData.userId,
-        sessionId: validatedData.sessionId,
+        userId: effectiveUserId,
+        sessionId: effectiveSessionId,
         activityId: validatedData.activityId,
         activityTitle: validatedData.activityTitle,
         customDuration: validatedData.customDuration,
