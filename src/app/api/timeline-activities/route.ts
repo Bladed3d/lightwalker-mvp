@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
         activityId: { in: activityIds },
         OR: [
           ...(userId ? [{ userId }] : []),
-          ...(sessionId ? [{ sessionId }] : [])
+          ...(effectiveSessionId ? [{ sessionId: effectiveSessionId }] : [])
         ],
         isActive: true
       }

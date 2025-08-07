@@ -159,15 +159,55 @@ export async function POST(request: NextRequest) {
     const effectiveSessionId = getEffectiveSessionId(validatedData.sessionId, validatedData.userId);
     const effectiveUserId = validatedData.userId || null;
 
+    // Ensure we have either a user ID or session ID for the unique constraint
+    if (!effectiveUserId && !effectiveSessionId) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Either userId or sessionId is required for saving preferences' 
+        },
+        { status: 400 }
+      )
+    }
+
     if (CONFIG.logSessionMode) {
       console.log(`💾 Saving preference for ${validatedData.activityTitle} as ${effectiveUserId ? 'user preference' : (effectiveSessionId === 'system-default' ? 'SYSTEM DEFAULT' : 'session preference')}`);
     }
 
-    // Upsert the activity preference
+    // Check if this is a new activity that needs to be created first
+    if (validatedData.activityId.startsWith('new-activity-')) {
+      // Create the base activity first
+      const existingActivity = await prisma.activity.findUnique({
+        where: { id: validatedData.activityId }
+      });
+
+      if (!existingActivity) {
+        console.log(`🆕 Creating new activity: ${validatedData.activityTitle} (${validatedData.activityId})`);
+        
+        await prisma.activity.create({
+          data: {
+            id: validatedData.activityId,
+            title: validatedData.activityTitle,
+            category: validatedData.customCategory || 'mindfulness',
+            duration: validatedData.customDuration || '30 min',
+            points: validatedData.customPoints || 30,
+            difficulty: validatedData.customDifficulty || 5,
+            icon: validatedData.customIcon || '🆕',
+            description: validatedData.customDescription || '',
+            rarity: 'common',
+            isActive: true
+          }
+        });
+        
+        console.log(`✅ Base activity created successfully: ${validatedData.activityTitle}`);
+      }
+    }
+
+    // Upsert the activity preference - use session constraint when no user ID
     const preference = await prisma.activityPreference.upsert({
       where: effectiveUserId 
         ? { unique_user_activity_preference: { userId: effectiveUserId, activityId: validatedData.activityId } }
-        : { unique_session_activity_preference: { sessionId: effectiveSessionId!, activityId: validatedData.activityId } },
+        : { unique_session_activity_preference: { sessionId: effectiveSessionId, activityId: validatedData.activityId } },
       update: {
         activityTitle: validatedData.activityTitle,
         customDuration: validatedData.customDuration,
@@ -218,6 +258,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error('❌ Zod validation error:', error.errors)
       return NextResponse.json(
         { 
           success: false, 
@@ -228,11 +269,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Error saving activity preference:', error)
+    // Enhanced error logging for debugging
+    console.error('❌ Database error saving activity preference:', {
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+      requestData: {
+        effectiveUserId,
+        effectiveSessionId,
+        activityId: validatedData.activityId,
+        activityTitle: validatedData.activityTitle
+      }
+    })
+    
     return NextResponse.json(
       { 
         success: false, 
-        error: 'Failed to save activity preference' 
+        error: 'Failed to save activity preference',
+        details: error instanceof Error ? error.message : 'Unknown database error'
       },
       { status: 500 }
     )

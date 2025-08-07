@@ -10,7 +10,8 @@ import {
   Sparkles,
   Menu,
   X,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Bell
 } from 'lucide-react';
 import { DragDropContext } from 'react-beautiful-dnd';
 
@@ -30,6 +31,9 @@ import DurationScreen from '@/components/daily-actions4/DurationScreen';
 import QuickActionsPanel from '@/components/daily-actions4/QuickActionsPanel';
 import InstructionsWindow from '@/components/daily-actions4/InstructionsWindow';
 import RepeatActivityModal from '@/components/daily-actions4/RepeatActivityModal';
+import ActivityAlertModal from '@/components/daily-actions4/ActivityAlertModal';
+import NotificationSettingsModal from '@/components/daily-actions4/NotificationSettingsModal';
+import { DebugPanel } from '@/components/debug/DebugPanel';
 
 // Utilities
 import { getSessionId, getUserId } from '@/lib/session-utils';
@@ -37,6 +41,7 @@ import { getSessionId, getUserId } from '@/lib/session-utils';
 
 // Hooks and utilities
 import { useDailyActivities } from '@/hooks/useDailyActivities';
+import { useNotifications } from '@/hooks/useNotifications';
 
 // Helper function to snap time to 5-minute intervals
 function snapToFiveMinutes(timeString: string): string {
@@ -95,6 +100,27 @@ export default function DailyActions2Page() {
     getTodayStreak
   } = useDailyActivities();
 
+  // Fix React Strict Mode interference with drag and drop
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Notifications hook
+  const { settings: notificationSettings, updateSettings, isInitialized, initialize } = useNotifications();
+  
+  // Initialize notifications on mount if not already done
+  useEffect(() => {
+    if (!isInitialized && mounted) {
+      initialize();
+    }
+  }, [isInitialized, initialize, mounted]);
+  
+  // FORCE DEBUG - What is the actual value?
+  console.log('🔥 BELL DEBUG - notificationSettings:', notificationSettings);
+  console.log('🔥 BELL DEBUG - enabled value:', notificationSettings?.enabled);
+  console.log('🔥 BELL DEBUG - enabled type:', typeof notificationSettings?.enabled);
+
   // UI State
   const [uiState, setUIState] = useState<DailyUseUIState>({
     activeTab: 'timeline',
@@ -132,12 +158,20 @@ export default function DailyActions2Page() {
     activity: null,
     position: { x: 0, y: 0 }
   });
-  
-  // Fix React Strict Mode interference with drag and drop
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+
+  // Alert Modal State
+  const [alertModal, setAlertModal] = useState<{
+    isVisible: boolean;
+    activity: any;
+    position: { x: number; y: number };
+  }>({
+    isVisible: false,
+    activity: null,
+    position: { x: 0, y: 0 }
+  });
+
+  // Notification Settings Modal State  
+  const [showNotificationSettings, setShowNotificationSettings] = useState(false);
 
   // Load timeline activities from database on mount
   useEffect(() => {
@@ -830,6 +864,19 @@ export default function DailyActions2Page() {
               </div>
             </div>
 
+            {/* Notification Settings Button */}
+            <button
+              onClick={() => setShowNotificationSettings(true)}
+              className="p-2 rounded-lg hover:bg-indigo-50 transition-colors"
+              title={`Notification Settings - ${notificationSettings?.enabled ? 'Enabled' : 'Disabled'}`}
+            >
+              <Bell className={`w-6 h-6 transition-colors ${
+                notificationSettings?.enabled === true
+                  ? 'text-green-500 hover:text-green-600' 
+                  : 'text-gray-400 hover:text-gray-500'
+              }`} />
+            </button>
+
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -1096,6 +1143,14 @@ export default function DailyActions2Page() {
             onActivitySetRepeat={(activity, position) => {
               // Show the focused repeat modal at click position
               setRepeatModal({
+                isVisible: true,
+                activity: activity,
+                position: position
+              });
+            }}
+            onActivitySetAlert={(activity, position) => {
+              // Show the alert configuration modal
+              setAlertModal({
                 isVisible: true,
                 activity: activity,
                 position: position
@@ -1540,9 +1595,6 @@ export default function DailyActions2Page() {
               {uiState.quickActionPanel === 'schedule' && (
                 <p>Schedule management coming soon...</p>
               )}
-              {uiState.quickActionPanel === 'edit' && (
-                <p>Activity editing interface coming soon...</p>
-              )}
             </div>
           </div>
         </div>
@@ -1611,6 +1663,137 @@ export default function DailyActions2Page() {
           setRepeatModal({ isVisible: false, activity: null, position: { x: 0, y: 0 } });
         }}
       />
+
+      {/* Activity Alert Modal */}
+      <ActivityAlertModal
+        theme={theme}
+        isVisible={alertModal.isVisible}
+        activity={alertModal.activity}
+        position={alertModal.position}
+        onSave={async (activity, alertConfig) => {
+          try {
+            console.log('💾 Saving alert config for activity:', activity.title, alertConfig);
+            
+            if (alertConfig.alertsEnabled) {
+              // Import and use the notification system
+              const { notificationSystem } = await import('@/lib/notification-system');
+              
+              // Initialize if not already done
+              const isInitialized = await notificationSystem.initialize();
+              if (!isInitialized) {
+                console.warn('⚠️ Could not initialize notification system');
+                return;
+              }
+              
+              // Parse the scheduled time - handle both 12-hour and 24-hour formats
+              const scheduledTime = new Date();
+              let timeMatch = activity.scheduledTime?.match(/^(\d+):(\d+)([ap])$/);
+              
+              // If no AM/PM, try 24-hour format or assume current time context
+              if (!timeMatch) {
+                const simpleTimeMatch = activity.scheduledTime?.match(/^(\d+):(\d+)$/);
+                if (simpleTimeMatch) {
+                  const hours = parseInt(simpleTimeMatch[1]);
+                  const minutes = parseInt(simpleTimeMatch[2]);
+                  
+                  // If it's a 24-hour format (0-23), use directly
+                  if (hours >= 0 && hours <= 23) {
+                    scheduledTime.setHours(hours, minutes, 0, 0);
+                  } else {
+                    console.error('❌ Invalid hour format:', activity.scheduledTime);
+                  }
+                }
+              } else {
+                // Handle 12-hour format with AM/PM
+                let hours = parseInt(timeMatch[1]);
+                const minutes = parseInt(timeMatch[2]);
+                const period = timeMatch[3];
+                
+                // Convert to 24-hour format
+                if (period === 'p' && hours !== 12) hours += 12;
+                if (period === 'a' && hours === 12) hours = 0;
+                
+                scheduledTime.setHours(hours, minutes, 0, 0);
+              }
+              
+              if (timeMatch || activity.scheduledTime?.match(/^(\d+):(\d+)$/)) {
+                
+                console.log('📅 Scheduling alerts for:', {
+                  activity: activity.title,
+                  scheduledTime: scheduledTime.toLocaleString(),
+                  onTime: alertConfig.showOnTime,
+                  minutesBefore: alertConfig.showMinutesBefore
+                });
+                
+                // Schedule on-time alert
+                if (alertConfig.showOnTime) {
+                  const onTimeAlert = {
+                    id: `${activity.id}-ontime`,
+                    timelineActivityId: activity.id,
+                    activityTitle: activity.title || activity.name,
+                    activityDescription: activity.description,
+                    activityIcon: activity.icon,
+                    scheduledTime: scheduledTime,
+                    alertType: 'start' as const,
+                    isEnabled: true
+                  };
+                  
+                  const scheduled = notificationSystem.scheduleActivityAlert(onTimeAlert);
+                  console.log('⏰ On-time alert scheduled:', scheduled);
+                }
+                
+                // Schedule early alert
+                if (alertConfig.showMinutesBefore > 0) {
+                  const earlyAlert = {
+                    id: `${activity.id}-early`,
+                    timelineActivityId: activity.id,
+                    activityTitle: activity.title || activity.name,
+                    activityDescription: activity.description,
+                    activityIcon: activity.icon,
+                    scheduledTime: scheduledTime,
+                    alertType: 'pre_activity' as const,
+                    minutesBefore: alertConfig.showMinutesBefore,
+                    isEnabled: true
+                  };
+                  
+                  const scheduled = notificationSystem.scheduleActivityAlert(earlyAlert);
+                  console.log(`⏰ Early alert (${alertConfig.showMinutesBefore}min before) scheduled:`, scheduled);
+                }
+                
+                // Update notification system settings with user preferences
+                notificationSystem.updateSettings({
+                  soundEnabled: alertConfig.soundEnabled,
+                  soundType: alertConfig.soundType
+                });
+                
+              } else {
+                console.error('❌ Could not parse scheduled time:', activity.scheduledTime);
+              }
+            }
+            
+            // Close modal
+            setAlertModal({ isVisible: false, activity: null, position: { x: 0, y: 0 } });
+            
+          } catch (error) {
+            console.error('❌ Error saving alert config:', error);
+            alert('Failed to save alert configuration. Please try again.');
+          }
+        }}
+        onCancel={() => {
+          setAlertModal({ isVisible: false, activity: null, position: { x: 0, y: 0 } });
+        }}
+      />
+
+      {/* Notification Settings Modal */}
+      <NotificationSettingsModal
+        theme={theme}
+        isVisible={showNotificationSettings}
+        onClose={() => setShowNotificationSettings(false)}
+      />
+
+      {/* Debug Panel - Development Only */}
+      <DebugPanel />
+
       </div>
     </DragDropContext>
   );

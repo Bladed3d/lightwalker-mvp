@@ -86,6 +86,7 @@ interface GamelikeTimelineProps {
   onActivityAdd?: (activity: any, timeSlot: string) => void;
   onActivityRemove?: (activity: any) => void;
   onActivitySetRepeat?: (activity: any, position: { x: number; y: number }) => void;
+  onActivitySetAlert?: (activity: any, position: { x: number; y: number }) => void;
   isDndActive?: boolean;
   timelineActivities?: any[];
   onDragEnd?: (result: any) => void;
@@ -95,7 +96,7 @@ interface GamelikeTimelineProps {
   isMobileView?: boolean;
 }
 
-const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySetRepeat, isDndActive = false, timelineActivities = [], onDragEnd, hideCurrentActivity = false, onTimeChange, onActivitiesChange, isMobileView = false }: GamelikeTimelineProps) => {
+const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySetRepeat, onActivitySetAlert, isDndActive = false, timelineActivities = [], onDragEnd, hideCurrentActivity = false, onTimeChange, onActivitiesChange, isMobileView = false }: GamelikeTimelineProps) => {
   // Fix Next.js SSR/CSR mismatch for React Beautiful DND
   if (typeof window === 'undefined') {
     return (
@@ -1082,18 +1083,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                 }}
               >
                 {timelineActivities.map((activity, index) => {
-                  // Debug activity category data
-                  if (activity.title?.toLowerCase().includes('dogs')) {
-                    console.log('🔍 DURATION LINE DEBUG - dogs activity:', {
-                      activity,
-                      category: activity.category,
-                      customCategory: activity.customCategory,
-                      activityId: activity.activityId,
-                      title: activity.title,
-                      scheduledTime: activity.scheduledTime,
-                      duration: activity.duration
-                    });
-                  }
+                  // Debug activity category data (removed debug spam)
 
                   // Parse activity time (same logic as activity rendering)
                   let hours, mins;
@@ -1130,17 +1120,7 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                   const color = CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS] || CATEGORY_COLORS.custom;
                   const verticalOffset = CATEGORY_VERTICAL_OFFSETS[category as keyof typeof CATEGORY_VERTICAL_OFFSETS] || CATEGORY_VERTICAL_OFFSETS.custom;
                   
-                  // Additional debug for dogs activity
-                  if (activity.title?.toLowerCase().includes('dogs')) {
-                    console.log('🔍 DURATION LINE RENDERING - dogs activity:', {
-                      finalCategory: category,
-                      color,
-                      verticalOffset,
-                      startPosition,
-                      endPosition,
-                      durationMinutes
-                    });
-                  }
+                  // Additional debug for dogs activity (removed debug spam)
                   
                   // Calculate line Y position (from bottom of container)
                   const lineY = 144 - 24 - verticalOffset; // container height - timeline base - category offset
@@ -1509,6 +1489,18 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                   >
                     <span className="text-blue-500">🔄</span>
                     Set Repeat
+                  </button>
+                  <button
+                    className="w-full px-4 py-2 text-left text-sm text-yellow-400 hover:bg-slate-700 hover:text-yellow-300 transition-colors flex items-center gap-2"
+                    onClick={() => {
+                      if (onActivitySetAlert) {
+                        onActivitySetAlert(contextMenu.activity, { x: contextMenu.x, y: contextMenu.y });
+                      }
+                      setContextMenu(null);
+                    }}
+                  >
+                    <span className="text-yellow-500">🔔</span>
+                    Set Alerts
                   </button>
                   <button
                     className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-slate-700 hover:text-red-300 transition-colors flex items-center gap-2"

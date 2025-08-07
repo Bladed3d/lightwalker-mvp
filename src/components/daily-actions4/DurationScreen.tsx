@@ -142,10 +142,14 @@ export default function DurationScreen({
             } else {
               console.log('ℹ️ No timeline activity found for:', baseActivityId);
             }
+          } else {
+            console.log('ℹ️ Timeline activities API not available, using activity defaults');
           }
+        } else {
+          console.log('ℹ️ No session ID, using activity defaults');
         }
       } catch (error) {
-        console.error('❌ Error loading timeline activity:', error);
+        console.log('ℹ️ Timeline activities API not available, using activity defaults:', error.message);
       }
       
       // Use timeline settings if available, otherwise use passed activity data

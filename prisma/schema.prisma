@@ -17,6 +17,7 @@ model User {
   status                     String                      @default("active")
   createdAt                  DateTime                    @default(now()) @map("created_at")
   lastActive                 DateTime                    @updatedAt @map("last_active")
+  activityAlerts             ActivityAlert[]
   activityCompletions        ActivityCompletion[]
   activityPreferences        ActivityPreference[]
   conversations              Conversation[]
@@ -501,24 +502,25 @@ model Activity {
 }
 
 model TimelineActivity {
-  id               String    @id @default(cuid())
-  userId           String?   @map("user_id")
-  sessionId        String?   @map("session_id")
-  activityId       String    @map("activity_id")
-  scheduledTime    String    @map("scheduled_time")
-  scheduledDate    DateTime  @default(now()) @map("scheduled_date")
-  isCompleted      Boolean   @default(false) @map("is_completed")
-  completedAt      DateTime? @map("completed_at")
-  customDuration   String?   @map("custom_duration")
-  customPoints     Int?      @map("custom_points")
+  id               String          @id @default(cuid())
+  userId           String?         @map("user_id")
+  sessionId        String?         @map("session_id")
+  activityId       String          @map("activity_id")
+  scheduledTime    String          @map("scheduled_time")
+  scheduledDate    DateTime        @default(now()) @map("scheduled_date")
+  isCompleted      Boolean         @default(false) @map("is_completed")
+  completedAt      DateTime?       @map("completed_at")
+  customDuration   String?         @map("custom_duration")
+  customPoints     Int?            @map("custom_points")
   notes            String?
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @updatedAt @map("updated_at")
-  isRecurring      Boolean   @default(false) @map("is_recurring")
-  parentTimelineId String?   @map("parent_timeline_id")
-  recurringPattern Json?     @map("recurring_pattern")
-  activity         Activity  @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  user             User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+  isRecurring      Boolean         @default(false) @map("is_recurring")
+  parentTimelineId String?         @map("parent_timeline_id")
+  recurringPattern Json?           @map("recurring_pattern")
+  activity         Activity        @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user             User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  alerts           ActivityAlert[]
 
   @@index([userId, scheduledDate])
   @@index([sessionId, scheduledDate])
@@ -631,4 +633,40 @@ model ActivityPreference {
   @@index([categoryId])
   @@index([activityType])
   @@map("activity_preferences")
+}
+
+model ActivityAlert {
+  id                 String           @id @default(cuid())
+  timelineActivityId String           @map("timeline_activity_id") 
+  userId             String?          @map("user_id")
+  sessionId          String?          @map("session_id")
+  
+  // Alert configuration
+  alertType          String           // "pre_activity", "start", "completion_reminder", "custom"
+  minutesBefore      Int?             @map("minutes_before") // For pre-activity alerts (5, 15, 60, etc)
+  customTime         String?          @map("custom_time")    // For custom alerts (e.g., "7:45a")
+  
+  // Alert settings
+  isEnabled          Boolean          @default(true) @map("is_enabled")
+  alertMethod        String           @default("browser") // "browser", "email", "sms" (future)
+  alertMessage       String?          @map("alert_message")
+  
+  // Notification status
+  isTriggered        Boolean          @default(false) @map("is_triggered")
+  triggeredAt        DateTime?        @map("triggered_at")
+  scheduledFor       DateTime         @map("scheduled_for") // Calculated alert time
+  
+  // Metadata
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
+  
+  // Relations
+  timelineActivity   TimelineActivity @relation(fields: [timelineActivityId], references: [id], onDelete: Cascade)
+  user               User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, scheduledFor])
+  @@index([sessionId, scheduledFor])
+  @@index([scheduledFor, isTriggered])
+  @@index([timelineActivityId])
+  @@map("activity_alerts")
 }
