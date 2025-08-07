@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { getEffectiveSessionId, CONFIG } from '@/lib/dev-config';
 
 const prisma = new PrismaClient();
 
@@ -7,15 +8,22 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
-    const sessionId = url.searchParams.get('sessionId');
+    const rawSessionId = url.searchParams.get('sessionId');
     const userId = url.searchParams.get('userId');
     const date = url.searchParams.get('date'); // Optional: filter by specific date
 
-    console.log('🔍 GET /api/timeline-activities called with:', {
-      sessionId,
-      userId,
-      date
-    });
+    // 🔧 DEV MODE: Use configuration to determine session behavior
+    const effectiveSessionId = getEffectiveSessionId(rawSessionId, userId);
+
+    if (CONFIG.logSessionMode) {
+      console.log('🔍 GET /api/timeline-activities called with:', {
+        rawSessionId,
+        effectiveSessionId,
+        userId,
+        date,
+        devMode: CONFIG.forceGlobalTimelineActivities
+      });
+    }
 
     // Build where clause for user identification
     const whereClause: any = {
@@ -26,8 +34,8 @@ export async function GET(request: NextRequest) {
       whereClause.OR.push({ userId: userId });
     }
 
-    if (sessionId) {
-      whereClause.OR.push({ sessionId: sessionId });
+    if (effectiveSessionId) {
+      whereClause.OR.push({ sessionId: effectiveSessionId });
     }
 
     // If neither provided, return empty array
@@ -149,8 +157,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log('📝 POST /api/timeline-activities called with:', body);
-
+    
     const {
       activityId,
       scheduledTime,
@@ -158,12 +165,26 @@ export async function POST(request: NextRequest) {
       customDuration,
       customPoints,
       notes,
-      sessionId,
+      sessionId: rawSessionId,
       userId,
       // Recurring fields (to be implemented)
       isRecurring,
       recurringPattern
     } = body;
+
+    // 🔧 DEV MODE: Use configuration to determine session behavior
+    const effectiveSessionId = getEffectiveSessionId(rawSessionId, userId);
+
+    if (CONFIG.logSessionMode) {
+      console.log('📝 POST /api/timeline-activities called with:', {
+        activityId,
+        scheduledTime,
+        rawSessionId,
+        effectiveSessionId,
+        userId,
+        devMode: CONFIG.forceGlobalTimelineActivities
+      });
+    }
 
     // Validate required fields
     if (!activityId || !scheduledTime) {
@@ -173,8 +194,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // User identification required
-    if (!sessionId && !userId) {
+    // User identification required (after applying dev mode logic)
+    if (!effectiveSessionId && !userId) {
       return NextResponse.json(
         { success: false, error: 'Either sessionId or userId is required' },
         { status: 400 }
@@ -190,7 +211,7 @@ export async function POST(request: NextRequest) {
         customDuration,
         customPoints,
         notes,
-        sessionId,
+        sessionId: effectiveSessionId,
         userId,
         isCompleted: false,
         isRecurring: isRecurring || false,

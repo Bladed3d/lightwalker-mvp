@@ -39,9 +39,9 @@ export const CONFIG = {
  * Get the effective session ID based on current mode
  */
 export function getEffectiveSessionId(userSessionId?: string, userId?: string): string {
-  if (CONFIG.forceGlobalPreferences && !userId) {
+  if ((CONFIG.forceGlobalPreferences || CONFIG.forceGlobalTimelineActivities) && !userId) {
     if (CONFIG.logSessionMode) {
-      console.log('🔧 DEV MODE: Using system-default sessionId');
+      console.log('🔧 DEV MODE: Using system-default sessionId for global data');
     }
     return 'system-default';
   }
