@@ -238,7 +238,8 @@ export async function saveActivityImageAndGridPreference(
   gridSize: { w: number; h: number },
   imageSource: 'upload' | 'ai_generated' = 'upload',
   imagePrompt?: string,
-  imageMetadata?: Record<string, any>
+  imageMetadata?: Record<string, any>,
+  customCategory?: string
 ): Promise<ActivityPreferencesApiResponse> {
   try {
     const { userId, sessionId } = getCurrentUserIdentifier()
@@ -252,7 +253,8 @@ export async function saveActivityImageAndGridPreference(
       imageSource,
       imagePrompt,
       imageMetadata,
-      customGridSize: gridSize
+      customGridSize: gridSize,
+      customCategory
     }
 
     const response = await fetch('/api/activities/preferences', {
@@ -295,6 +297,78 @@ export async function saveActivityImageAndGridPreference(
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error occurred',
       message: 'Failed to save activity image and grid preference' 
+    };
+  }
+}
+
+// Save activity preferences including category changes
+export async function saveActivityCategoryPreference(
+  activityId: string,
+  activityTitle: string,
+  customCategory: string,
+  customDuration?: string,
+  customPoints?: number
+): Promise<ActivityPreferencesApiResponse> {
+  try {
+    const { userId, sessionId } = getCurrentUserIdentifier()
+    
+    const requestData = {
+      userId,
+      sessionId,
+      activityId,
+      activityTitle,
+      customCategory,
+      customDuration,
+      customPoints
+    }
+
+    console.log('🔍 API REQUEST DEBUG:', {
+      url: '/api/activities/preferences',
+      method: 'POST',
+      requestData,
+      sessionId: sessionId
+    });
+
+    const response = await fetch('/api/activities/preferences', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData)
+    })
+
+    console.log('🔍 API RESPONSE DEBUG:', {
+      status: response.status,
+      ok: response.ok,
+      statusText: response.statusText
+    });
+
+    const result: ActivityPreferencesApiResponse = await response.json()
+    
+    console.log('🔍 API RESULT DEBUG:', result);
+    
+    if (result.success) {
+      console.log('✅ Activity category preference saved successfully!');
+      
+      // Trigger grid layout update event
+      window.dispatchEvent(new CustomEvent('gridLayoutChanged', {
+        detail: { 
+          activityId, 
+          newCategory: customCategory,
+          customDuration,
+          customPoints
+        }
+      }));
+    } else {
+      console.error('❌ API returned error:', result.error);
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('❌ Error saving activity category preference:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error occurred' 
     };
   }
 }

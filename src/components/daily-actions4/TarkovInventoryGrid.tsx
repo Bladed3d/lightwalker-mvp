@@ -20,6 +20,41 @@ import {
   getActivitiesFromDatabase
 } from '@/lib/database-activity-filter';
 
+// Category color mapping (7 core categories + legacy fallbacks)
+const CATEGORY_COLORS = {
+  // Core 7 categories
+  mindfulness: '#3B82F6',    // blue
+  physical: '#10B981',       // green  
+  creativity: '#F59E0B',     // orange
+  communication: '#8B4513',  // brown
+  learning: '#8B5CF6',       // purple
+  productivity: '#06B6D4',   // teal
+  relationships: '#EC4899',  // pink
+  // Legacy category fallbacks (will be remapped later)
+  creative: '#F59E0B',       // → creativity
+  'decision-making': '#06B6D4', // → productivity
+  reflection: '#3B82F6',     // → mindfulness
+  'self-care': '#10B981',    // → physical
+  growth: '#8B5CF6',         // → learning
+  nutrition: '#10B981',      // → physical
+  companionship: '#EC4899',  // → relationships
+  sleep: '#10B981',          // → physical
+  morning: '#10B981',        // → physical
+  work: '#06B6D4',           // → productivity
+  social: '#EC4899',         // → relationships
+  custom: '#9CA3AF',      // neutral gray
+} as const;
+
+// Get category color for activity (supports custom categories from preferences)
+const getCategoryColor = (activity: ActivityTemplate, activityPreferences: ActivityPreference[]): string => {
+  // Check if activity has custom category preference
+  const preference = activityPreferences.find(p => p.activityId === activity.id);
+  const category = preference?.customCategory || activity.category;
+  
+  // Return color from mapping or default gray for unknown categories
+  return CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS] || '#9CA3AF';
+};
+
 export interface ActivityTemplate {
   id: string;
   title: string;
@@ -104,7 +139,38 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
   const [searchQuery, setSearchQuery] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
-  const layoutEngine = useMemo(() => new GridLayoutEngine(10), []); // 10 columns
+  // Calculate optimal columns based on container width
+  const [containerWidth, setContainerWidth] = useState(1000);
+  const optimalColumns = useMemo(() => {
+    const cellSize = isMobileView ? 60 : 100;
+    const minColumns = 2; // Always show at least 2 columns
+    const maxColumns = isMobileView ? 6 : 12; // Reasonable limits
+    const calculatedColumns = Math.floor(containerWidth / cellSize);
+    return Math.max(minColumns, Math.min(maxColumns, calculatedColumns));
+  }, [containerWidth, isMobileView]);
+  
+  const layoutEngine = useMemo(() => new GridLayoutEngine(optimalColumns), [optimalColumns]);
+
+  // Track container width for responsive columns
+  useEffect(() => {
+    const updateContainerWidth = () => {
+      if (gridRef.current) {
+        const width = gridRef.current.offsetWidth;
+        setContainerWidth(width);
+      }
+    };
+
+    // Initial width
+    updateContainerWidth();
+
+    // Set up resize observer
+    const resizeObserver = new ResizeObserver(updateContainerWidth);
+    if (gridRef.current) {
+      resizeObserver.observe(gridRef.current);
+    }
+
+    return () => resizeObserver.disconnect();
+  }, [isMobileView]);
 
   // Fix Next.js SSR/CSR mismatch for React Beautiful DND
   if (typeof window === 'undefined') {
@@ -609,12 +675,12 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
                           }
                         } : undefined}
                       >
-                        {/* Grid size indicator for custom items */}
-                        {activity.gridSize && (activity.gridSize.w !== 1 || activity.gridSize.h !== 1) && (
+                        {/* Grid size indicator for custom items - COMMENTED OUT */}
+                        {/* {activity.gridSize && (activity.gridSize.w !== 1 || activity.gridSize.h !== 1) && (
                           <div className="absolute top-0 left-0 bg-purple-500 text-white text-xs px-1 rounded-br z-10">
                             {activity.gridSize.w}×{activity.gridSize.h}
                           </div>
-                        )}
+                        )} */}
                         
                         {/* Timeline usage indicator */}
                         {(() => {
@@ -633,6 +699,23 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
                           }
                           return null;
                         })()}
+                        
+                        {/* Category color dot - bottom-left corner */}
+                        {activity.id !== 'create-new-activity' && (
+                          <div 
+                            className="absolute bottom-1 left-1 w-2 h-2 rounded-full z-10 shadow-md border border-black/20"
+                            style={{ 
+                              backgroundColor: getCategoryColor(activity, activityPreferences),
+                              // Add subtle glow effect
+                              boxShadow: `0 0 6px ${getCategoryColor(activity, activityPreferences)}40`
+                            }}
+                            title={(() => {
+                              const preference = activityPreferences.find(p => p.activityId === activity.id);
+                              const category = preference?.customCategory || activity.category;
+                              return `Category: ${category}`;
+                            })()}
+                          />
+                        )}
                         
                         {/* Enhanced drop time popup when dragging */}
                         {snapshot.isDragging && (
@@ -761,9 +844,9 @@ export default function TarkovInventoryGrid({ theme, onDragEnd, onActivityEdit, 
                 <span className="text-red-400 ml-1">Level {hoveredActivity.difficulty}</span>
               </div>
               <div>
-                <span className="text-slate-500">Rarity:</span>
-                <span className={`ml-1 capitalize ${getRarityColors(hoveredActivity.rarity).text}`}>
-                  {hoveredActivity.rarity}
+                <span className="text-slate-500">Category:</span>
+                <span className="ml-1 capitalize" style={{ color: getCategoryColor(hoveredActivity, activityPreferences) }}>
+                  {hoveredActivity.category}
                 </span>
               </div>
             </div>

@@ -7,148 +7,141 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Extended Sprint 1 schema with Lightwalker models
 model User {
-  id                String   @id @default(cuid())
-  wordpressUserId   Int      @unique @map("wordpress_user_id")
-  email             String   @unique
-  name              String?
-  preferences       String?  @default("{}")
-  timezone          String   @default("UTC")
-  status            String   @default("active")
-  createdAt         DateTime @default(now()) @map("created_at")
-  lastActive        DateTime @updatedAt @map("last_active")
-
-  conversations     Conversation[]
-  userStats         UserStats?
-  costTracking      CostTracking[]
-  userSessions      UserSession[]
-  userLightwalkers  UserLightwalker[]
-  copyingActivities CopyingActivity[]
-  progressMetrics   ProgressMetric[]
-  notificationSchedules NotificationSchedule[]
+  id                         String                      @id @default(cuid())
+  wordpressUserId            Int                         @unique @map("wordpress_user_id")
+  email                      String                      @unique
+  name                       String?
+  preferences                String?                     @default("{}")
+  timezone                   String                      @default("UTC")
+  status                     String                      @default("active")
+  createdAt                  DateTime                    @default(now()) @map("created_at")
+  lastActive                 DateTime                    @updatedAt @map("last_active")
+  activityCompletions        ActivityCompletion[]
+  activityPreferences        ActivityPreference[]
+  conversations              Conversation[]
+  copyingActivities          CopyingActivity[]
+  costTracking               CostTracking[]
+  lifeSkillProgress          LifeSkillProgress[]
+  notificationSchedules      NotificationSchedule[]
+  progressMetrics            ProgressMetric[]
+  savedCharacters            SavedCharacter[]
+  timelineActivities         TimelineActivity[]
+  userLightwalkers           UserLightwalker[]
   userRoleModelConsultations UserRoleModelConsultation[]
-  savedCharacters   SavedCharacter[]
-  activityPreferences ActivityPreference[]
-  lifeSkillProgress LifeSkillProgress[]
-  activityCompletions ActivityCompletion[]
-  timelineActivities TimelineActivity[]
+  userSessions               UserSession[]
+  userStats                  UserStats?
 
   @@map("users")
 }
 
-// Sprint 1 models remain unchanged
 model Conversation {
-  id                String   @id @default(cuid())
-  userId            String   @map("user_id")
-  title             String?
-  startedAt         DateTime @default(now()) @map("started_at")
-  endedAt           DateTime? @map("ended_at")
-  messageCount      Int      @default(0) @map("message_count")
-  totalTokensUsed   Int      @default(0) @map("total_tokens_used")
-  totalCost         Float    @default(0) @map("total_cost")
-  contextSummary    String?  @map("context_summary")
-  lastMessageAt     DateTime @updatedAt @map("last_message_at")
+  id              String    @id @default(cuid())
+  userId          String    @map("user_id")
+  title           String?
+  startedAt       DateTime  @default(now()) @map("started_at")
+  endedAt         DateTime? @map("ended_at")
+  messageCount    Int       @default(0) @map("message_count")
+  totalTokensUsed Int       @default(0) @map("total_tokens_used")
+  totalCost       Float     @default(0) @map("total_cost")
+  contextSummary  String?   @map("context_summary")
+  lastMessageAt   DateTime  @updatedAt @map("last_message_at")
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages        Message[]
 
-  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages          Message[]
-
-  @@map("conversations")
   @@index([userId, lastMessageAt])
   @@index([userId, startedAt])
+  @@map("conversations")
 }
 
 model Message {
-  id                String   @id @default(cuid())
-  conversationId    String   @map("conversation_id")
-  role              String   // 'user', 'assistant', 'system'
-  content           String
-  modelUsed         String?  @map("model_used")
-  tokensUsed        Int?     @map("tokens_used")
-  cost              Float?
-  complexityScore   Int?     @map("complexity_score")
-  processingTime    Int?     @map("processing_time") // milliseconds
-  createdAt         DateTime @default(now()) @map("created_at")
+  id              String       @id @default(cuid())
+  conversationId  String       @map("conversation_id")
+  role            String
+  content         String
+  modelUsed       String?      @map("model_used")
+  tokensUsed      Int?         @map("tokens_used")
+  cost            Float?
+  complexityScore Int?         @map("complexity_score")
+  processingTime  Int?         @map("processing_time")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
-  conversation      Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-
-  @@map("messages")
   @@index([conversationId, createdAt])
   @@index([role, createdAt])
+  @@map("messages")
 }
 
 model UserStats {
-  userId                String   @id @map("user_id")
-  totalMessages         Int      @default(0) @map("total_messages")
-  totalConversations    Int      @default(0) @map("total_conversations")
-  messagesThisWeek      Int      @default(0) @map("messages_this_week")
-  messagesThisMonth     Int      @default(0) @map("messages_this_month")
-  totalCost             Float    @default(0) @map("total_cost")
-  averageComplexity     Float?   @map("average_complexity")
-  favoriteTimeOfDay     String?  @map("favorite_time_of_day")
-  lastMessageDate       DateTime? @map("last_message_date")
-  dailyMessageCount     Int      @default(0) @map("daily_message_count")
-  dailyResetDate        DateTime @default(now()) @map("daily_reset_date")
-  feedbackProvided      Boolean  @default(false) @map("feedback_provided")
-  
-  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String    @id @map("user_id")
+  totalMessages      Int       @default(0) @map("total_messages")
+  totalConversations Int       @default(0) @map("total_conversations")
+  messagesThisWeek   Int       @default(0) @map("messages_this_week")
+  messagesThisMonth  Int       @default(0) @map("messages_this_month")
+  totalCost          Float     @default(0) @map("total_cost")
+  averageComplexity  Float?    @map("average_complexity")
+  favoriteTimeOfDay  String?   @map("favorite_time_of_day")
+  lastMessageDate    DateTime? @map("last_message_date")
+  dailyMessageCount  Int       @default(0) @map("daily_message_count")
+  dailyResetDate     DateTime  @default(now()) @map("daily_reset_date")
+  feedbackProvided   Boolean   @default(false) @map("feedback_provided")
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("user_stats")
   @@index([dailyResetDate])
   @@index([lastMessageDate])
+  @@map("user_stats")
 }
 
 model CostTracking {
-  id                String   @id @default(cuid())
-  userId            String   @map("user_id")
-  messageId         String?  @map("message_id")
-  modelUsed         String   @map("model_used")
-  tokensUsed        Int      @map("tokens_used")
-  cost              Float
-  requestType       String   @map("request_type") // 'chat', 'completion', 'embedding'
-  processingTime    Int?     @map("processing_time") // milliseconds
-  createdAt         DateTime @default(now()) @map("created_at")
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  messageId      String?  @map("message_id")
+  modelUsed      String   @map("model_used")
+  tokensUsed     Int      @map("tokens_used")
+  cost           Float
+  requestType    String   @map("request_type")
+  processingTime Int?     @map("processing_time")
+  createdAt      DateTime @default(now()) @map("created_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("cost_tracking")
   @@index([userId, createdAt])
   @@index([modelUsed, createdAt])
   @@index([createdAt])
+  @@map("cost_tracking")
 }
 
 model ModelPricing {
-  id                String   @id @default(cuid())
-  modelName         String   @unique @map("model_name")
-  provider          String
-  inputPricePer1k   Float    @map("input_price_per_1k")
-  outputPricePer1k  Float    @map("output_price_per_1k")
-  tier              String   // 'fast', 'complex', 'cheap'
-  contextWindow     Int      @map("context_window")
-  isActive          Boolean  @default(true) @map("is_active")
-  updatedAt         DateTime @updatedAt @map("updated_at")
+  id               String   @id @default(cuid())
+  modelName        String   @unique @map("model_name")
+  provider         String
+  inputPricePer1k  Float    @map("input_price_per_1k")
+  outputPricePer1k Float    @map("output_price_per_1k")
+  tier             String
+  contextWindow    Int      @map("context_window")
+  isActive         Boolean  @default(true) @map("is_active")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
-  @@map("model_pricing")
   @@index([tier, isActive])
   @@index([provider])
+  @@map("model_pricing")
 }
 
 model BetaInvite {
-  id                String   @id @default(cuid())
-  code              String   @unique
-  email             String?
-  usedBy            String?  @map("used_by")
-  usedAt            DateTime? @map("used_at")
-  expiresAt         DateTime @map("expires_at")
-  maxUses           Int      @default(1) @map("max_uses")
-  currentUses       Int      @default(0) @map("current_uses")
-  createdBy         String   @map("created_by")
-  notes             String?
-  createdAt         DateTime @default(now()) @map("created_at")
+  id          String    @id @default(cuid())
+  code        String    @unique
+  email       String?
+  usedBy      String?   @map("used_by")
+  usedAt      DateTime? @map("used_at")
+  expiresAt   DateTime  @map("expires_at")
+  maxUses     Int       @default(1) @map("max_uses")
+  currentUses Int       @default(0) @map("current_uses")
+  createdBy   String    @map("created_by")
+  notes       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
 
-  @@map("beta_invites")
   @@index([code])
   @@index([expiresAt])
+  @@map("beta_invites")
 }
 
 model UserSession {
@@ -162,125 +155,117 @@ model UserSession {
   lastActivity      DateTime @updatedAt @map("last_activity")
   expiresAt         DateTime @map("expires_at")
   createdAt         DateTime @default(now()) @map("created_at")
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("user_sessions")
   @@index([userId, isActive])
   @@index([sessionToken])
   @@index([expiresAt])
+  @@map("user_sessions")
 }
 
-// NEW LIGHTWALKER MODELS
-
 model LightwalkerTemplate {
-  id                String   @id @default(cuid())
-  name              String   @unique
-  displayName       String   @map("display_name")
-  tagline           String?
-  description       String
-  category          String   @default("general") // "general" or "situational"
-  monthlyPrice      Float    @default(29.00) @map("monthly_price")
-  personalityPrompt String   @map("personality_prompt")
-  communicationStyle String  @map("communication_style") // JSON string
-  coreTraits        String   @map("core_traits") // JSON array string
-  dailyRoutines     String   @map("daily_routines") // JSON string
-  challengeResponses String  @map("challenge_responses") // JSON string
-  sampleActivities  String   @map("sample_activities") // JSON array string
-  icon              String   @default("✨")
-  colorScheme       String   @map("color_scheme") // JSON string
-  isActive          Boolean  @default(true) @map("is_active")
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
+  id                 String            @id @default(cuid())
+  name               String            @unique
+  displayName        String            @map("display_name")
+  tagline            String?
+  description        String
+  category           String            @default("general")
+  monthlyPrice       Float             @default(29.00) @map("monthly_price")
+  personalityPrompt  String            @map("personality_prompt")
+  communicationStyle String            @map("communication_style")
+  coreTraits         String            @map("core_traits")
+  dailyRoutines      String            @map("daily_routines")
+  challengeResponses String            @map("challenge_responses")
+  sampleActivities   String            @map("sample_activities")
+  icon               String            @default("✨")
+  colorScheme        String            @map("color_scheme")
+  isActive           Boolean           @default(true) @map("is_active")
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+  userLightwalkers   UserLightwalker[]
 
-  userLightwalkers  UserLightwalker[]
-
-  @@map("lightwalker_templates")
   @@index([category, isActive])
+  @@map("lightwalker_templates")
 }
 
 model UserLightwalker {
-  id                    String   @id @default(cuid())
-  userId                String   @map("user_id")
-  templateId            String   @map("template_id")
-  customName            String?  @map("custom_name")
-  customizations        String?  // JSON string
-  problemFocus          String?  @map("problem_focus")
-  creationCompletedAt   DateTime? @map("creation_completed_at")
-  lastInteractionAt     DateTime? @map("last_interaction_at")
-  isActive              Boolean  @default(true) @map("is_active")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
-
-  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  template              LightwalkerTemplate @relation(fields: [templateId], references: [id])
+  id                    String                 @id @default(cuid())
+  userId                String                 @map("user_id")
+  templateId            String                 @map("template_id")
+  customName            String?                @map("custom_name")
+  customizations        String?
+  problemFocus          String?                @map("problem_focus")
+  creationCompletedAt   DateTime?              @map("creation_completed_at")
+  lastInteractionAt     DateTime?              @map("last_interaction_at")
+  isActive              Boolean                @default(true) @map("is_active")
+  createdAt             DateTime               @default(now()) @map("created_at")
+  updatedAt             DateTime               @updatedAt @map("updated_at")
   copyingActivities     CopyingActivity[]
-  notificationSchedules NotificationSchedule[]
   lightwalkerRoleModels LightwalkerRoleModel[]
+  notificationSchedules NotificationSchedule[]
+  template              LightwalkerTemplate    @relation(fields: [templateId], references: [id])
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("user_lightwalkers")
-  @@index([userId, isActive])
   @@unique([userId, isActive], name: "unique_active_lightwalker")
+  @@index([userId, isActive])
+  @@map("user_lightwalkers")
 }
 
 model CopyingActivity {
-  id                  String   @id @default(cuid())
-  userId              String   @map("user_id")
-  userLightwalkerId   String   @map("user_lightwalker_id")
-  activityDescription String   @map("activity_description")
-  activityType        String?  @map("activity_type")
-  templateSource      String?  @map("template_source")
-  difficultyRating    Int?     @map("difficulty_rating")
-  satisfactionRating  Int?     @map("satisfaction_rating")
-  dateCopied          DateTime @default(now()) @map("date_copied")
-  timeLogged          DateTime @default(now()) @map("time_logged")
+  id                  String          @id @default(cuid())
+  userId              String          @map("user_id")
+  userLightwalkerId   String          @map("user_lightwalker_id")
+  activityDescription String          @map("activity_description")
+  activityType        String?         @map("activity_type")
+  templateSource      String?         @map("template_source")
+  difficultyRating    Int?            @map("difficulty_rating")
+  satisfactionRating  Int?            @map("satisfaction_rating")
+  dateCopied          DateTime        @default(now()) @map("date_copied")
+  timeLogged          DateTime        @default(now()) @map("time_logged")
   notes               String?
-  createdAt           DateTime @default(now()) @map("created_at")
-
-  user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime        @default(now()) @map("created_at")
+  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   userLightwalker     UserLightwalker @relation(fields: [userLightwalkerId], references: [id])
 
-  @@map("copying_activities")
   @@index([userId, dateCopied])
   @@index([userLightwalkerId, dateCopied])
+  @@map("copying_activities")
 }
 
 model ProgressMetric {
-  id                  String   @id @default(cuid())
-  userId              String   @map("user_id")
-  date                DateTime @unique
-  dailyActivityCount  Int      @default(0) @map("daily_activity_count")
-  consistencyScore    Float    @default(0) @map("consistency_score")
-  weeklyAverage       Float    @default(0) @map("weekly_average")
-  streakDays          Int      @default(0) @map("streak_days")
-  activityDiversity   Int      @default(0) @map("activity_diversity")
-  calculatedAt        DateTime @default(now()) @map("calculated_at")
+  id                 String   @id @default(cuid())
+  userId             String   @map("user_id")
+  date               DateTime @unique
+  dailyActivityCount Int      @default(0) @map("daily_activity_count")
+  consistencyScore   Float    @default(0) @map("consistency_score")
+  weeklyAverage      Float    @default(0) @map("weekly_average")
+  streakDays         Int      @default(0) @map("streak_days")
+  activityDiversity  Int      @default(0) @map("activity_diversity")
+  calculatedAt       DateTime @default(now()) @map("calculated_at")
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("progress_metrics")
-  @@index([userId, date])
   @@unique([userId, date])
+  @@index([userId, date])
+  @@map("progress_metrics")
 }
 
 model NotificationSchedule {
-  id                  String   @id @default(cuid())
-  userId              String   @map("user_id")
-  userLightwalkerId   String   @map("user_lightwalker_id")
-  notificationType    String   @map("notification_type")
-  scheduledTime       String   @map("scheduled_time") // TIME as string "HH:MM"
-  timezone            String   @default("UTC")
-  messageTemplate     String?  @map("message_template")
-  isActive            Boolean  @default(true) @map("is_active")
-  lastSentAt          DateTime? @map("last_sent_at")
-  createdAt           DateTime @default(now()) @map("created_at")
+  id                String          @id @default(cuid())
+  userId            String          @map("user_id")
+  userLightwalkerId String          @map("user_lightwalker_id")
+  notificationType  String          @map("notification_type")
+  scheduledTime     String          @map("scheduled_time")
+  timezone          String          @default("UTC")
+  messageTemplate   String?         @map("message_template")
+  isActive          Boolean         @default(true) @map("is_active")
+  lastSentAt        DateTime?       @map("last_sent_at")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userLightwalker   UserLightwalker @relation(fields: [userLightwalkerId], references: [id])
 
-  user                User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userLightwalker     UserLightwalker @relation(fields: [userLightwalkerId], references: [id])
-
-  @@map("notification_schedules")
   @@index([scheduledTime, isActive])
   @@index([userId, isActive])
+  @@map("notification_schedules")
 }
 
 model WaitlistEntry {
@@ -290,450 +275,360 @@ model WaitlistEntry {
   templateName String   @map("template_name")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  @@map("waitlist_entries")
   @@index([email, templateName])
   @@index([templateName])
+  @@map("waitlist_entries")
 }
 
-// ROLE MODEL SYSTEM
-
 model RoleModel {
-  id                    String   @id @default(cuid())
-  code                  String?  @unique // "BD", "SJ", "EI" - 2-3 char codes
-  fullName              String   @map("full_name")
-  commonName            String   @map("common_name")
-  lifeSpan              String   @map("life_span")
-  culturalContext       String   @map("cultural_context")
-  historicalPeriod      String   @map("historical_period")
-  primaryDomain         String   @map("primary_domain")
-  
-  // Core Identity
-  lifeMission           String   @map("life_mission")
-  coreValues            String   @map("core_values") // JSON array
-  valueHierarchy        String   @map("value_hierarchy") // JSON array
-  worldview             String
-  personalPhilosophy    String   @map("personal_philosophy")
-  
-  // Personality & Traits
-  dominantTraits        String   @map("dominant_traits") // JSON array
-  communicationStyle    String   @map("communication_style")
-  emotionalPatterns     String   @map("emotional_patterns")
-  socialInteractionStyle String @map("social_interaction_style")
-  learningApproach      String   @map("learning_approach")
-  
-  // Decision Making
-  decisionProcess       String   @map("decision_process") // JSON object
-  informationGathering  String   @map("information_gathering")
-  evaluationCriteria    String   @map("evaluation_criteria")
-  riskAssessment        String   @map("risk_assessment")
-  implementationStyle   String   @map("implementation_style")
-  
-  // Daily Habits & Routines
-  morningPractices      String   @map("morning_practices")
-  workPatterns          String   @map("work_patterns")
-  physicalPractices     String   @map("physical_practices")
-  mentalSpiritualPractices String @map("mental_spiritual_practices")
-  eveningRoutines       String   @map("evening_routines")
-  weeklyMonthlyRhythms  String   @map("weekly_monthly_rhythms")
-  
-  // Challenge Response
-  stressManagement      String   @map("stress_management")
-  conflictResolution    String   @map("conflict_resolution")
-  failureResponse       String   @map("failure_response")
-  crisisLeadership      String   @map("crisis_leadership")
-  adaptationStrategies  String   @map("adaptation_strategies")
-  
-  // Wisdom & Teachings
-  coreTeachings         String   @map("core_teachings")
-  famousQuotes          String   @map("famous_quotes") // JSON array
-  teachingMethods       String   @map("teaching_methods")
-  keyPrinciples         String   @map("key_principles")
-  practicalApplications String   @map("practical_applications")
-  
-  // Relationships
-  familyRelationships   String   @map("family_relationships")
-  friendshipPatterns    String   @map("friendship_patterns")
-  mentorshipStyle       String   @map("mentorship_style")
-  leadershipApproach    String   @map("leadership_approach")
-  conflictHandling      String   @map("conflict_handling")
-  
-  // Modern Integration
-  contemporaryRelevance String   @map("contemporary_relevance")
-  dailyLifeApplications String   @map("daily_life_applications")
-  decisionTemplates     String   @map("decision_templates") // JSON array
-  characterDevelopment  String   @map("character_development")
-  commonMisinterpretations String @map("common_misinterpretations")
-  
-  // Lightwalker Integration
-  personalitySynthesis  String   @map("personality_synthesis")
-  decisionConsultation  String   @map("decision_consultation")
-  situationalApplications String @map("situational_applications")
-  potentialConflicts    String   @map("potential_conflicts")
-  userImplementation    String   @map("user_implementation")
-  
-  // LEGACY FIELDS - Keep during migration
-  enhancedAttributes    String?  @map("enhanced_attributes") // Will be migrated to Trait table
-  
-  // DAILY-DO ENHANCEMENT SYSTEM
-  dailyDoEnhanced       Json?    @map("daily_do_enhanced") // Claude-enhanced concrete activities
-  
-  // Source & Quality
-  primarySources        String   @map("primary_sources")
-  historicalSources     String   @map("historical_sources")
-  academicSources       String   @map("academic_sources")
-  culturalSources       String   @map("cultural_sources")
-  sourceQualityAssessment String @map("source_quality_assessment")
-  
-  // Authenticity
-  historicalAccuracy    String   @map("historical_accuracy")
-  quoteAuthentication   String   @map("quote_authentication")
-  culturalSensitivity   String   @map("cultural_sensitivity")
-  balancedPerspective   String   @map("balanced_perspective")
-  scholarlyConsensus    String   @map("scholarly_consensus")
-  
-  isActive              Boolean  @default(true) @map("is_active")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
+  id                         String                      @id @default(cuid())
+  fullName                   String                      @map("full_name")
+  commonName                 String                      @map("common_name")
+  lifeSpan                   String                      @map("life_span")
+  culturalContext            String                      @map("cultural_context")
+  historicalPeriod           String                      @map("historical_period")
+  primaryDomain              String                      @map("primary_domain")
+  lifeMission                String                      @map("life_mission")
+  coreValues                 String                      @map("core_values")
+  valueHierarchy             String                      @map("value_hierarchy")
+  worldview                  String
+  personalPhilosophy         String                      @map("personal_philosophy")
+  dominantTraits             String                      @map("dominant_traits")
+  communicationStyle         String                      @map("communication_style")
+  emotionalPatterns          String                      @map("emotional_patterns")
+  socialInteractionStyle     String                      @map("social_interaction_style")
+  learningApproach           String                      @map("learning_approach")
+  decisionProcess            String                      @map("decision_process")
+  informationGathering       String                      @map("information_gathering")
+  evaluationCriteria         String                      @map("evaluation_criteria")
+  riskAssessment             String                      @map("risk_assessment")
+  implementationStyle        String                      @map("implementation_style")
+  morningPractices           String                      @map("morning_practices")
+  workPatterns               String                      @map("work_patterns")
+  physicalPractices          String                      @map("physical_practices")
+  mentalSpiritualPractices   String                      @map("mental_spiritual_practices")
+  eveningRoutines            String                      @map("evening_routines")
+  weeklyMonthlyRhythms       String                      @map("weekly_monthly_rhythms")
+  stressManagement           String                      @map("stress_management")
+  conflictResolution         String                      @map("conflict_resolution")
+  failureResponse            String                      @map("failure_response")
+  crisisLeadership           String                      @map("crisis_leadership")
+  adaptationStrategies       String                      @map("adaptation_strategies")
+  coreTeachings              String                      @map("core_teachings")
+  famousQuotes               String                      @map("famous_quotes")
+  teachingMethods            String                      @map("teaching_methods")
+  keyPrinciples              String                      @map("key_principles")
+  practicalApplications      String                      @map("practical_applications")
+  familyRelationships        String                      @map("family_relationships")
+  friendshipPatterns         String                      @map("friendship_patterns")
+  mentorshipStyle            String                      @map("mentorship_style")
+  leadershipApproach         String                      @map("leadership_approach")
+  conflictHandling           String                      @map("conflict_handling")
+  contemporaryRelevance      String                      @map("contemporary_relevance")
+  dailyLifeApplications      String                      @map("daily_life_applications")
+  decisionTemplates          String                      @map("decision_templates")
+  characterDevelopment       String                      @map("character_development")
+  commonMisinterpretations   String                      @map("common_misinterpretations")
+  personalitySynthesis       String                      @map("personality_synthesis")
+  decisionConsultation       String                      @map("decision_consultation")
+  situationalApplications    String                      @map("situational_applications")
+  potentialConflicts         String                      @map("potential_conflicts")
+  userImplementation         String                      @map("user_implementation")
+  enhancedAttributes         String?                     @map("enhanced_attributes")
+  primarySources             String                      @map("primary_sources")
+  historicalSources          String                      @map("historical_sources")
+  academicSources            String                      @map("academic_sources")
+  culturalSources            String                      @map("cultural_sources")
+  sourceQualityAssessment    String                      @map("source_quality_assessment")
+  historicalAccuracy         String                      @map("historical_accuracy")
+  quoteAuthentication        String                      @map("quote_authentication")
+  culturalSensitivity        String                      @map("cultural_sensitivity")
+  balancedPerspective        String                      @map("balanced_perspective")
+  scholarlyConsensus         String                      @map("scholarly_consensus")
+  isActive                   Boolean                     @default(true) @map("is_active")
+  createdAt                  DateTime                    @default(now()) @map("created_at")
+  updatedAt                  DateTime                    @updatedAt @map("updated_at")
+  code                       String?                     @unique
+  dailyDoEnhanced            Json?                       @map("daily_do_enhanced")
+  lightwalkerRoleModels      LightwalkerRoleModel[]
+  traits                     Trait[]
+  userRoleModelConsultations UserRoleModelConsultation[]
 
-  // Relations
-  traits                        Trait[]
-  userRoleModelConsultations    UserRoleModelConsultation[]
-  lightwalkerRoleModels         LightwalkerRoleModel[]
-
-  @@map("role_models")
   @@index([code])
   @@index([commonName, isActive])
   @@index([primaryDomain])
+  @@map("role_models")
 }
 
-// User consultations with role models
 model UserRoleModelConsultation {
-  id              String   @id @default(cuid())
-  userId          String   @map("user_id")
-  roleModelId     String   @map("role_model_id")
-  question        String
-  context         String?  // Situation context
-  response        String   // Generated response from role model
-  responseRating  Int?     @map("response_rating") // 1-5 rating from user
-  createdAt       DateTime @default(now()) @map("created_at")
+  id             String    @id @default(cuid())
+  userId         String    @map("user_id")
+  roleModelId    String    @map("role_model_id")
+  question       String
+  context        String?
+  response       String
+  responseRating Int?      @map("response_rating")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  roleModel      RoleModel @relation(fields: [roleModelId], references: [id])
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  roleModel       RoleModel @relation(fields: [roleModelId], references: [id])
-
-  @@map("user_role_model_consultations")
   @@index([userId, createdAt])
   @@index([roleModelId, createdAt])
+  @@map("user_role_model_consultations")
 }
 
-// Many-to-many relation for Lightwalkers having multiple role model advisors
 model LightwalkerRoleModel {
-  id                    String   @id @default(cuid())
-  userLightwalkerId     String   @map("user_lightwalker_id")
-  roleModelId           String   @map("role_model_id")
-  influenceWeight       Float    @default(1.0) @map("influence_weight") // How much this role model influences the Lightwalker
-  addedAt               DateTime @default(now()) @map("added_at")
+  id                String          @id @default(cuid())
+  userLightwalkerId String          @map("user_lightwalker_id")
+  roleModelId       String          @map("role_model_id")
+  influenceWeight   Float           @default(1.0) @map("influence_weight")
+  addedAt           DateTime        @default(now()) @map("added_at")
+  roleModel         RoleModel       @relation(fields: [roleModelId], references: [id])
+  userLightwalker   UserLightwalker @relation(fields: [userLightwalkerId], references: [id], onDelete: Cascade)
 
-  userLightwalker       UserLightwalker @relation(fields: [userLightwalkerId], references: [id], onDelete: Cascade)
-  roleModel             RoleModel @relation(fields: [roleModelId], references: [id])
-
-  @@map("lightwalker_role_models")
   @@unique([userLightwalkerId, roleModelId])
   @@index([userLightwalkerId])
+  @@map("lightwalker_role_models")
 }
 
-// NEW: Trait System for Multi-Pathway Discovery
 model Trait {
-  id                    String   @id @default(cuid())
-  traitCode             String   @unique // "BD.01", "SJ.03"
-  roleModelCode         String   @map("role_model_code") // "BD", "SJ" (foreign key to RoleModel.code)
-  traitNumber           Int      @map("trait_number") // 1, 2, 3... (order within role model)
-  name                  String   // "Compassionately Wise"
-  slug                  String   // "compassionately-wise"
-  
-  // Search optimization for discovery pathways
-  problemTags           String[] @map("problem_tags") // ["anger", "judgment", "conflict"]
-  valueTags             String[] @map("value_tags") // ["compassion", "empathy", "understanding"]  
-  actionTags            String[] @map("action_tags") // ["meditation", "pause", "breathe"]
-  
-  isActive              Boolean  @default(true) @map("is_active")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
+  id            String     @id @default(cuid())
+  traitCode     String     @unique
+  roleModelCode String     @map("role_model_code")
+  traitNumber   Int        @map("trait_number")
+  name          String
+  slug          String
+  problemTags   String[]   @map("problem_tags")
+  valueTags     String[]   @map("value_tags")
+  actionTags    String[]   @map("action_tags")
+  isActive      Boolean    @default(true) @map("is_active")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  subTraits     SubTrait[]
+  roleModel     RoleModel  @relation(fields: [roleModelCode], references: [code])
 
-  // Relations
-  roleModel             RoleModel @relation(fields: [roleModelCode], references: [code])
-  subTraits             SubTrait[]
-
-  @@map("traits")
   @@index([roleModelCode])
   @@index([traitCode])
   @@index([problemTags])
   @@index([valueTags])
   @@index([actionTags])
+  @@map("traits")
 }
 
 model SubTrait {
-  id                    String   @id @default(cuid())
-  subTraitCode          String   @unique // "BD.01.ATT", "BD.01.PRB", "BD.01.ACT"
-  traitCode             String   @map("trait_code") // "BD.01" (foreign key to Trait.traitCode)
-  type                  String   // "ATTRIBUTE", "PROBLEM", "ACTION"
-  
-  title                 String   // "Compassionate Wisdom", "Getting Angry", "Daily Meditation"
-  description           String   // Full content for this tab
-  method                String   // How the role model practices this
-  benefit               String   // What user gains from this
-  oppositeOf            String?  @map("opposite_of") // What this replaces
-  
-  // Search optimization
-  searchTerms           String[] @map("search_terms") // All searchable keywords for this subtrait
-  
-  isActive              Boolean  @default(true) @map("is_active")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
+  id                  String               @id @default(cuid())
+  subTraitCode        String               @unique
+  traitCode           String               @map("trait_code")
+  type                String
+  title               String
+  description         String
+  method              String
+  benefit             String
+  oppositeOf          String?              @map("opposite_of")
+  searchTerms         String[]             @map("search_terms")
+  isActive            Boolean              @default(true) @map("is_active")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  trait               Trait                @relation(fields: [traitCode], references: [traitCode])
+  userCharacterTraits UserCharacterTrait[]
 
-  // Relations
-  trait                 Trait @relation(fields: [traitCode], references: [traitCode])
-  userCharacterTraits   UserCharacterTrait[]
-
-  @@map("sub_traits")
   @@index([traitCode])
   @@index([subTraitCode])
   @@index([type])
   @@index([searchTerms])
+  @@map("sub_traits")
 }
 
 model UserCharacterTrait {
-  id                    String   @id @default(cuid())
-  characterId           String   @map("character_id") // Foreign key to SavedCharacter.id
-  subTraitCode          String   @map("sub_trait_code") // "BD.01.ATT" (what user actually selected)
-  addedAt               DateTime @default(now()) @map("added_at")
-  order                 Int      // User's ordering of their selected traits
+  id           String         @id @default(cuid())
+  characterId  String         @map("character_id")
+  subTraitCode String         @map("sub_trait_code")
+  addedAt      DateTime       @default(now()) @map("added_at")
+  order        Int
+  character    SavedCharacter @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  subTrait     SubTrait       @relation(fields: [subTraitCode], references: [subTraitCode])
 
-  // Relations
-  character             SavedCharacter @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  subTrait              SubTrait @relation(fields: [subTraitCode], references: [subTraitCode])
-
-  @@map("user_character_traits")
+  @@unique([characterId, subTraitCode])
   @@index([characterId])
   @@index([subTraitCode])
-  @@unique([characterId, subTraitCode]) // Prevent duplicate trait selections
+  @@map("user_character_traits")
 }
 
-// Updated Saved Character System for New Relational Structure
 model SavedCharacter {
-  id                    String   @id @default(cuid())
-  sessionId             String?  @map("session_id") // For anonymous users
-  userId                String?  @map("user_id") // For logged-in users
-  characterName         String?  @map("character_name") // Optional custom name
-  discoveryPoints       Int?     @default(0) @map("discovery_points")
-  level                 Int?     @default(1)
-  isActive              Boolean  @default(true) @map("is_active")
-  lastViewedAt          DateTime @default(now()) @map("last_viewed_at")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
-  
-  // LEGACY FIELD - Keep during migration
-  selectedTraits        String?  @map("selected_traits") // Will be migrated to UserCharacterTrait
+  id              String               @id @default(cuid())
+  sessionId       String?              @map("session_id")
+  userId          String?              @map("user_id")
+  characterName   String?              @map("character_name")
+  discoveryPoints Int?                 @default(0) @map("discovery_points")
+  level           Int?                 @default(1)
+  selectedTraits  String?              @map("selected_traits")
+  isActive        Boolean              @default(true) @map("is_active")
+  lastViewedAt    DateTime             @default(now()) @map("last_viewed_at")
+  createdAt       DateTime             @default(now()) @map("created_at")
+  updatedAt       DateTime             @updatedAt @map("updated_at")
+  user            User?                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userTraits      UserCharacterTrait[]
 
-  // Relations
-  user                  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userTraits            UserCharacterTrait[]
-
-  @@map("saved_characters")
   @@index([sessionId, isActive])
   @@index([userId, isActive])
+  @@map("saved_characters")
 }
 
-// Base Activity table - replaces hardcoded ACTIVITY_TEMPLATES
 model Activity {
-  id                    String   @id @default(cuid())
-  title                 String
-  description           String?  // Philosophical context and meaning
-  instructions          String?  // Step-by-step practical activities
-  icon                  String   // Path to image file, no emojis
-  category              String   // 'mindfulness', 'physical', 'creative', etc.
-  points                Int      @default(20)
-  rarity                String   @default("common") // 'common', 'uncommon', 'rare', 'epic', 'legendary'
-  duration              String   @default("15 min") // e.g., "5 min", "30 min"
-  difficulty            Int      @default(1) // 1-5 scale
-  gridSizeW             Int      @default(1) @map("grid_size_w") // Grid width
-  gridSizeH             Int      @default(1) @map("grid_size_h") // Grid height
-  isActive              Boolean  @default(true) @map("is_active")
-  sortOrder             Int      @default(0) @map("sort_order")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
-  
-  // Relations
-  activityPreferences   ActivityPreference[]
-  timelineActivities    TimelineActivity[]
-  activityCompletions   ActivityCompletion[]
-  
-  @@map("activities")
+  id                  String               @id @default(cuid())
+  title               String
+  description         String?
+  icon                String
+  category            String
+  points              Int                  @default(20)
+  rarity              String               @default("common")
+  duration            String               @default("15 min")
+  difficulty          Int                  @default(1)
+  gridSizeW           Int                  @default(1) @map("grid_size_w")
+  gridSizeH           Int                  @default(1) @map("grid_size_h")
+  isActive            Boolean              @default(true) @map("is_active")
+  sortOrder           Int                  @default(0) @map("sort_order")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  instructions        String?
+  activityCompletions ActivityCompletion[]
+  activityPreferences ActivityPreference[]
+  timelineActivities  TimelineActivity[]
+
   @@index([isActive, category])
   @@index([rarity, sortOrder])
+  @@map("activities")
 }
 
-// Timeline activities - scheduled instances of activities
 model TimelineActivity {
-  id                    String   @id @default(cuid())
-  userId                String?  @map("user_id") // For logged-in users
-  sessionId             String?  @map("session_id") // For anonymous users
-  activityId            String   @map("activity_id")
-  scheduledTime         String   @map("scheduled_time") // e.g., "9:30a", "2:15p"
-  scheduledDate         DateTime @default(now()) @map("scheduled_date")
-  isCompleted           Boolean  @default(false) @map("is_completed")
-  completedAt           DateTime? @map("completed_at")
-  customDuration        String?  @map("custom_duration") // Override activity duration
-  customPoints          Int?     @map("custom_points") // Override activity points
-  notes                 String?
-  
-  // Recurring pattern fields
-  isRecurring           Boolean  @default(false) @map("is_recurring")
-  recurringPattern      Json?    @map("recurring_pattern") // Store recurring configuration as JSON
-  parentTimelineId      String?  @map("parent_timeline_id") // For recurring instances, reference to the original
-  
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
-  
-  // Relations
-  activity              Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  user                  User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@map("timeline_activities")
+  id               String    @id @default(cuid())
+  userId           String?   @map("user_id")
+  sessionId        String?   @map("session_id")
+  activityId       String    @map("activity_id")
+  scheduledTime    String    @map("scheduled_time")
+  scheduledDate    DateTime  @default(now()) @map("scheduled_date")
+  isCompleted      Boolean   @default(false) @map("is_completed")
+  completedAt      DateTime? @map("completed_at")
+  customDuration   String?   @map("custom_duration")
+  customPoints     Int?      @map("custom_points")
+  notes            String?
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  isRecurring      Boolean   @default(false) @map("is_recurring")
+  parentTimelineId String?   @map("parent_timeline_id")
+  recurringPattern Json?     @map("recurring_pattern")
+  activity         Activity  @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user             User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, scheduledDate])
   @@index([sessionId, scheduledDate])
   @@index([scheduledDate, scheduledTime])
+  @@map("timeline_activities")
 }
 
-// Activity Categories System
 model ActivityCategory {
-  id                    Int      @id @default(autoincrement())
-  name                  String   @unique
-  description           String?
-  icon                  String?
-  sortOrder             Int      @default(0) @map("sort_order")
-  isActive              Boolean  @default(true) @map("is_active")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
+  id                  Int                  @id @default(autoincrement())
+  name                String               @unique
+  description         String?
+  icon                String?
+  sortOrder           Int                  @default(0) @map("sort_order")
+  isActive            Boolean              @default(true) @map("is_active")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  activityPreferences ActivityPreference[]
 
-  // Relations
-  activityPreferences   ActivityPreference[]
-
-  @@map("activity_categories")
   @@index([isActive, sortOrder])
+  @@map("activity_categories")
 }
 
-// Life Skills Progress Tracking
 model LifeSkillProgress {
-  id                    String   @id @default(cuid())
-  userId                String?  @map("user_id") // For logged-in users
-  sessionId             String?  @map("session_id") // For anonymous users
-  activityId            String   @map("activity_id")
-  programStartDate      DateTime @map("program_start_date")
-  programDuration       Int      @default(30) @map("program_duration") // days
-  targetCompletions     Int      @map("target_completions") // e.g., 21 out of 30 days
-  actualCompletions     Int      @default(0) @map("actual_completions")
-  currentAverage        Float    @default(0) @map("current_average") // rolling average
-  completionData        Json?    @map("completion_data") // daily tracking: {"1": true, "2": false, ...}
-  isCompleted           Boolean  @default(false) @map("is_completed")
-  completionDate        DateTime? @map("completion_date")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
+  id                String    @id @default(cuid())
+  userId            String?   @map("user_id")
+  sessionId         String?   @map("session_id")
+  activityId        String    @map("activity_id")
+  programStartDate  DateTime  @map("program_start_date")
+  programDuration   Int       @default(30) @map("program_duration")
+  targetCompletions Int       @map("target_completions")
+  actualCompletions Int       @default(0) @map("actual_completions")
+  currentAverage    Float     @default(0) @map("current_average")
+  completionData    Json?     @map("completion_data")
+  isCompleted       Boolean   @default(false) @map("is_completed")
+  completionDate    DateTime? @map("completion_date")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  user              User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relations
-  user                  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("life_skill_progress")
-  @@index([userId, activityId])
-  @@index([sessionId, activityId])
   @@unique([userId, activityId], name: "unique_user_life_skill")
   @@unique([sessionId, activityId], name: "unique_session_life_skill")
+  @@index([userId, activityId])
+  @@index([sessionId, activityId])
+  @@map("life_skill_progress")
 }
 
-// Activity Completions - Enhanced tracking
 model ActivityCompletion {
-  id                    String   @id @default(cuid())
-  userId                String?  @map("user_id") // For logged-in users
-  sessionId             String?  @map("session_id") // For anonymous users
-  activityId            String   @map("activity_id")
-  completionDate        DateTime @default(now()) @map("completion_date")
-  completionTime        DateTime @default(now()) @map("completion_time")
-  rating                Int?     // 1-5 rating
-  notes                 String?
-  
-  // Enhanced completion tracking
-  completionCount       Int      @default(1) @map("completion_count") // 1=normal, 2=double for make-up
-  isMakeup              Boolean  @default(false) @map("is_makeup")
-  makeupForDate         DateTime? @map("makeup_for_date")
-  
-  // Learning Loop - what happened, learned, will do differently
-  whatHappened          String?  @map("what_happened")
-  whatLearned           String?  @map("what_learned")
-  nextTimeWillDo        String?  @map("next_time_will_do")
-  
-  createdAt             DateTime @default(now()) @map("created_at")
+  id              String    @id @default(cuid())
+  userId          String?   @map("user_id")
+  sessionId       String?   @map("session_id")
+  activityId      String    @map("activity_id")
+  completionDate  DateTime  @default(now()) @map("completion_date")
+  completionTime  DateTime  @default(now()) @map("completion_time")
+  rating          Int?
+  notes           String?
+  completionCount Int       @default(1) @map("completion_count")
+  isMakeup        Boolean   @default(false) @map("is_makeup")
+  makeupForDate   DateTime? @map("makeup_for_date")
+  whatHappened    String?   @map("what_happened")
+  whatLearned     String?   @map("what_learned")
+  nextTimeWillDo  String?   @map("next_time_will_do")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  activity        Activity  @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user            User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relations
-  user                  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
-  activity              Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
-
-  @@map("activity_completions")
   @@index([userId, activityId, completionDate])
   @@index([sessionId, activityId, completionDate])
   @@index([isMakeup, makeupForDate])
+  @@map("activity_completions")
 }
 
-// Activity Preferences System - For Daily Actions Customization
 model ActivityPreference {
-  id                    String   @id @default(cuid())
-  userId                String?  @map("user_id") // For logged-in users
-  sessionId             String?  @map("session_id") // For anonymous users
-  activityId            String   @map("activity_id") // Original activity template ID
-  activityTitle         String   @map("activity_title") // For quick reference
-  
-  // Enhanced Activity System
-  categoryId            Int?     @map("category_id") // Foreign key to ActivityCategory
-  activityType          String   @default("single") @map("activity_type") // 'single', 'linked_pair', 'life_skill'
-  programDuration       Int?     @map("program_duration") // for Life Skills (21-30 days)
-  linkedActivityId      String?  @map("linked_activity_id") // for paired activities
-  sequenceOrder         Int?     @map("sequence_order") // 1=morning, 2=evening for linked activities
-  successThreshold      Float    @default(0.70) @map("success_threshold") // for Life Skills (70% completion needed)
-  learningEnabled       Boolean  @default(false) @map("learning_enabled") // can user document learnings?
-  
-  // Customizable properties
-  customDuration        String?  @map("custom_duration") // e.g., "45 min", "1 hour"
-  customPoints          Int?     @map("custom_points") // Custom point value
-  customDifficulty      Int?     @map("custom_difficulty") // 1-9 scale
-  customCategory        String?  @map("custom_category") // Custom category if changed
-  customDescription     String?  @map("custom_description") // Custom description
-  customIcon            String?  @map("custom_icon") // Custom emoji icon
-  
-  // Art Studio - Image customization (Stage 1)
-  customImageUrl        String?  @map("custom_image_url") // URL to uploaded/generated image
-  imageSource           String?  @map("image_source") // "upload", "ai_generated", "template"
-  imagePrompt           String?  @map("image_prompt") // For AI-generated images
-  imageMetadata         Json?    @map("image_metadata") // Additional image data (size, cost, etc.)
-  
-  // Art Studio - Dynamic grid sizing (Stage 2)
-  customGridSize        Json?    @map("custom_grid_size") // Custom grid dimensions {"w": 2, "h": 1}
-  
-  // Metadata
-  timesUsed             Int      @default(0) @map("times_used") // How often this customization is applied
-  lastUsedAt            DateTime? @map("last_used_at") // When last applied
-  isActive              Boolean  @default(true) @map("is_active")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
+  id                String            @id @default(cuid())
+  userId            String?           @map("user_id")
+  sessionId         String?           @map("session_id")
+  activityId        String            @map("activity_id")
+  activityTitle     String            @map("activity_title")
+  customDuration    String?           @map("custom_duration")
+  customPoints      Int?              @map("custom_points")
+  customDifficulty  Int?              @map("custom_difficulty")
+  customCategory    String?           @map("custom_category")
+  customDescription String?           @map("custom_description")
+  customIcon        String?           @map("custom_icon")
+  timesUsed         Int               @default(0) @map("times_used")
+  lastUsedAt        DateTime?         @map("last_used_at")
+  isActive          Boolean           @default(true) @map("is_active")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+  customImageUrl    String?           @map("custom_image_url")
+  imageMetadata     Json?             @map("image_metadata")
+  imagePrompt       String?           @map("image_prompt")
+  imageSource       String?           @map("image_source")
+  customGridSize    Json?             @map("custom_grid_size")
+  activityType      String            @default("single") @map("activity_type")
+  categoryId        Int?              @map("category_id")
+  learningEnabled   Boolean           @default(false) @map("learning_enabled")
+  linkedActivityId  String?           @map("linked_activity_id")
+  programDuration   Int?              @map("program_duration")
+  sequenceOrder     Int?              @map("sequence_order")
+  successThreshold  Float             @default(0.70) @map("success_threshold")
+  activity          Activity          @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  category          ActivityCategory? @relation(fields: [categoryId], references: [id])
+  user              User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relations
-  user                  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
-  activity              Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  category              ActivityCategory? @relation(fields: [categoryId], references: [id])
-
-  @@map("activity_preferences")
+  @@unique([userId, activityId], name: "unique_user_activity_preference")
+  @@unique([sessionId, activityId], name: "unique_session_activity_preference")
   @@index([userId, activityId])
   @@index([sessionId, activityId])
   @@index([activityId, isActive])
   @@index([categoryId])
   @@index([activityType])
-  @@unique([userId, activityId], name: "unique_user_activity_preference")
-  @@unique([sessionId, activityId], name: "unique_session_activity_preference")
+  @@map("activity_preferences")
 }

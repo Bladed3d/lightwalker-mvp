@@ -238,20 +238,73 @@ export default function DailyActions2Page() {
   useEffect(() => {
     const handlePreferenceUpdate = async (event: any) => {
       try {
+        console.log('🔍 PREFERENCE UPDATE EVENT:', event.type, event.detail);
         const preferences = await loadActivityPreferences();
+        console.log('🔍 RELOADED PREFERENCES:', preferences);
         setActivityPreferences(preferences);
       } catch (error) {
         console.error('❌ Error reloading activity preferences:', error);
       }
     };
 
-    // Listen for both events
+    const handleCategoryUpdate = async (event: any) => {
+      try {
+        console.log('🔍 CATEGORY UPDATE EVENT:', event.detail);
+        const preferences = await loadActivityPreferences();
+        console.log('🔍 RELOADED PREFERENCES AFTER CATEGORY UPDATE:', preferences);
+        setActivityPreferences(preferences);
+        
+        // Force reload timeline activities to apply new category
+        const sessionId = getSessionId();
+        const userId = getUserId();
+        
+        const response = await fetch(`/api/timeline-activities?sessionId=${sessionId}${userId ? `&userId=${userId}` : ''}`);
+        
+        if (response.ok) {
+          const result = await response.json();
+          const activities = result.timelineActivities || [];
+          console.log('🔍 RELOADED TIMELINE ACTIVITIES:', activities);
+          
+          // Reapply preferences to timeline activities
+          const processedActivities = activities.map((timelineActivity: any) => {
+            const preference = preferences.find((pref: any) => pref.activityId === timelineActivity.activityId);
+            
+            if (preference) {
+              const updated = {
+                ...timelineActivity,
+                icon: preference.customImageUrl || timelineActivity.icon,
+                category: preference.customCategory || timelineActivity.category,
+                customCategory: preference.customCategory
+              };
+              console.log('🔍 APPLYING CATEGORY PREFERENCE:', {
+                activityId: timelineActivity.activityId,
+                originalCategory: timelineActivity.category,
+                newCategory: preference.customCategory,
+                updated
+              });
+              return updated;
+            }
+            
+            return timelineActivity;
+          });
+          
+          setTimelineActivities(processedActivities);
+          setAllTimelineActivities(processedActivities);
+        }
+      } catch (error) {
+        console.error('❌ Error handling category preference update:', error);
+      }
+    };
+
+    // Listen for all preference update events
     window.addEventListener('activityImageUpdated', handlePreferenceUpdate);
     window.addEventListener('gridLayoutChanged', handlePreferenceUpdate);
+    window.addEventListener('categoryPreferenceUpdated', handleCategoryUpdate);
     
     return () => {
       window.removeEventListener('activityImageUpdated', handlePreferenceUpdate);
       window.removeEventListener('gridLayoutChanged', handlePreferenceUpdate);
+      window.removeEventListener('categoryPreferenceUpdated', handleCategoryUpdate);
     };
   }, []);
 
@@ -904,6 +957,7 @@ export default function DailyActions2Page() {
             />
             
             {/* Manage Images Button - Right after Up Next - Hidden in Mobile */}
+            {/* COMMENTED OUT - Can be restored later if needed
             {!isMobileView && (
               <div className="mt-3">
                 <button
@@ -915,7 +969,9 @@ export default function DailyActions2Page() {
               </button>
               </div>
             )}
+            */}
             
+            {/* COMMENTED OUT - QuickActions panel with Active now, Recent achievements, Today's progress
             {!isMobileView && (
               <QuickActions
               onAction={handleQuickAction}
@@ -926,6 +982,7 @@ export default function DailyActions2Page() {
               theme={theme}
               />
             )}
+            */}
           </div>
           
           {/* Middle - Timeline Container - Show in both Desktop and Mobile */}
@@ -1491,7 +1548,7 @@ export default function DailyActions2Page() {
         </div>
       )}
 
-      {/* Quick Actions Panel */}
+      {/* COMMENTED OUT - Quick Actions Panel (Manage Images)
       <QuickActionsPanel
         theme={theme}
         isVisible={showQuickActionsPanel}
@@ -1500,6 +1557,7 @@ export default function DailyActions2Page() {
         activityPreferences={activityPreferences}
         timelineActivities={allTimelineActivities}
       />
+      */}
 
       {/* Repeat Activity Modal */}
       <RepeatActivityModal

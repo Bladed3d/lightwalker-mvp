@@ -1,0 +1,790 @@
+# Art Studio PRD - Lightwalker Custom Activity Image System
+
+## Executive Overview
+
+### Vision Statement
+Transform Lightwalker from a static activity system into a dynamic, personalized experience where users can create, customize, and own their visual journey through AI-powered image generation and theme management.
+
+### Core Objectives
+
+**User Experience Goals:**
+- Enable users to personalize their daily activities with custom imagery that resonates with their lifestyle and preferences
+- Create an engaging "Art Studio" environment that makes activity customization feel like creative play rather than configuration
+- Provide seamless transition from simple image swapping to full AI-powered custom generation
+- Establish foundation for unlimited theme expansion and community-driven content
+
+**Business Objectives:**
+- Differentiate Lightwalker with unique AI-powered personalization capabilities
+- Create scalable infrastructure supporting growth from beta (100 users) to production (10,000+ users)
+- Establish team workflows for rapid theme creation and content expansion
+- Build foundation for future premium features and user-generated content marketplace
+
+**Technical Objectives:**
+- Implement staged rollout: Simple file upload → AI Art Studio → Team theme builder
+- Create flexible database architecture supporting unlimited themes, variations, and user customizations
+- Integrate Gemini AI API for high-quality, cost-effective image generation
+- Establish cloud storage infrastructure that scales with user growth
+
+### Success Metrics
+
+**Stage 1 (MVP - File Upload):**
+- 60%+ of beta users customize at least 1 activity image
+- Zero disruption to existing functionality
+- <2 second image upload and replacement experience
+
+**Stage 2 (AI Art Studio):**
+- 80%+ user satisfaction with AI-generated images
+- Average 3-5 activities customized per active user
+- <30 second end-to-end custom image creation flow
+
+**Stage 3 (Team Theme Builder):**
+- 95%+ team-generated themes meet quality standards
+- Ability to create complete 88-activity theme in <4 hours
+- New themes increase user engagement by 25%+
+
+## Three-Stage Implementation Strategy
+
+### Stage 1: Activity Settings Image Upload (MVP)
+- **Scope:** Simple file upload and replace in existing Activity Duration Settings window  
+- **User Flow:** User clicks activity → Duration settings → "Change Image" → Upload → Replace
+- **Technical:** Basic file handling, image validation, database image URL update
+- **Timeline:** 2-3 weeks for full implementation
+
+### Stage 2: AI Art Studio (Core Feature)
+- **Scope:** Dedicated "Art Studio" interface with 4-step AI image generation process
+- **User Flow:** Magic wand customization → Describe image → Style selection → AI generation → Refinement → Apply
+- **Technical:** Gemini API integration, image management system, sophisticated UX flows  
+- **Timeline:** 6-8 weeks for full implementation
+
+### Stage 3: Team Theme Builder (Scaling Tool)
+- **Scope:** Admin-only enhanced Art Studio for creating complete app themes
+- **User Flow:** Team creates comprehensive themes (88 activities) with consistent style/characteristics
+- **Technical:** Batch processing, approval workflows, theme management dashboard
+- **Timeline:** 4-6 weeks for full implementation
+
+---
+
+## Technical Feasibility & Competitive Analysis
+
+### AI Image Generation APIs Analysis
+
+**Primary Recommendation: OpenAI DALL-E 3**
+- **Capabilities**: 1024x1024 to 1792x1024 resolutions, natural language prompts, style consistency
+- **Pricing**: $0.040-0.120 per image depending on size/quality
+- **Rate Limits**: 500 requests/minute for enterprise accounts
+- **Integration**: Robust REST API with excellent Next.js compatibility
+- **Quality**: Highest consistency for productivity-focused imagery
+
+**Fallback: Runware Stable Diffusion**
+- **Capabilities**: Multiple model variants, faster generation times
+- **Pricing**: $0.002-0.004 per image (significantly cheaper)
+- **Rate Limits**: Higher throughput capacity
+- **Quality**: Good for bulk generation, requires more prompt engineering
+
+### Storage Architecture Recommendations
+
+**MVP: Vercel Blob Storage**
+- **Capacity**: Sufficient for 100 beta users with 10-50 images each
+- **Costs**: $0.15/GB storage, $0.30/GB bandwidth
+- **Integration**: Native Next.js integration, zero configuration
+- **Limitations**: 6GB limit per deployment, requires upgrade for production scale
+
+**Production: AWS S3 + CloudFront CDN**
+- **Capacity**: Unlimited scalability to 10,000+ users
+- **Costs**: $0.023/GB storage, $0.085/GB CDN transfer
+- **Performance**: Global edge caching, <100ms image load times
+- **Features**: Automatic optimization, multiple format support
+
+### Database Optimization Strategy
+
+**PostgreSQL JSON Extensions**
+- **Performance Gains**: 40-60% query improvement with JSONB indexes
+- **Schema Flexibility**: Support for dynamic image metadata without migrations
+- **Scaling**: Handles 10,000+ concurrent users with proper indexing
+
+### Cost Projections by User Scale
+
+**100 Beta Users**
+- AI Generation: ~$75/month (150 images at $0.50 average)
+- Storage: ~$3.75/month (Vercel Blob)
+- **Total**: $78.75/month ($0.79 per user)
+
+**10,000 Production Users**
+- AI Generation: ~$3,750/month (7,500 images at $0.50 average)
+- Storage + CDN: ~$1,365/month (AWS S3 + CloudFront)
+- **Total**: $5,115/month ($0.51 per user)
+
+### Competitive Landscape Analysis
+
+**Direct Competitors:**
+- **Notion**: Custom icons but no AI generation - Position: "AI creates what Notion can't"
+- **Todoist**: Basic theming only - Position: "Beyond themes - personalized visual experiences"
+- **Forest**: Single nature aesthetic - Position: "Infinite variety vs single aesthetic"
+
+**Market Opportunity:** First productivity app with integrated AI art generation creates significant differentiation in $36.35B AI productivity tools market (CAGR 26.7%).
+
+---
+
+## User Experience Design Specifications
+
+### Stage 1: Activity Settings Enhancement
+
+**Integration with Existing Daily-Actions3**
+- **Current**: Activity Duration Settings window opens when user drags activity to orange triangle
+- **Enhancement**: Add image customization section below existing duration/points controls
+- **Visual Design**: Maintain Tarkov-style gaming aesthetic with 160px enhanced image preview
+- **Interaction**: Hover overlay reveals "Upload Image" and "Generate with AI" buttons
+
+```typescript
+// Enhanced Activity Settings Modal Structure
+<Modal>
+  {/* Existing Controls */}
+  <DurationSettings />
+  <PointsSettings />
+  
+  {/* NEW: Image Customization Section */}
+  <ImageCustomizationSection>
+    <ImagePreview size="160px" />
+    <UploadButton />
+    <AIGenerateButton />
+    <ResetToDefaultButton />
+  </ImageCustomizationSection>
+  
+  <ActionButtons />
+</Modal>
+```
+
+### Stage 2: Full Art Studio Interface
+
+**4-Step Generation Process:**
+
+1. **Activity Context Display**: Show current activity with 128px preview
+2. **Smart Prompt Builder**: Text input with AI suggestions based on activity type
+3. **Style Selection Grid**: Visual style picker (realistic, artistic, minimalist, etc.)
+4. **Generation & Refinement**: Loading state → Preview grid → Selection → Apply
+
+**Navigation Integration**: 
+- **Entry Point 1**: "✨ Customize" button in Activity Duration Settings
+- **Entry Point 2**: "Art Studio" in main daily-actions3 navigation
+- **Entry Point 3**: Floating action button during timeline interactions
+
+### Stage 3: Team Theme Builder
+
+**Admin Dashboard Layout:**
+- **Left Panel**: Activity overview with progress stats (34/88 customized)
+- **Center Panel**: Bulk generation interface with style consistency tools
+- **Right Panel**: Theme preview and approval controls
+
+**Bulk Operations Interface:**
+- **Style Guide Panel**: Color palette, typography, and visual consistency rules
+- **Batch Generation**: Process multiple activities with consistent prompting
+- **Quality Control**: Review, approve, regenerate individual images
+- **Publishing Flow**: Theme approval workflow before community release
+
+### Accessibility & Mobile Optimization
+
+**WCAG 2.1 AA Compliance:**
+- Keyboard navigation support for all Art Studio interfaces
+- Screen reader compatibility with semantic markup and ARIA labels
+- Color contrast verification (4.5:1 ratio minimum)
+- Touch-friendly 44px minimum target sizes on mobile
+
+**Responsive Design:**
+- **Mobile First**: Art Studio modal adapts to portrait orientation
+- **Tablet Optimization**: Grid layouts scale appropriately for larger touch screens
+- **Desktop Enhancement**: Full-width Art Studio interface with advanced features
+
+---
+
+## Backend Architecture & Database Design
+
+### Database Schema Extensions
+
+**Core Image Management System:**
+```sql
+-- Art Studio Images - Complete metadata tracking
+CREATE TABLE art_studio_images (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid(),
+  
+  -- Basic Properties
+  file_name TEXT NOT NULL,
+  storage_url TEXT NOT NULL,
+  thumbnail_url TEXT,
+  width INTEGER,
+  height INTEGER,
+  file_size INTEGER,
+  
+  -- Activity Association
+  activity_id TEXT NOT NULL,
+  activity_title TEXT NOT NULL,
+  
+  -- User/Session Association
+  user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+  session_id TEXT, -- For anonymous users
+  
+  -- Image Source & Type
+  image_type TEXT CHECK (image_type IN ('custom_upload', 'ai_generated', 'team_theme')),
+  source_type TEXT NOT NULL,
+  
+  -- AI Generation Metadata
+  ai_prompt TEXT,
+  ai_model TEXT, -- 'dall-e-3', 'stable-diffusion-xl'
+  ai_parameters JSONB,
+  generation_cost NUMERIC(10,4),
+  
+  -- Theme Association
+  theme_id TEXT REFERENCES art_studio_themes(id),
+  theme_variant TEXT, -- 'primary', 'alt1', 'alt2'
+  
+  -- Status & Usage
+  status TEXT DEFAULT 'active',
+  is_active BOOLEAN DEFAULT true,
+  times_used INTEGER DEFAULT 0,
+  last_used_at TIMESTAMP,
+  
+  created_at TIMESTAMP DEFAULT now(),
+  updated_at TIMESTAMP DEFAULT now()
+);
+
+-- AI Generation Queue Management
+CREATE TABLE ai_generation_requests (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id TEXT REFERENCES users(id),
+  session_id TEXT,
+  activity_id TEXT NOT NULL,
+  
+  -- Generation Parameters
+  prompt TEXT NOT NULL,
+  enhanced_prompt TEXT, -- AI-optimized version
+  model TEXT NOT NULL,
+  parameters JSONB,
+  
+  -- Queue Management
+  status TEXT DEFAULT 'queued' CHECK (status IN ('queued', 'processing', 'completed', 'failed')),
+  priority INTEGER DEFAULT 5 CHECK (priority BETWEEN 1 AND 10),
+  
+  -- Processing Tracking
+  queued_at TIMESTAMP DEFAULT now(),
+  started_at TIMESTAMP,
+  completed_at TIMESTAMP,
+  processing_time INTEGER, -- milliseconds
+  
+  -- Results
+  result_image_id TEXT REFERENCES art_studio_images(id),
+  error_code TEXT,
+  error_message TEXT,
+  cost NUMERIC(10,4),
+  
+  -- Retry Logic
+  retry_count INTEGER DEFAULT 0,
+  max_retries INTEGER DEFAULT 3
+);
+
+-- Team Theme Management
+CREATE TABLE art_studio_themes (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  description TEXT,
+  category TEXT,
+  
+  -- Scope & Coverage
+  activity_ids TEXT[] NOT NULL, -- Activities covered by theme
+  role_model_ids TEXT[], -- Associated role models
+  
+  -- Status & Approval
+  status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'review', 'approved', 'published')),
+  created_by_user_id TEXT REFERENCES users(id),
+  approved_by_user_id TEXT REFERENCES users(id),
+  
+  -- Publishing
+  is_public BOOLEAN DEFAULT false,
+  published_at TIMESTAMP,
+  
+  -- Metadata
+  color_palette JSONB,
+  style_guide JSONB,
+  
+  created_at TIMESTAMP DEFAULT now(),
+  updated_at TIMESTAMP DEFAULT now()
+);
+```
+
+### API Endpoint Architecture
+
+**Stage 1: File Upload Endpoints**
+```typescript
+// /api/art-studio/upload
+POST - Upload image file with validation
+GET /api/art-studio/images/[activityId] - Retrieve activity images
+PUT /api/art-studio/images/[imageId] - Update image metadata
+DELETE /api/art-studio/images/[imageId] - Remove image
+```
+
+**Stage 2: AI Generation Endpoints**
+```typescript
+// /api/art-studio/generate
+POST - Queue AI image generation request
+GET /api/art-studio/generate/status/[requestId] - Check generation status
+GET /api/art-studio/generate/queue - Get queue position and wait time
+
+// WebSocket: /api/art-studio/ws/generation-updates
+// Real-time updates for generation progress
+```
+
+**Stage 3: Team Theme Endpoints**
+```typescript
+// /api/art-studio/themes
+POST - Create new theme
+GET - List public themes
+PUT /api/art-studio/themes/[themeId] - Update theme
+POST /api/art-studio/themes/[themeId]/review - Review/approve theme
+POST /api/art-studio/themes/[themeId]/publish - Publish theme
+POST /api/art-studio/themes/apply - Apply theme to user activities
+```
+
+### AI Integration Architecture
+
+**Dual-Provider Setup with Failover:**
+```typescript
+interface AIImageGenerator {
+  generateImage(config: GenerationConfig): Promise<GenerationResult>;
+  calculateCost(config: GenerationConfig): number;
+}
+
+class OpenAIImageGenerator implements AIImageGenerator {
+  async generateImage(config: GenerationConfig) {
+    // DALL-E 3 implementation with rate limiting
+    const response = await this.client.images.generate({
+      model: 'dall-e-3',
+      prompt: config.enhancedPrompt,
+      size: config.size,
+      quality: config.quality
+    });
+    
+    return {
+      imageUrl: response.data[0].url,
+      revisedPrompt: response.data[0].revised_prompt,
+      cost: this.calculateCost(config)
+    };
+  }
+}
+
+class AIGenerationQueue {
+  private primaryGenerator = new OpenAIImageGenerator();
+  private fallbackGenerator = new RunwareImageGenerator();
+  
+  async processRequest(request: AIGenerationRequest) {
+    try {
+      return await this.primaryGenerator.generateImage(request.config);
+    } catch (error) {
+      console.warn('Primary provider failed, using fallback');
+      return await this.fallbackGenerator.generateImage(request.config);
+    }
+  }
+}
+```
+
+### Performance Optimization
+
+**Database Indexing Strategy:**
+```sql
+-- Essential indexes for performance
+CREATE INDEX idx_art_studio_images_activity_lookup 
+ON art_studio_images (activity_id, is_active, created_at DESC);
+
+CREATE INDEX idx_art_studio_images_user_lookup 
+ON art_studio_images (user_id, is_active, last_used_at DESC) 
+WHERE user_id IS NOT NULL;
+
+CREATE INDEX idx_ai_generation_requests_queue 
+ON ai_generation_requests (status, priority DESC, queued_at ASC) 
+WHERE status IN ('queued', 'processing');
+```
+
+**Caching Strategy:**
+- **Redis**: Cache activity images for 1 hour, user preferences for 30 minutes
+- **CDN**: CloudFront edge caching with 1-year expiration
+- **Application**: In-memory LRU cache for frequently accessed images
+
+---
+
+## Implementation Strategy & Technical Requirements
+
+### Integration with Existing Daily-Actions3 System
+
+**Current System Analysis:**
+- **Live Production**: Daily-actions3 with GamelikeTimeline, TarkovInventoryGrid, 18 custom activities
+- **Performance**: Optimized 28.7 kB bundle size, stable React Beautiful DND integration
+- **Database**: ActivityPreference system ready for image customization extension
+- **Styling**: Established Tarkov-style gaming aesthetic with rarity-based activity styling
+
+**Integration Strategy:**
+```typescript
+// Extend existing ActivityPreference schema
+interface ActivityPreferenceWithImage extends ActivityPreference {
+  customImage?: string; // Vercel Blob URL or base64
+  imageSource?: 'upload' | 'ai-generated' | 'template';
+  imagePrompt?: string;
+  imageMetadata?: {
+    width: number;
+    height: number;
+    cost?: number;
+    generatedAt?: Date;
+  };
+}
+
+// Enhance existing preferences API
+// /api/activities/preferences (existing endpoint)
+// Add image fields to request/response
+```
+
+### Phase-by-Phase Implementation Timeline
+
+**Weeks 1-3: Stage 1 Foundation**
+- Extend ActivityPreference database schema with image fields
+- Update activity-preferences.ts utility functions
+- Create basic ImageUpload component following existing modal patterns
+- Integrate with Activity Duration Settings window
+- **Milestone**: Basic image customization working in daily-actions3
+
+**Weeks 4-8: AI Integration Core**
+- Implement Gemini API integration with rate limiting
+- Create prompt optimization system for productivity context
+- Build generation queue management with WebSocket updates
+- Add image processing pipeline (thumbnails, optimization)
+- **Milestone**: AI generation producing usable activity images
+
+**Weeks 9-11: Art Studio Interface**
+- Build complete Art Studio modal following existing design patterns
+- Implement 4-step generation process with progress tracking
+- Add batch processing capabilities for multiple activities
+- Integration testing with existing daily-actions3 functionality
+- **Milestone**: Full Art Studio workflow functional
+
+**Weeks 12-15: Team Theme Builder**
+- Create admin dashboard for bulk theme creation
+- Implement approval workflow and publishing system
+- Add theme application system for instant activity updates
+- Build community gallery and theme discovery
+- **Milestone**: Team theme creation and sharing working
+
+**Weeks 16-17: Polish & Production Readiness**
+- Performance optimization and bundle size management
+- Comprehensive testing across all user flows
+- Mobile responsiveness and accessibility compliance
+- Production deployment and monitoring setup
+- **Milestone**: Production-ready Art Studio system
+
+### Code Integration Strategy
+
+**Component Architecture:**
+```
+src/components/art-studio/
+├── ArtStudioModal.tsx          // Main modal component
+├── ImageUploadSection.tsx      // File handling and validation
+├── AIPromptBuilder.tsx         // Smart prompt generation
+├── ImagePreviewGrid.tsx        // Generated options display
+├── ThemeSelector.tsx           // Style consistency tools
+├── BatchProcessor.tsx          // Multi-activity processing
+└── AdminThemeBuilder.tsx       // Team dashboard
+
+src/app/api/art-studio/
+├── upload/route.ts             // File upload handler
+├── generate/route.ts           // AI generation queue
+├── themes/route.ts             // Theme management
+└── queue/route.ts              // Generation status
+```
+
+**State Management Integration:**
+```typescript
+// Extend existing activity preferences system
+const useArtStudioPreferences = () => {
+  const { preferences, updatePreference } = useActivityPreferences();
+  
+  const updateActivityImage = useCallback(async (
+    activityId: string, 
+    imageData: ImageCustomization
+  ) => {
+    await updatePreference(activityId, {
+      ...preferences[activityId],
+      customImage: imageData.url,
+      imageSource: imageData.source,
+      imagePrompt: imageData.prompt
+    });
+  }, [preferences, updatePreference]);
+  
+  return { updateActivityImage };
+};
+```
+
+### Performance & Bundle Size Management
+
+**Lazy Loading Strategy:**
+```typescript
+// Art Studio modal loads only when opened
+const ArtStudioModal = lazy(() => import('./components/art-studio/ArtStudioModal'));
+
+// Component-level code splitting
+const AIPromptBuilder = lazy(() => import('./AIPromptBuilder'));
+const ImageGenerationQueue = lazy(() => import('./ImageGenerationQueue'));
+```
+
+**Bundle Impact Analysis:**
+- **Base Art Studio**: ~8-12 kB (lazy loaded)
+- **AI Integration**: ~3-5 kB (WebSocket + API client)
+- **Image Processing**: ~4-6 kB (Sharp utilities, thumbnail generation)
+- **Total Impact**: <20 kB additional, maintaining <50 kB total application size
+
+### Risk Mitigation & Quality Assurance
+
+**Technical Risk Management:**
+1. **Compatibility Risk**: Comprehensive integration testing with daily-actions3
+2. **Performance Risk**: Bundle size monitoring, lazy loading implementation
+3. **AI Cost Risk**: Usage caps, cost monitoring dashboard, fallback systems
+4. **Storage Risk**: Gradual migration from Vercel Blob to AWS S3 as needed
+
+**Testing Strategy:**
+```typescript
+// Integration tests with existing system
+describe('Art Studio + Daily Actions Integration', () => {
+  test('Timeline displays custom images correctly', () => {
+    // Test GamelikeTimeline with custom activity images
+  });
+  
+  test('Drag and drop preserves image customization', () => {
+    // Test React Beautiful DND with enhanced activities
+  });
+  
+  test('Activity settings modal enhancement', () => {
+    // Test new image section in existing modal
+  });
+});
+
+// Performance tests
+describe('Bundle Size & Performance', () => {
+  test('Art Studio lazy loading reduces initial bundle', () => {
+    // Verify code splitting effectiveness
+  });
+  
+  test('Image loading does not impact timeline performance', () => {
+    // Test image caching and optimization
+  });
+});
+```
+
+### Migration & Deployment Strategy
+
+**Database Migration Plan:**
+```sql
+-- Phase 1: Backward-compatible extension
+ALTER TABLE activity_preferences 
+ADD COLUMN custom_image TEXT,
+ADD COLUMN image_source VARCHAR(20) DEFAULT 'template',
+ADD COLUMN image_prompt TEXT,
+ADD COLUMN image_metadata JSONB;
+
+-- Phase 2: Art Studio tables
+-- (Create art_studio_images, ai_generation_requests, art_studio_themes)
+
+-- Phase 3: Indexes and optimization
+-- (Add performance indexes as user base grows)
+```
+
+**Feature Flag Rollout:**
+- **Stage 1**: 25% of users → 50% → 100% over 2 weeks
+- **Stage 2**: Beta users → All users → Public launch over 4 weeks  
+- **Stage 3**: Admin only → Team beta → Public release over 6 weeks
+
+---
+
+## Marketing Strategy & User Adoption
+
+### Market Opportunity & Positioning
+
+**Market Size & Growth:**
+- **AI Productivity Tools**: $36.35B by 2030 (CAGR 26.7%)
+- **AI Personalization Market**: $788.7B by 2033
+- **Visual Customization Premium**: 40% of users willing to pay extra for AR/visual features
+- **Competitive Advantage**: First productivity app with integrated AI art generation
+
+**Unique Value Proposition:**
+- **Primary**: "Transform boring task lists into visually inspiring experiences with AI"
+- **Secondary**: "The same AI that created your perfect Lightwalker™ character now designs your perfect daily environment"
+- **Competitive**: "While Notion gives you templates, we give you AI that creates exactly what motivates YOU"
+
+### Three-Stage Launch Strategy
+
+**Stage 1: Soft Launch (Simple Image Customization)**
+- **Target**: Current 100 beta users
+- **Goal**: 60% adoption rate, proof of visual customization value
+- **Tactics**: Email announcement, in-app tutorial, user success showcases
+- **Content**: "Upgrade Your Daily Actions" tutorial series
+
+**Stage 2: Public Launch (Full AI Art Studio)**
+- **Target**: 1,000+ users through organic growth and press coverage
+- **Goal**: 80+ user satisfaction, 15-25% premium conversion
+- **Tactics**: Product Hunt launch, tech blog coverage, influencer partnerships
+- **Content**: "AI Art for Productivity" thought leadership campaign
+
+**Stage 3: Community Launch (Team Theme Builder)**
+- **Target**: Organizations, productivity communities, enterprise teams
+- **Goal**: 50+ team accounts, community-driven theme marketplace
+- **Tactics**: B2B outreach, productivity conference speaking, enterprise sales
+- **Content**: "Team Productivity Through Visual Consistency" case studies
+
+### User Engagement & Retention Framework
+
+**Onboarding Experience:**
+1. **Visual Impact Demo**: Before/after activity transformations in 30 seconds
+2. **Personal Style Assessment**: 8-question quiz determining visual preferences
+3. **First Success**: Guided customization of user's most important activity
+4. **Community Connection**: Gallery showcase and social sharing option
+
+**Progressive Engagement:**
+- **Week 1**: Welcome sequence + first customization achievement
+- **Weeks 2-4**: Weekly challenges ("Transform Tuesday") + peer discovery
+- **Months 2-3**: Advanced tools unlock + seasonal theme contests
+- **Ongoing**: Community recognition, expert status, early access features
+
+**Retention Mechanisms:**
+- **Daily**: Visual completion tracking increases task completion by 40%
+- **Weekly**: Art Studio digest with community highlights and new features
+- **Monthly**: Personal analytics showing completion rate improvements
+
+### Viral Growth & Social Sharing
+
+**Built-in Shareability:**
+- **Social Media Integration**: One-click before/after transformation posts
+- **Community Gallery**: Public showcase with like/comment engagement
+- **Achievement Sharing**: Custom graphics for Art Studio milestones
+
+**Viral Loop Architecture:**
+1. User creates stunning activity customization
+2. Shares achievement on social media with Art Studio watermark
+3. Friends discover visual transformation capability
+4. Landing page features friend's creation as social proof
+5. New user signup with referral bonus and premium trial
+
+### Content Marketing Strategy
+
+**Educational Content (40%):**
+- "Psychology of Visual Motivation" research-backed article series
+- "AI Art for Productivity" tutorial video library
+- "Design Your Day" monthly webinar series
+
+**User Success Content (35%):**
+- Transformation case studies with completion rate improvements
+- Before/after showcases with user interviews
+- Community artist spotlights and creation process features
+
+**Product Content (25%):**
+- Art Studio feature tutorials and best practices
+- Behind-the-scenes AI technology and development insights
+- Roadmap updates and community-driven feature development
+
+### Business Impact & Revenue Projections
+
+**Freemium Model:**
+- **Free Tier**: Basic upload + 3 AI generations/month
+- **Premium ($15/month)**: Unlimited AI generation + advanced tools
+- **Team ($45/month)**: Collaborative features + admin controls
+
+**Revenue Projections:**
+- **Year 1**: $31K-65K ARR (150-250 premium users from 1,000 active)
+- **Year 2**: $311K-648K ARR (1,500-2,500 premium users from 10,000 active)
+- **Conversion Rate**: 15-25% premium (higher than typical due to visual investment)
+
+**Business Impact Metrics:**
+- **User Engagement**: 40% increase in daily actions completion
+- **Session Duration**: 30% increase due to creative exploration
+- **Retention**: 25% improvement in 30-day retention rate
+- **Viral Growth**: 0.4 coefficient from social sharing features
+
+---
+
+## Success Metrics & Validation Framework
+
+### Key Performance Indicators
+
+**Technical Performance:**
+- **Image Generation Speed**: <10 seconds average
+- **Upload Performance**: <2 seconds for file replacement
+- **System Reliability**: 99.9% uptime for Art Studio features
+- **Bundle Size Impact**: <35 kB total application size
+
+**User Experience:**
+- **Adoption Rate**: 60% of users try customization (Stage 1)
+- **Satisfaction Score**: 80%+ with AI-generated images (Stage 2)
+- **Feature Discovery**: 70% try advanced tools within 30 days
+- **Onboarding Completion**: 85% finish Art Studio introduction
+
+**Business Metrics:**
+- **Premium Conversion**: 15-25% from Art Studio trial users
+- **User Retention**: 25% improvement in 30-day retention
+- **Engagement Increase**: 40% higher daily actions completion
+- **Viral Growth**: 0.4 viral coefficient from sharing features
+
+### Validation Checkpoints
+
+**30-Day Validation:**
+- Stage 1 adoption rate meets 60% target
+- Zero regressions in existing daily-actions3 functionality
+- User feedback indicates high satisfaction with customization
+
+**60-Day Validation:**
+- AI generation quality meets 80% user approval threshold
+- Premium conversion funnel shows 15%+ conversion rate
+- Performance metrics remain within acceptable ranges
+
+**90-Day Validation:**
+- Full Art Studio workflow demonstrates user value
+- Community features show engagement and sharing activity
+- Business metrics validate revenue model assumptions
+
+### Success Criteria & Go/No-Go Decision Points
+
+**Stage 1 Success Criteria:**
+- ✅ 60%+ user adoption of image customization
+- ✅ <5% increase in support tickets (no major UX confusion)
+- ✅ Positive user sentiment (>80% satisfaction surveys)
+- ✅ Technical stability (no performance regressions)
+
+**Stage 2 Success Criteria:**
+- ✅ 80%+ satisfaction with AI-generated images
+- ✅ 15%+ premium conversion rate from Art Studio users
+- ✅ <30 second average generation time
+- ✅ Cost efficiency (<$0.10 per user per month for AI)
+
+**Stage 3 Success Criteria:**
+- ✅ 50+ organizations using team features
+- ✅ 95%+ team-created themes meet quality standards
+- ✅ 25%+ increase in overall user engagement
+- ✅ Community marketplace shows organic growth
+
+**Go/No-Go Decision Framework:**
+- **Green Light**: All success criteria met, proceed to next stage
+- **Yellow Light**: 70-80% of criteria met, iterate and optimize before proceeding
+- **Red Light**: <70% success rate, pause development and reassess approach
+
+---
+
+## Conclusion & Next Steps
+
+The Art Studio PRD represents a comprehensive strategy for transforming Lightwalker from a functional daily actions system into a visually engaging, AI-powered personalization platform. By implementing this three-stage approach, we will create sustainable competitive differentiation while building a scalable revenue model.
+
+### Immediate Action Items (Next 2 Weeks)
+
+1. **Technical Foundation**: Begin database schema extensions and Gemini API integration
+2. **Design System**: Develop Art Studio UI components consistent with Tarkov aesthetic
+3. **User Research**: Survey beta users about visual customization preferences and willingness to pay
+4. **Content Preparation**: Create pre-launch educational content and tutorial materials
+5. **Partnership Development**: Identify and engage with productivity micro-influencers
+
+### Success Factors
+
+**Technical Excellence**: Seamless integration with existing daily-actions3 without performance impact
+**User Experience**: Intuitive, engaging interfaces that make customization feel like creative play
+**Business Viability**: Clear path to premium conversions and sustainable unit economics
+**Market Timing**: First-mover advantage in AI-powered productivity personalization
+
+The Art Studio feature positions Lightwalker™ uniquely in the market while building on proven success patterns from the existing character creation and daily actions systems. With careful execution of this comprehensive strategy, Art Studio will become a significant driver of user engagement, retention, and revenue growth.

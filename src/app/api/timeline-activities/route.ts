@@ -60,35 +60,75 @@ export async function GET(request: NextRequest) {
 
     console.log(`✅ Found ${timelineActivities.length} timeline activities`);
 
-    // Transform for frontend compatibility
-    const formattedActivities = timelineActivities.map(ta => ({
-      id: ta.id,
-      title: ta.activity.title,
-      name: ta.activity.title, // Alias for compatibility
-      time: ta.scheduledTime,
-      scheduledTime: ta.scheduledTime,
-      scheduledDate: ta.scheduledDate,
-      duration: ta.customDuration || ta.activity.duration,
-      points: ta.customPoints || ta.activity.points,
-      icon: ta.activity.icon,
-      category: ta.activity.category,
-      difficulty: ta.activity.difficulty,
-      description: ta.activity.description,
-      instructions: ta.activity.instructions,
-      isCompleted: ta.isCompleted,
-      completedAt: ta.completedAt,
-      notes: ta.notes,
-      // Timeline-specific fields
-      activityId: ta.activityId,
-      userId: ta.userId,
-      sessionId: ta.sessionId,
-      // Recurring pattern fields
-      isRecurring: ta.isRecurring,
-      recurringPattern: ta.recurringPattern,
-      parentTimelineId: ta.parentTimelineId,
-      createdAt: ta.createdAt,
-      updatedAt: ta.updatedAt
-    }));
+    // CRITICAL FIX: Fetch activity preferences to get custom categories
+    const activityIds = timelineActivities.map(ta => ta.activityId);
+    const activityPreferences = activityIds.length > 0 ? await prisma.activityPreference.findMany({
+      where: {
+        activityId: { in: activityIds },
+        OR: [
+          ...(userId ? [{ userId }] : []),
+          ...(sessionId ? [{ sessionId }] : [])
+        ],
+        isActive: true
+      }
+    }) : [];
+
+    console.log(`🔍 Found ${activityPreferences.length} activity preferences for timeline activities`);
+
+    // Create preference map for quick lookup
+    const preferencesMap = new Map();
+    activityPreferences.forEach(pref => {
+      preferencesMap.set(pref.activityId, pref);
+    });
+
+    // Transform for frontend compatibility WITH custom category preferences
+    const formattedActivities = timelineActivities.map(ta => {
+      const preference = preferencesMap.get(ta.activityId);
+      
+      const result = {
+        id: ta.id,
+        title: ta.activity.title,
+        name: ta.activity.title, // Alias for compatibility
+        time: ta.scheduledTime,
+        scheduledTime: ta.scheduledTime,
+        scheduledDate: ta.scheduledDate,
+        duration: ta.customDuration || preference?.customDuration || ta.activity.duration,
+        points: ta.customPoints || preference?.customPoints || ta.activity.points,
+        icon: preference?.customImageUrl || ta.activity.icon,
+        category: preference?.customCategory || ta.activity.category, // FIXED: Apply custom category
+        customCategory: preference?.customCategory, // Also provide customCategory field
+        difficulty: preference?.customDifficulty || ta.activity.difficulty,
+        description: preference?.customDescription || ta.activity.description,
+        instructions: preference?.customDescription || ta.activity.instructions,
+        isCompleted: ta.isCompleted,
+        completedAt: ta.completedAt,
+        notes: ta.notes,
+        // Timeline-specific fields
+        activityId: ta.activityId,
+        userId: ta.userId,
+        sessionId: ta.sessionId,
+        // Recurring pattern fields
+        isRecurring: ta.isRecurring,
+        recurringPattern: ta.recurringPattern,
+        parentTimelineId: ta.parentTimelineId,
+        createdAt: ta.createdAt,
+        updatedAt: ta.updatedAt
+      };
+      
+      // Debug log for activities that might have category issues
+      if (ta.activity.title?.toLowerCase().includes('dogs') || preference?.customCategory) {
+        console.log('🔍 TIMELINE ACTIVITY FORMATTING:', {
+          activityId: ta.activityId,
+          title: ta.activity.title,
+          baseCategory: ta.activity.category,
+          customCategory: preference?.customCategory,
+          finalCategory: result.category,
+          hasPreference: !!preference
+        });
+      }
+      
+      return result;
+    });
 
     return NextResponse.json({
       success: true,
@@ -163,7 +203,19 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Timeline activity created:', timelineActivity.id);
 
-    // Format response for frontend compatibility
+    // FIXED: Fetch activity preferences for the created activity
+    const preference = await prisma.activityPreference.findFirst({
+      where: {
+        activityId: timelineActivity.activityId,
+        OR: [
+          ...(userId ? [{ userId }] : []),
+          ...(sessionId ? [{ sessionId }] : [])
+        ],
+        isActive: true
+      }
+    });
+
+    // Format response for frontend compatibility WITH custom category preferences
     const formattedActivity = {
       id: timelineActivity.id,
       title: timelineActivity.activity.title,
@@ -171,13 +223,14 @@ export async function POST(request: NextRequest) {
       time: timelineActivity.scheduledTime,
       scheduledTime: timelineActivity.scheduledTime,
       scheduledDate: timelineActivity.scheduledDate,
-      duration: timelineActivity.customDuration || timelineActivity.activity.duration,
-      points: timelineActivity.customPoints || timelineActivity.activity.points,
-      icon: timelineActivity.activity.icon,
-      category: timelineActivity.activity.category,
-      difficulty: timelineActivity.activity.difficulty,
-      description: timelineActivity.activity.description,
-      instructions: timelineActivity.activity.instructions,
+      duration: timelineActivity.customDuration || preference?.customDuration || timelineActivity.activity.duration,
+      points: timelineActivity.customPoints || preference?.customPoints || timelineActivity.activity.points,
+      icon: preference?.customImageUrl || timelineActivity.activity.icon,
+      category: preference?.customCategory || timelineActivity.activity.category, // FIXED: Apply custom category
+      customCategory: preference?.customCategory,
+      difficulty: preference?.customDifficulty || timelineActivity.activity.difficulty,
+      description: preference?.customDescription || timelineActivity.activity.description,
+      instructions: preference?.customDescription || timelineActivity.activity.instructions,
       isCompleted: timelineActivity.isCompleted,
       activityId: timelineActivity.activityId,
       userId: timelineActivity.userId,
@@ -252,7 +305,19 @@ export async function PUT(request: NextRequest) {
 
     console.log('✅ Timeline activity updated:', timelineActivity.id);
 
-    // Format response
+    // FIXED: Fetch activity preferences for the updated activity
+    const preference = await prisma.activityPreference.findFirst({
+      where: {
+        activityId: timelineActivity.activityId,
+        OR: [
+          ...(timelineActivity.userId ? [{ userId: timelineActivity.userId }] : []),
+          ...(timelineActivity.sessionId ? [{ sessionId: timelineActivity.sessionId }] : [])
+        ],
+        isActive: true
+      }
+    });
+
+    // Format response WITH custom category preferences
     const formattedActivity = {
       id: timelineActivity.id,
       title: timelineActivity.activity.title,
@@ -260,13 +325,14 @@ export async function PUT(request: NextRequest) {
       time: timelineActivity.scheduledTime,
       scheduledTime: timelineActivity.scheduledTime,
       scheduledDate: timelineActivity.scheduledDate,
-      duration: timelineActivity.customDuration || timelineActivity.activity.duration,
-      points: timelineActivity.customPoints || timelineActivity.activity.points,
-      icon: timelineActivity.activity.icon,
-      category: timelineActivity.activity.category,
-      difficulty: timelineActivity.activity.difficulty,
-      description: timelineActivity.activity.description,
-      instructions: timelineActivity.activity.instructions,
+      duration: timelineActivity.customDuration || preference?.customDuration || timelineActivity.activity.duration,
+      points: timelineActivity.customPoints || preference?.customPoints || timelineActivity.activity.points,
+      icon: preference?.customImageUrl || timelineActivity.activity.icon,
+      category: preference?.customCategory || timelineActivity.activity.category, // FIXED: Apply custom category
+      customCategory: preference?.customCategory,
+      difficulty: preference?.customDifficulty || timelineActivity.activity.difficulty,
+      description: preference?.customDescription || timelineActivity.activity.description,
+      instructions: preference?.customDescription || timelineActivity.activity.instructions,
       isCompleted: timelineActivity.isCompleted,
       completedAt: timelineActivity.completedAt,
       notes: timelineActivity.notes,

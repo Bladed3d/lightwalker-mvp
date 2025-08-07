@@ -11,10 +11,12 @@ import {
   ArrowLeft,
   Upload,
   Image as ImageIcon,
-  Sparkles
+  Sparkles,
+  ChevronDown,
+  RotateCcw
 } from 'lucide-react';
 import { ThemeConfig } from '@/lib/theme-config';
-import { saveActivityImageAndGridPreference } from '@/lib/activity-preferences';
+import { saveActivityImageAndGridPreference, saveActivityCategoryPreference } from '@/lib/activity-preferences';
 
 interface ActivityEditItem {
   id: string;
@@ -63,6 +65,7 @@ export default function DurationScreen({
   const [editingTitle, setEditingTitle] = useState('');
   const [editingDescription, setEditingDescription] = useState('');
   const [editingInstructions, setEditingInstructions] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('mindfulness');
   
   // Recurring schedule states
   const [isRecurring, setIsRecurring] = useState(false);
@@ -79,6 +82,22 @@ export default function DurationScreen({
   const [imageDimensions, setImageDimensions] = useState<{width: number, height: number, aspectRatio: number} | null>(null);
   const [suggestedGridSize, setSuggestedGridSize] = useState<{w: number, h: number} | null>(null);
   const [selectedGridSize, setSelectedGridSize] = useState<{w: number, h: number} | null>(null);
+  const [originalIcon, setOriginalIcon] = useState<string>(''); // Track original icon for restore functionality
+
+  // Category options for dropdown (7 categories)
+  const CATEGORY_OPTIONS = [
+    { id: 'mindfulness', label: 'Mindfulness', icon: '🧘', color: '#3B82F6' },
+    { id: 'physical', label: 'Physical', icon: '💪', color: '#10B981' },
+    { id: 'creativity', label: 'Creativity', icon: '🎨', color: '#F59E0B' },
+    { id: 'communication', label: 'Communication', icon: '🗣️', color: '#8B4513' },
+    { id: 'learning', label: 'Learning', icon: '📚', color: '#8B5CF6' },
+    { id: 'productivity', label: 'Productivity', icon: '⚡', color: '#06B6D4' },
+    { id: 'relationships', label: 'Relationships', icon: '💝', color: '#EC4899' }
+  ];
+
+  const getCategoryColor = (categoryId: string): string => {
+    return CATEGORY_OPTIONS.find(c => c.id === categoryId)?.color || '#6B73FF';
+  };
 
   // Listen for dropped activities from main page
   useEffect(() => {
@@ -90,6 +109,9 @@ export default function DurationScreen({
       setCustomImagePreview(null);
       setImageDimensions(null);
       setSuggestedGridSize(null);
+      
+      // Store original icon for restore functionality
+      setOriginalIcon(activity.icon || '');
       
       // Extract base activity ID for timeline lookup
       let baseActivityId = activity.id;
@@ -131,6 +153,8 @@ export default function DurationScreen({
         ...activity,
         duration: timelineActivity.customDuration || timelineActivity.duration || activity.duration,
         points: timelineActivity.customPoints || timelineActivity.points || activity.points,
+        category: timelineActivity.category || timelineActivity.customCategory || activity.category,
+        customCategory: timelineActivity.customCategory || timelineActivity.category || activity.customCategory,
         isRecurring: timelineActivity.isRecurring || false,
         recurringPattern: timelineActivity.recurringPattern || undefined,
         scheduledTime: timelineActivity.scheduledTime,
@@ -146,6 +170,7 @@ export default function DurationScreen({
       setEditingTitle(finalActivity.title || finalActivity.name || '');
       setEditingDescription(finalActivity.description || '');
       setEditingInstructions(finalActivity.instructions || '');
+      setSelectedCategory(finalActivity.category || finalActivity.customCategory || 'mindfulness');
       
       // Initialize recurring states from timeline data
       setIsRecurring(finalActivity.isRecurring || false);
@@ -159,6 +184,8 @@ export default function DurationScreen({
       console.log('📋 Final activity settings loaded:', {
         duration: finalActivity.duration,
         points: finalActivity.points,
+        category: finalActivity.category,
+        customCategory: finalActivity.customCategory,
         isRecurring: finalActivity.isRecurring,
         fromTimeline: !!timelineActivity
       });
@@ -232,6 +259,17 @@ export default function DurationScreen({
     }
   };
 
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    if (currentActivity) {
+      setCurrentActivity(prev => prev ? { 
+        ...prev, 
+        category: categoryId,
+        customCategory: categoryId // Also update customCategory for preferences
+      } : null);
+    }
+  };
+
   const handleDurationSliderChange = (minutes: number) => {
     handleDurationChange(`${minutes} min`);
   };
@@ -293,9 +331,69 @@ export default function DurationScreen({
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (currentActivity) {
-      onActivitySave(currentActivity);
+      // Ensure the category is updated in the current activity before saving
+      const updatedActivity = {
+        ...currentActivity,
+        category: selectedCategory,
+        customCategory: selectedCategory,
+        title: editingTitle,
+        description: editingDescription,
+        instructions: editingInstructions
+      };
+
+      // Save category preference to database
+      let baseActivityId = currentActivity.id;
+      if (currentActivity.id.startsWith('edit-') && currentActivity.id.includes('-')) {
+        const parts = currentActivity.id.split('-');
+        if (parts.length >= 3) {
+          baseActivityId = parts.slice(2).join('-');
+        }
+      }
+
+      console.log('🔍 CATEGORY SAVE DEBUG:', {
+        selectedCategory,
+        baseActivityId,
+        originalId: currentActivity.id,
+        activityTitle: updatedActivity.title,
+        duration: updatedActivity.duration,
+        points: updatedActivity.points
+      });
+
+      try {
+        const result = await saveActivityCategoryPreference(
+          baseActivityId,
+          updatedActivity.title,
+          selectedCategory,
+          updatedActivity.duration,
+          updatedActivity.points
+        );
+        
+        console.log('✅ Category save result:', result);
+        
+        if (result.success) {
+          console.log('✅ Activity category saved successfully:', selectedCategory);
+          
+          // Dispatch event to refresh timeline
+          window.dispatchEvent(new CustomEvent('categoryPreferenceUpdated', {
+            detail: { 
+              activityId: baseActivityId, 
+              category: selectedCategory,
+              updatedActivity 
+            }
+          }));
+          
+        } else {
+          console.error('❌ Category save failed:', result.error);
+          alert(`Failed to save category: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('❌ Error saving category preference:', error);
+        alert(`Error saving category: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+
+      onActivitySave(updatedActivity);
       setCurrentActivity(null);
       onBack(); // Close the edit screen after saving
     }
@@ -336,6 +434,27 @@ export default function DurationScreen({
     if (aspectRatio > 1.2 && aspectRatio <= 1.8) return { w: 2, h: 2 };
     // Default square
     return { w: 1, h: 1 };
+  };
+
+  // Art Studio - Handle restore original image
+  const handleRestoreOriginalImage = () => {
+    if (originalIcon && currentActivity) {
+      // Clear custom preview and reset to original
+      setCustomImagePreview(null);
+      setImageDimensions(null);
+      setSuggestedGridSize(null);
+      
+      // Update current activity with original icon
+      setCurrentActivity(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          icon: originalIcon
+        };
+      });
+      
+      console.log('🔄 Restored original image:', originalIcon);
+    }
   };
 
   // Art Studio - Handle image upload
@@ -425,7 +544,8 @@ export default function DurationScreen({
               originalDimensions: dimensions,
               suggestedGridSize: suggestedGrid,
               selectedGridSize: gridSizeToSave
-            }
+            },
+            selectedCategory // Include the selected category
           );
 
           if (result.success) {
@@ -472,32 +592,12 @@ export default function DurationScreen({
             </button>
           </div>
 
-          {/* Activity Summary with Big Graphic */}
+          {/* Activity Summary - Text Only */}
           <div className={`p-4 ${theme.statsBackground} rounded-lg mb-6`}>
-            <div className="flex items-center space-x-4">
-              {/* Big Activity Graphic */}
-              <div className="flex-shrink-0">
-                {(currentActivity.icon.startsWith('/') || currentActivity.icon.startsWith('data:')) ? (
-                  <div className="w-20 h-20 bg-gray-800 rounded-lg p-2 shadow-lg">
-                    <img 
-                      src={currentActivity.icon} 
-                      alt={currentActivity.title}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg">
-                    <span className="text-4xl">{currentActivity.icon}</span>
-                  </div>
-                )}
-              </div>
-              <div>
-                <h4 className={`text-lg font-medium ${theme.cardText}`}>{currentActivity.title}</h4>
-                <p className={`text-sm ${theme.cardSubtext}`}>
-                  Duration: {currentActivity.duration} • Points: {currentActivity.points}
-                </p>
-              </div>
-            </div>
+            <h4 className={`text-lg font-medium ${theme.cardText} mb-2`}>{currentActivity.title}</h4>
+            <p className={`text-sm ${theme.cardSubtext}`}>
+              Duration: {currentActivity.duration} • Points: {currentActivity.points}
+            </p>
           </div>
 
           {/* Time Position Input */}
@@ -561,16 +661,16 @@ export default function DurationScreen({
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
-              className={`mb-6 min-h-[120px] rounded-lg transition-colors ${
+              className={`${currentActivity ? 'mb-2' : 'mb-6'} ${currentActivity ? 'min-h-[20px]' : 'min-h-[120px]'} rounded-lg transition-colors ${
                 snapshot.isDraggingOver 
                   ? 'bg-orange-500/10 border-2 border-dashed border-orange-500' 
                   : 'border-2 border-dashed border-transparent'
               }`}
             >
               {currentActivity ? (
-                // Compact Activity Display
+                // Compact Activity Display - COMMENTED OUT to remove duplicate
+                /*
                 <div className="flex items-center space-x-4 p-4">
-                  {/* Activity Graphic */}
                   <div className="flex-shrink-0">
                     {(customImagePreview || currentActivity.icon) && ((customImagePreview || currentActivity.icon).startsWith('/') || (customImagePreview || currentActivity.icon).startsWith('data:')) ? (
                       <div className="w-16 h-16 bg-gray-800 rounded-lg p-2 shadow-lg">
@@ -591,13 +691,17 @@ export default function DurationScreen({
                     )}
                   </div>
                   
-                  {/* Activity Info */}
                   <div className="flex-1">
                     <h4 className="text-lg font-bold text-white mb-1">{editingTitle || currentActivity.title || 'Activity'}</h4>
                     <p className="text-sm text-gray-300">
                       Duration: {currentActivity.duration} • Points: {currentActivity.points}
                     </p>
                   </div>
+                </div>
+                */
+                // Activity indicator removed - title/info already shown in right column
+                <div className="p-2">
+                  {/* No content needed - activity info displayed in right column */}
                 </div>
               ) : (
                 // Drop instruction
@@ -688,33 +792,47 @@ export default function DurationScreen({
                   
                   {/* Upload Controls & Grid Selector */}
                   <div className="flex-1">
-                    <label className="cursor-pointer">
-                      <input
-                        id="image-upload-input"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                        disabled={isUploadingImage}
-                      />
-                      <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors w-fit ${
-                        isUploadingImage 
-                          ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                          : 'bg-purple-500 text-white hover:bg-purple-600 cursor-pointer'
-                      }`}>
-                        {isUploadingImage ? (
-                          <>
-                            <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
-                            <span>Uploading...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="w-4 h-4" />
-                            <span>Upload Image</span>
-                          </>
-                        )}
-                      </div>
-                    </label>
+                    <div className="flex items-center space-x-3 mb-2">
+                      <label className="cursor-pointer">
+                        <input
+                          id="image-upload-input"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          disabled={isUploadingImage}
+                        />
+                        <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors w-fit ${
+                          isUploadingImage 
+                            ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                            : 'bg-purple-500 text-white hover:bg-purple-600 cursor-pointer'
+                        }`}>
+                          {isUploadingImage ? (
+                            <>
+                              <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                              <span>Uploading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-4 h-4" />
+                              <span>Upload Image</span>
+                            </>
+                          )}
+                        </div>
+                      </label>
+                      
+                      {/* Restore Original Button */}
+                      {originalIcon && originalIcon !== (customImagePreview || currentActivity?.icon) && (
+                        <button
+                          onClick={handleRestoreOriginalImage}
+                          className="flex items-center space-x-2 px-4 py-2 bg-gray-600 text-gray-300 hover:bg-gray-500 hover:text-white rounded-lg transition-colors"
+                          title="Restore original activity image"
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                          <span>Restore Original</span>
+                        </button>
+                      )}
+                    </div>
                     
                     <p className="text-xs text-gray-400 mt-1">
                       JPG, PNG up to 5MB
@@ -992,8 +1110,45 @@ export default function DurationScreen({
               </div>
             </div>
 
-            {/* Right Column: Title, Philosophy and Instructions Editing */}
+            {/* Right Column: Category, Title, Philosophy and Instructions Editing */}
             <div className="space-y-6">
+              {/* Category Selection */}
+              <div>
+                <label className={`block text-sm font-medium ${theme.cardText} mb-3 flex items-center`}>
+                  <span className="mr-2">Category</span>
+                  <span className="text-xs text-gray-400 font-normal">(Timeline Duration Line Color)</span>
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white focus:bg-gray-500 focus:border-orange-400 focus:outline-none transition-colors appearance-none cursor-pointer"
+                  >
+                    {CATEGORY_OPTIONS.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.icon} {category.label}
+                      </option>
+                    ))}
+                  </select>
+                  {/* Custom dropdown arrow */}
+                  <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  </div>
+                </div>
+                
+                {/* Color Preview Line */}
+                <div className="mt-2 flex items-center space-x-2">
+                  <span className="text-xs text-gray-400">Duration line color:</span>
+                  <div 
+                    className="w-8 h-1 rounded-full" 
+                    style={{ backgroundColor: getCategoryColor(selectedCategory) }}
+                  />
+                  <span className="text-xs font-medium" style={{ color: getCategoryColor(selectedCategory) }}>
+                    {CATEGORY_OPTIONS.find(c => c.id === selectedCategory)?.label}
+                  </span>
+                </div>
+              </div>
+
               {/* Title Editing */}
               <div>
                 <label className={`block text-sm font-medium ${theme.cardText} mb-3`}>
@@ -1078,6 +1233,16 @@ export default function DurationScreen({
                     <span>Duration: {currentActivity.duration}</span>
                     <span>Points: {currentActivity.points}</span>
                     <span>Grid: {selectedGridSize?.w || 1}×{selectedGridSize?.h || 1}</span>
+                    <div className="flex items-center space-x-1">
+                      <span>Category:</span>
+                      <div 
+                        className="w-2 h-2 rounded-full" 
+                        style={{ backgroundColor: getCategoryColor(selectedCategory) }}
+                      />
+                      <span style={{ color: getCategoryColor(selectedCategory) }}>
+                        {CATEGORY_OPTIONS.find(c => c.id === selectedCategory)?.label}
+                      </span>
+                    </div>
                   </div>
                   {isRecurring && (
                     <div className="mt-2 p-2 bg-green-900/30 border border-green-700 rounded">

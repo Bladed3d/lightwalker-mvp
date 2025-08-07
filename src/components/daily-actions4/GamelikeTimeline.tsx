@@ -2,6 +2,85 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import { ThemeConfig } from '@/lib/theme-config';
 
+// Duration parsing utility
+function parseDurationToMinutes(duration: string): number {
+  if (!duration) return 15; // Default duration
+  
+  // Handle various formats: "15 min", "1 hour", "2 hours 30 min", "6 hours"
+  const hourMatch = duration.match(/(\d+)\s*hours?/i);
+  const minMatch = duration.match(/(\d+)\s*min/i);
+  
+  let totalMinutes = 0;
+  
+  if (hourMatch) {
+    totalMinutes += parseInt(hourMatch[1]) * 60;
+  }
+  
+  if (minMatch) {
+    totalMinutes += parseInt(minMatch[1]);
+  }
+  
+  // If no match found, try to parse as just a number (assume minutes)
+  if (totalMinutes === 0) {
+    const numMatch = duration.match(/(\d+)/);
+    if (numMatch) {
+      totalMinutes = parseInt(numMatch[1]);
+    }
+  }
+  
+  return totalMinutes || 15; // Default to 15 minutes if parsing fails
+}
+
+// Category color mapping (7 core categories + legacy fallbacks)
+const CATEGORY_COLORS = {
+  // Core 7 categories
+  mindfulness: '#3B82F6',    // blue
+  physical: '#10B981',       // green  
+  creativity: '#F59E0B',     // orange
+  communication: '#8B4513',  // brown
+  learning: '#8B5CF6',       // purple
+  productivity: '#06B6D4',   // teal
+  relationships: '#EC4899',  // pink
+  // Legacy category fallbacks (will be remapped later)
+  creative: '#F59E0B',       // → creativity
+  'decision-making': '#06B6D4', // → productivity
+  reflection: '#3B82F6',     // → mindfulness
+  'self-care': '#10B981',    // → physical
+  growth: '#8B5CF6',         // → learning
+  nutrition: '#10B981',      // → physical
+  companionship: '#EC4899',  // → relationships
+  sleep: '#10B981',          // → physical
+  morning: '#10B981',        // → physical
+  work: '#06B6D4',           // → productivity
+  social: '#EC4899',         // → relationships
+  custom: '#9CA3AF',      // neutral gray
+} as const;
+
+// Category vertical offset mapping (10px increments to prevent overlap)
+const CATEGORY_VERTICAL_OFFSETS = {
+  // Core 7 categories (10px spacing)
+  mindfulness: 10,
+  physical: 20,
+  creativity: 30,
+  communication: 40,
+  learning: 50,
+  productivity: 60,
+  relationships: 70,
+  // Legacy category fallbacks (map to core categories)
+  creative: 30,           // → creativity
+  'decision-making': 60,  // → productivity
+  reflection: 10,         // → mindfulness
+  'self-care': 20,        // → physical
+  growth: 50,             // → learning
+  nutrition: 20,          // → physical
+  companionship: 70,      // → relationships
+  sleep: 20,              // → physical
+  morning: 20,            // → physical
+  work: 60,               // → productivity
+  social: 70,             // → relationships
+  custom: 80,             // fallback
+} as const;
+
 interface GamelikeTimelineProps {
   theme?: ThemeConfig;
   onActivityAdd?: (activity: any, timeSlot: string) => void;
@@ -993,6 +1072,131 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
               {/* Timeline Base Line - moved lower to avoid activity label overlap */}
               <div className="absolute left-0 right-0 h-0.5 bg-slate-600" style={{ bottom: '24px' }}></div>
 
+              {/* Duration Lines SVG Overlay */}
+              <svg 
+                className="absolute inset-0 pointer-events-none" 
+                style={{ 
+                  width: `${24 * 60 * pixelsPerMinute}px`,
+                  height: '100%',
+                  zIndex: 25 // Below activity icons but above timeline base
+                }}
+              >
+                {timelineActivities.map((activity, index) => {
+                  // Debug activity category data
+                  if (activity.title?.toLowerCase().includes('dogs')) {
+                    console.log('🔍 DURATION LINE DEBUG - dogs activity:', {
+                      activity,
+                      category: activity.category,
+                      customCategory: activity.customCategory,
+                      activityId: activity.activityId,
+                      title: activity.title,
+                      scheduledTime: activity.scheduledTime,
+                      duration: activity.duration
+                    });
+                  }
+
+                  // Parse activity time (same logic as activity rendering)
+                  let hours, mins;
+                  if (activity.time) {
+                    [hours, mins] = activity.time.split(':').map(Number);
+                  } else if (activity.scheduledTime) {
+                    const timeStr = activity.scheduledTime;
+                    
+                    if (timeStr.includes('a') || timeStr.includes('p')) {
+                      const isPM = timeStr.includes('p');
+                      const [hourStr, minStr] = timeStr.replace(/[ap]/, '').split(':');
+                      hours = parseInt(hourStr);
+                      mins = parseInt(minStr);
+                      
+                      if (isPM && hours !== 12) hours += 12;
+                      if (!isPM && hours === 12) hours = 0;
+                    } else {
+                      [hours, mins] = timeStr.split(':').map(Number);
+                    }
+                  } else {
+                    return null;
+                  }
+
+                  // Calculate start position
+                  const activityStart = hours * 60 + mins;
+                  const startPosition = activityStart * pixelsPerMinute;
+                  
+                  // Parse duration and calculate end position
+                  const durationMinutes = parseDurationToMinutes(activity.duration || '15 min');
+                  const endPosition = startPosition + (durationMinutes * pixelsPerMinute);
+                  
+                  // Get category color and vertical offset - check both category and customCategory
+                  const category = activity.customCategory || activity.category || 'custom';
+                  const color = CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS] || CATEGORY_COLORS.custom;
+                  const verticalOffset = CATEGORY_VERTICAL_OFFSETS[category as keyof typeof CATEGORY_VERTICAL_OFFSETS] || CATEGORY_VERTICAL_OFFSETS.custom;
+                  
+                  // Additional debug for dogs activity
+                  if (activity.title?.toLowerCase().includes('dogs')) {
+                    console.log('🔍 DURATION LINE RENDERING - dogs activity:', {
+                      finalCategory: category,
+                      color,
+                      verticalOffset,
+                      startPosition,
+                      endPosition,
+                      durationMinutes
+                    });
+                  }
+                  
+                  // Calculate line Y position (from bottom of container)
+                  const lineY = 144 - 24 - verticalOffset; // container height - timeline base - category offset
+                  
+                  return (
+                    <g key={`duration-${activity.id || index}`}>
+                      {/* Main duration line */}
+                      <line
+                        x1={startPosition}
+                        y1={lineY}
+                        x2={endPosition}
+                        y2={lineY}
+                        stroke={color}
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        opacity="0.7"
+                        className="duration-line hover:opacity-100 transition-opacity"
+                      />
+                      
+                      {/* Start circle */}
+                      <circle
+                        cx={startPosition}
+                        cy={lineY}
+                        r="2"
+                        fill={color}
+                        opacity="0.8"
+                      />
+                      
+                      {/* End circle */}
+                      <circle
+                        cx={endPosition}
+                        cy={lineY}
+                        r="2"
+                        fill={color}
+                        opacity="0.8"
+                      />
+                      
+                      {/* Duration text (only show for longer activities to avoid clutter) */}
+                      {durationMinutes >= 30 && (
+                        <text
+                          x={startPosition + (endPosition - startPosition) / 2}
+                          y={lineY - 8}
+                          textAnchor="middle"
+                          fontSize="10"
+                          fill={color}
+                          opacity="0.9"
+                          className="font-mono text-shadow"
+                        >
+                          {activity.duration}
+                        </text>
+                      )}
+                    </g>
+                  );
+                })}
+              </svg>
+
               {/* Hourly Time Markers (aligned with moved timeline) */}
               {Array.from({ length: 24 }, (_, i) => (
                 <div key={`hour-${i}`}>
@@ -1101,8 +1305,32 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                     }}
                   >
                     {/* Activity Time (above icon) */}
-                    <div className="text-xs text-slate-300 font-mono mb-1 whitespace-nowrap">
+                    <div className="relative text-xs text-slate-300 font-mono mb-1 whitespace-nowrap">
                       {displayTime}
+                      {/* Tactical Crosshair Target - Right-click menu indicator */}
+                      {isDroppedActivity && (
+                        <div 
+                          className="absolute -top-1 -right-6 w-4 h-4 bg-transparent flex items-center justify-center cursor-pointer group"
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            const menuData = {
+                              visible: true,
+                              x: e.clientX,
+                              y: e.clientY,
+                              activity: activity
+                            };
+                            setContextMenu(menuData);
+                          }}
+                          title="Right-click for actions"
+                        >
+                          <div className="w-3 h-3 text-red-400 hover:text-red-300 transition-colors">⊕</div>
+                          
+                          {/* Hover tooltip */}
+                          <div className="absolute left-6 top-0 bg-slate-800 text-white text-xs px-2 py-1 rounded border border-slate-600 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                            Right-click for menu
+                          </div>
+                        </div>
+                      )}
                     </div>
                     
                     {/* Activity Icon */}
@@ -1128,31 +1356,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                       {/* Underline highlight for current activity */}
                       {isCurrent && (
                         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-blue-400 shadow-lg shadow-blue-400/50"></div>
-                      )}
-                      
-                      {/* Tactical Crosshair Target - Right-click menu indicator */}
-                      {isDroppedActivity && (
-                        <div 
-                          className="absolute -top-1 -right-1 w-4 h-4 bg-transparent flex items-center justify-center cursor-pointer group"
-                          onContextMenu={(e) => {
-                            e.preventDefault();
-                            const menuData = {
-                              visible: true,
-                              x: e.clientX,
-                              y: e.clientY,
-                              activity: activity
-                            };
-                            setContextMenu(menuData);
-                          }}
-                          title="Right-click for actions"
-                        >
-                          <div className="text-red-500 text-xs font-bold leading-none hover:text-red-400 transition-colors">⊕</div>
-                          
-                          {/* Hover tooltip */}
-                          <div className="absolute left-6 top-0 bg-slate-800 text-white text-xs px-2 py-1 rounded border border-slate-600 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                            Right-click for menu
-                          </div>
-                        </div>
                       )}
                     </div>
                     
@@ -1205,8 +1408,32 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                             </div>
                           )}
                           {/* Activity Time (above icon) */}
-                          <div className="text-xs text-slate-300 font-mono mb-1 whitespace-nowrap">
+                          <div className="relative text-xs text-slate-300 font-mono mb-1 whitespace-nowrap">
                             {displayTime}
+                            {/* Tactical Crosshair Target - Right-click menu indicator */}
+                            {isDroppedActivity && (
+                              <div 
+                                className="absolute -top-1 -right-6 w-4 h-4 bg-transparent flex items-center justify-center cursor-pointer group"
+                                onContextMenu={(e) => {
+                                  e.preventDefault();
+                                  const menuData = {
+                                    visible: true,
+                                    x: e.clientX,
+                                    y: e.clientY,
+                                    activity: activity
+                                  };
+                                  setContextMenu(menuData);
+                                }}
+                                title="Right-click for actions"
+                              >
+                                <div className="w-3 h-3 text-red-400 hover:text-red-300 transition-colors">⊕</div>
+                                
+                                {/* Hover tooltip */}
+                                <div className="absolute left-6 top-0 bg-slate-800 text-white text-xs px-2 py-1 rounded border border-slate-600 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                                  Right-click for menu
+                                </div>
+                              </div>
+                            )}
                           </div>
                           
                           {/* Activity Icon */}
@@ -1232,31 +1459,6 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
                             {/* Underline highlight for current activity */}
                             {isCurrent && (
                               <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-blue-400 shadow-lg shadow-blue-400/50"></div>
-                            )}
-                            
-                            {/* Tactical Crosshair Target - Right-click menu indicator */}
-                            {isDroppedActivity && (
-                              <div 
-                                className="absolute -top-1 -right-1 w-4 h-4 bg-transparent flex items-center justify-center cursor-pointer group"
-                                onContextMenu={(e) => {
-                                  e.preventDefault();
-                                  const menuData = {
-                                    visible: true,
-                                    x: e.clientX,
-                                    y: e.clientY,
-                                    activity: activity
-                                  };
-                                  setContextMenu(menuData);
-                                }}
-                                title="Right-click for actions"
-                              >
-                                <div className="text-red-500 text-xs font-bold leading-none hover:text-red-400 transition-colors">⊕</div>
-                                
-                                {/* Hover tooltip */}
-                                <div className="absolute left-6 top-0 bg-slate-800 text-white text-xs px-2 py-1 rounded border border-slate-600 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                                  Right-click for menu
-                                </div>
-                              </div>
                             )}
                           </div>
                           
@@ -1354,6 +1556,60 @@ const GamelikeTimeline = ({ theme, onActivityAdd, onActivityRemove, onActivitySe
             </div>
             <span className={`text-xs ${theme?.timelineText || 'text-slate-300'}`}>{zoomLevel}x ({pixelsPerMinute}px/min)</span>
           </div>
+
+          {/* Duration Legend - Only show if there are timeline activities */}
+          {timelineActivities.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-slate-600">
+              <div className="flex items-center justify-between mb-2">
+                <span className={`text-xs ${theme?.cardSubtext || 'text-slate-400'}`}>Duration Colors</span>
+                <span className={`text-xs ${theme?.cardSubtext || 'text-slate-400'}`}>
+                  {timelineActivities.length} activities
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs">
+                {/* Show legend for categories that are actually present in timeline activities */}
+                {Object.entries(CATEGORY_COLORS)
+                  .filter(([category]) => 
+                    timelineActivities.some(activity => 
+                      (activity.category || 'custom') === category
+                    )
+                  )
+                  .slice(0, 6) // Limit to 6 categories to avoid clutter
+                  .map(([category, color]) => (
+                    <div key={category} className="flex items-center gap-1">
+                      <div 
+                        className="w-3 h-0.5 rounded-full"
+                        style={{ backgroundColor: color }}
+                      />
+                      <span className={`${theme?.cardSubtext || 'text-slate-400'} capitalize`}>
+                        {category.replace('-', ' ')}
+                      </span>
+                    </div>
+                  ))}
+                {/* Show +more indicator if there are additional categories */}
+                {Object.keys(CATEGORY_COLORS).filter(category => 
+                  timelineActivities.some(activity => 
+                    (activity.category || 'custom') === category
+                  )
+                ).length > 6 && (
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-0.5 rounded-full bg-slate-500" />
+                    <span className={`${theme?.cardSubtext || 'text-slate-400'}`}>
+                      +{Object.keys(CATEGORY_COLORS).filter(category => 
+                        timelineActivities.some(activity => 
+                          (activity.category || 'custom') === category
+                        )
+                      ).length - 6} more
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className={`text-xs ${theme?.cardSubtext || 'text-slate-400'} mt-1 italic`}>
+                Lines show activity duration and overlap
+              </div>
+            </div>
+          )}
+          
           </div>
 
         </div>

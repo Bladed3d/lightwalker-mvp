@@ -1,0 +1,75 @@
+KEEP,CATEGORY,ACTIVITY_NAME,ROLE_MODEL,DESCRIPTION,DURATION,DIFFICULTY,PRACTICAL_FOR
+,E,Daily Zen Meditation,Steve Jobs,"Mindful meditation for 20-30 minutes focusing on breath awareness, developing focus and intuitive decision-making",20-30 min,2,Both - great for stress management and mental clarity
+,B,Walking Meetings/Reflection,Steve Jobs,"Take walking breaks during work calls or for personal reflection, stimulates creative thinking",15-30 min,1,Both - easy to incorporate into daily routine
+,M,Simplification Exercises,Steve Jobs,"Daily practice of asking 'What can I remove?' to declutter thoughts and focus on essentials",10 min,2,Both - helps with decision-making and priorities
+,M,Question-Based Research Method,Isaac Newton,"Start projects/learning with written questions rather than assumptions, systematic inquiry approach",15 min,2,Both - great for problem-solving and learning
+,M,Intensive Note-Taking and Organization,Isaac Newton,"Create detailed notes with indexes and cross-references for better knowledge retention",20 min,2,Both - excellent for professional development
+,M,Deep Focus Sessions,Isaac Newton,"Dedicated periods of uninterrupted focus on important tasks (adapted to 1-2 hours max)",60-120 min,3,Both - especially valuable for software work
+,E,Daily Meditation Practice,Buddha,"Anapanasati (breath awareness) meditation for present-moment awareness and emotional balance",20-40 min,2,Both - proven stress reduction and emotional regulation
+,E,Loving-Kindness Meditation,Buddha,"Systematically send loving-kindness to self, loved ones, difficult people, and all beings",15-20 min,2,Both - improves relationships and emotional resilience
+,B,Walking Meditation,Buddha,"Slow, mindful walking with complete awareness of each step and breath",15-30 min,1,Both - combines exercise with mindfulness
+,C,Daily Teaching Through Questions,Buddha,"Use Socratic questioning to guide family/colleagues to their own insights rather than lecturing",Ongoing,2,Both - excellent parenting and leadership skill
+,C,Daily Violin/Music Practice,Albert Einstein,"Play musical instrument or engage with music as creative thinking tool",30-60 min,2,Both - enhances creativity and stress relief
+,M,Thought Experiments,Albert Einstein,"Mental visualization of 'what if' scenarios to explore problems and solutions creatively",15-30 min,2,Both - develops innovative thinking
+,B,Long Solitary Walks,Albert Einstein,"Daily walks alone without agenda, allowing mind to wander and process thoughts",30-60 min,1,Both - excellent for mental health and problem-solving
+,M,Combinatory Play with Ideas,Albert Einstein,"Playful mental manipulation of concepts and 'what if' questions without pressure",20 min,2,Both - enhances creative problem-solving
+,M,Rigorous Daily Scheduling,Marie Curie,"Maintain strict daily schedule with planned time blocks for different activities",Ongoing,2,Both - essential for productivity and work-life balance
+,M,Triple-Journal System,Marie Curie,"Keep separate journals for work, personal reflection, and family observations",15 min daily,2,Stay-at-home mom - excellent for personal development
+,M,Practical Decision Making,Marie Curie,"Evaluate all decisions based on how they support main goals, eliminate unnecessary activities",Ongoing,2,Both - helps focus on priorities
+,M,Daily Notebook Observations,Leonardo da Vinci,"Carry notebook and document interesting observations, ideas, and learnings throughout day",Ongoing,1,Both - develops curiosity and learning mindset
+,M,Step-by-Step Analysis Method,Leonardo da Vinci,"Break complex subjects into components, examine each detail before understanding the whole",30 min,2,Both - excellent for learning and problem-solving
+,M,Interdisciplinary Project Rotation,Leonardo da Vinci,"Work on multiple projects across different areas, allowing cross-pollination of ideas",Ongoing,3,Both - prevents burnout and enhances creativity
+,C,Early Morning Creative Sessions,Leonardo da Vinci,"Dedicate early morning hours to creative work when mind is freshest",60-90 min,2,Both - maximizes creative productivity
+,E,Evening Reflection and Writing,Marcus Aurelius,"Daily evening reflection on the day's events and philosophical observations",15-30 min,2,Both - promotes wisdom and emotional growth
+,E,Morning Self-Preparation Ritual,Marcus Aurelius,"Begin each day with philosophical preparation and intention-setting",10-15 min,1,Both - sets positive mindset for the day
+,E,Dichotomy of Control Practice,Marcus Aurelius,"Daily practice of categorizing events as within or outside personal control",Ongoing,2,Both - essential for stress management and emotional resilience  
+,E,Virtue-Based Decision Making,Marcus Aurelius,"Make decisions based on core virtues: wisdom, justice, courage, and temperance",Ongoing,3,Both - develops strong character and ethical foundation
+,E,The 13 Virtues System,Benjamin Franklin,"Systematic character development focusing on one virtue weekly over 13 weeks",Ongoing,3,Both - proven system for personal improvement
+,E,Daily Questions Practice,Benjamin Franklin,"Ask 'What good shall I do today?' (morning) and 'What good have I done?' (evening)",2 min,1,Both - focuses on contribution and accountability
+,M,Structured Learning Time,Benjamin Franklin,"Dedicate specific hours to learning and experimentation with detailed record-keeping",60 min,2,Both - essential for professional development
+,C,Thoughtful Communication,Benjamin Franklin,"Carefully craft important communications considering how words will be received",30 min,2,Both - improves relationships and professional success
+,S,Daily Prayer and Spiritual Listening,Joan of Arc,"Dedicated time for prayer and spiritual reflection, seeking guidance for decisions",20-30 min,1,Both - provides spiritual grounding and peace
+,C,Leading by Example,Joan of Arc,"Consistently model the behavior and standards you expect from others",Ongoing,2,Both - essential parenting and leadership principle
+,E,Maintaining Ethical Standards,Joan of Arc,"Establish personal moral principles and follow them consistently regardless of circumstances",Ongoing,3,Both - builds character and self-respect
+,S,Prayer for Others,Joan of Arc,"Regular intercessory prayer focusing on others' needs rather than personal desires",10-15 min,1,Both - develops service mindset and spiritual growth
+,M,Daily Study and Reading,Nelson Mandela,"Maintain rigorous self-education program with dedicated reading time",45-60 min,2,Both - essential for personal and professional growth
+,B,Physical Exercise Routine,Nelson Mandela,"Maintain daily exercise routine as act of self-respect and resilience building",30-60 min,2,Both - essential for physical and mental health
+,M,Language Learning,Nelson Mandela,"Learn new languages or skills to better understand different perspectives",30 min,2,Both - expands opportunities and understanding
+,M,Reflective Writing and Planning,Nelson Mandela,"Process experiences through writing while planning for future goals",20-30 min,2,Both - promotes clarity and strategic thinking
+,C,Daily Questioning Dialogues,Socrates,"Engage others with genuine curiosity using questions rather than assertions",Ongoing,2,Both - improves relationships and learning
+,E,Self-Examination Practice,Socrates,"Regular examination of own beliefs, motivations, and actions with intellectual honesty",15 min,2,Both - develops self-awareness and authenticity
+,E,Virtue-Based Decision Making,Socrates,"Choose virtue over personal advantage in every decision",Ongoing,3,Both - builds character and integrity
+,C,Teaching Through Guidance,Socrates,"Help others discover insights themselves rather than imposing knowledge upon them",Ongoing,3,Both - excellent parenting and mentoring skill
+,C,Daily Writing Ritual,Maya Angelou,"Disciplined daily writing practice with complete focus and honest expression",60-90 min,3,Both - develops communication skills and self-awareness
+,M,Memorization and Recitation,Maya Angelou,"Memorize and recite poetry or meaningful texts to absorb rhythm and power of language",20 min,2,Both - improves memory and communication skills
+,C,Teaching and Mentoring Others,Maya Angelou,"Regularly share knowledge and offer encouragement to those seeking to grow",Ongoing,2,Both - develops leadership and contributes to community
+,S,Spiritual Study and Reflection,Maya Angelou,"Daily study of spiritual texts combined with personal reflection and prayer",30 min,2,Both - provides spiritual grounding and wisdom
+,M,Voracious Reading and Self-Education,Abraham Lincoln,"Intensive daily reading across multiple subjects with deep comprehension focus",60 min,2,Both - essential for personal and professional development
+,C,Storytelling and Humor Practice,Abraham Lincoln,"Practice telling stories and using humor to connect with others and illustrate points",Ongoing,2,Both - improves communication and relationships
+,C,Careful Communication Preparation,Abraham Lincoln,"Write and rewrite important communications, considering impact and reception",30 min,3,Both - essential for professional success
+,B,Walking and Solitary Reflection,Abraham Lincoln,"Take regular walks alone for processing difficult decisions and maintaining balance",30-45 min,1,Both - excellent for mental health and decision-making
+,C,Youth Mentoring and Education,Rosa Parks,"Work with young people to teach them values and help them develop potential",Ongoing,2,Both - contributes to community and develops leadership
+,E,Work with Dignity,Rosa Parks,"Approach daily work with dignity and pride regardless of job status or circumstances",Ongoing,2,Both - builds self-respect and character
+,M,Daily Reading and Writing Practice,Frederick Douglass,"Dedicated time for reading and writing to develop communication and thinking skills",45 min,2,Both - essential for professional development
+,C,Teaching Others Skills,Frederick Douglass,"Share knowledge and skills with others who want to learn and grow",Ongoing,2,Both - develops leadership and serves community
+,C,Public Speaking Practice,Frederick Douglass,"Regular practice of speaking clearly and persuasively about important topics",30 min,3,Both - valuable professional and personal skill
+,C,Writing and Communication,Frederick Douglass,"Regular writing practice to develop clear expression of ideas and arguments",30 min,2,Both - essential communication skill
+,C,Daily Writing Practice,Eleanor Roosevelt,"Consistent daily writing to reflect on experiences and connect them to larger themes",30 min,2,Both - develops communication and self-awareness
+,C,Teaching and Education,Eleanor Roosevelt,"Maintain teaching commitments and educational activities even during busy periods",Ongoing,3,Both - contributes to community and develops expertise
+,C,Public Speaking and Advocacy,Eleanor Roosevelt,"Practice speaking about important topics and values to various audiences",Ongoing,3,Both - develops confidence and leadership skills
+,C,Structured Daily Writing,Winston Churchill,"Maintain rigorous writing schedule with research and systematic approach",60-90 min,3,Both - develops communication and thinking skills
+,C,Speech Preparation and Practice,Winston Churchill,"Methodically prepare and practice important presentations and communications",60 min,3,Both - essential professional skill
+,B,Strategic Afternoon Napping,Winston Churchill,"Take 90-minute afternoon nap to recharge energy for evening productivity",90 min,1,Both - improves energy management and productivity
+,C,Evening Creative Activities,Winston Churchill,"Engage in painting, crafts, or other creative activities as active recovery",60 min,1,Both - provides stress relief and creative outlet
+,B,Daily Vigorous Exercise,Theodore Roosevelt,"Maintain rigorous daily exercise routine including various physical activities",45-60 min,2,Both - essential for physical and mental health
+,B,Incorporating Athletics,Theodore Roosevelt,"Integrate sports and athletic activities into daily life and family time",Ongoing,2,Both - promotes family bonding and health
+,S,Daily Prayer and Spiritual Preparation,Martin Luther King Jr,"Extensive daily prayer practices for spiritual strength and guidance",30 min,2,Both - provides spiritual foundation and resilience
+,S,Scripture Study and Preparation,Martin Luther King Jr,"Daily study of spiritual texts connecting teachings to daily life challenges",30 min,2,Both - develops wisdom and moral foundation
+,C,Writing Letters and Speeches,Martin Luther King Jr,"Craft careful written communications that inspire and articulate important values",45 min,3,Both - develops communication and leadership skills
+,S,Daily Mass and Spiritual Worship,Mother Teresa,"Begin each day with spiritual practice and connection to divine source",30-60 min,1,Both - provides spiritual centeredness and peace
+,C,Teaching and Training Others,Mother Teresa,"Daily teaching and mentoring focused on helping others feel wanted and loved",Ongoing,2,Both - develops compassion and leadership
+,S,Prayer Walks,Mother Teresa,"Combine prayer with walking exercise, maintaining spiritual focus during physical activity",30 min,1,Both - combines physical and spiritual benefits
+,S,Daily Ritual Practice,Confucius,"Regular practice of meaningful rituals and traditions that develop character",20 min,2,Both - provides structure and moral foundation
+,M,Intensive Study and Reading,Confucius,"Prioritize daily learning and study over physical comfort when necessary",45 min,2,Both - essential for intellectual development
+,C,Individualized Teaching Method,Confucius,"Adapt communication and guidance style to each person's personality and needs",Ongoing,3,Both - excellent parenting and leadership skill
+,E,Moral Self-Cultivation Practice,Confucius,"Daily self-examination and moral cultivation focusing on virtue development",15 min,2,Both - develops character and ethical foundation

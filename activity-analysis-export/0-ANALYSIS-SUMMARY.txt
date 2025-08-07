@@ -1,0 +1,50 @@
+
+LIGHTWALKER ACTIVITY ANALYSIS REPORT
+Generated: 2025-08-06T23:37:29.846Z
+
+OVERVIEW:
+- Database Activities: 56
+- Philosophical Activities: 33
+- Total Activities: 89
+- Activities with User Preferences: 4
+- Potential Duplicates Found: 20
+
+CATEGORY DISTRIBUTION:
+- mindfulness → mindfulness (20 activities)
+- communication → communication (13 activities)
+- creativity → creativity (12 activities)
+- productivity → productivity (12 activities)
+- learning → learning (8 activities)
+- relationships → relationships (8 activities)
+- physical → physical (5 activities)
+- creative → creativity (4 activities)
+- decision-making → productivity (3 activities)
+- reflection → mindfulness (2 activities)
+- self-care → physical (1 activities)
+- growth → learning (1 activities)
+
+TOP DUPLICATES:
+- "200-Year Perspective Check" vs "200-Year Perspective Check" (100% word overlap)
+- "Adaptability Practice" vs "Adaptability Practice" (100% word overlap)
+- "Artistic Diversion" vs "Artistic Diversion" (100% word overlap)
+- "Better Questions Practice" vs "Better Questions Practice" (100% word overlap)
+- "Deep Reflection" vs "Reflect" (0% word overlap)
+- "Edison Strategic Napping" vs "Edison Strategic Napping" (100% word overlap)
+- "Ego Check Before Speaking" vs "Ego Check Before Speaking" (100% word overlap)
+- "Ego or Joy Choice" vs "Ego or Joy Choice" (100% word overlap)
+- "Extreme Imagination Practice" vs "Extreme Imagination Practice" (100% word overlap)
+- "Failure Alchemy" vs "Failure Alchemy" (100% word overlap)
+
+FILES EXPORTED:
+- 1-all-activities.csv: Complete activity listing
+- 2-database-activities.csv: Current database activities
+- 3-philosophical-activities.csv: Curated philosophical activities
+- 4-category-mapping-analysis.csv: Category mapping analysis
+- 5-potential-duplicates.csv: Duplicate detection results
+
+RECOMMENDATIONS:
+1. Review potential duplicates and merge/eliminate
+2. Map all legacy categories to 7 core categories
+3. Preserve philosophical activities (highest quality)
+4. Enhance database activities with philosophy/instructions
+5. Assign role models to final curated set
