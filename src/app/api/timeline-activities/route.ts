@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
         activityId: timelineActivity.activityId,
         OR: [
           ...(userId ? [{ userId }] : []),
-          ...(sessionId ? [{ sessionId }] : [])
+          ...(effectiveSessionId ? [{ sessionId: effectiveSessionId }] : [])
         ],
         isActive: true
       }
