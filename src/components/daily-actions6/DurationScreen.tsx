@@ -28,6 +28,8 @@ interface ActivityEditItem {
   category: string;
   originalDuration: string;
   instructions?: string;
+  philosophy?: string;
+  description?: string;
   isRecurring?: boolean;
   recurringPattern?: {
     type: 'daily' | 'weekly' | 'monthly' | 'custom';
@@ -63,7 +65,6 @@ export default function DurationScreen({
   
   // New editing states
   const [editingTitle, setEditingTitle] = useState('');
-  const [editingDescription, setEditingDescription] = useState('');
   const [editingInstructions, setEditingInstructions] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('mindfulness');
   
@@ -172,7 +173,6 @@ export default function DurationScreen({
       
       // Initialize editing states
       setEditingTitle(finalActivity.title || finalActivity.name || '');
-      setEditingDescription(finalActivity.description || '');
       setEditingInstructions(finalActivity.instructions || '');
       setSelectedCategory(finalActivity.category || finalActivity.customCategory || 'mindfulness');
       
@@ -249,12 +249,6 @@ export default function DurationScreen({
     }
   };
 
-  const handleDescriptionChange = (newDescription: string) => {
-    setEditingDescription(newDescription);
-    if (currentActivity) {
-      setCurrentActivity(prev => prev ? { ...prev, description: newDescription } : null);
-    }
-  };
 
   const handleInstructionsChange = (newInstructions: string) => {
     setEditingInstructions(newInstructions);
@@ -343,7 +337,6 @@ export default function DurationScreen({
         category: selectedCategory,
         customCategory: selectedCategory,
         title: editingTitle,
-        description: editingDescription,
         instructions: editingInstructions
       };
 
@@ -1170,21 +1163,23 @@ export default function DurationScreen({
                 </p>
               </div>
 
-              {/* Philosophy Editing */}
+              {/* Philosophy Display (Read-Only) */}
               <div>
                 <label className={`block text-sm font-medium text-blue-400 mb-3 flex items-center`}>
                   <span className="mr-2">Philosophy</span>
                   <span className="text-xs text-gray-400 font-normal">(Meaning & Context)</span>
                 </label>
-                <textarea
-                  value={editingDescription}
-                  onChange={(e) => handleDescriptionChange(e.target.value)}
-                  placeholder="Enter the philosophical meaning or personal significance of this activity..."
-                  rows={4}
-                  className="w-full px-4 py-2 bg-blue-900/20 border border-blue-500/50 rounded-lg text-white placeholder-blue-300/60 focus:bg-blue-900/30 focus:border-blue-400 focus:outline-none transition-colors resize-none"
-                />
+                {currentActivity?.philosophy ? (
+                  <div className="w-full px-4 py-3 bg-blue-900/20 border border-blue-500/30 rounded-lg text-blue-100 leading-relaxed">
+                    {currentActivity.philosophy}
+                  </div>
+                ) : (
+                  <div className="w-full px-4 py-3 bg-gray-800/20 border border-gray-600/30 rounded-lg text-gray-400 italic">
+                    No philosophical content available for this activity.
+                  </div>
+                )}
                 <p className="text-xs text-blue-400 mt-1">
-                  This provides philosophical context and deeper meaning
+                  This content explains the philosophical meaning and context of the activity
                 </p>
               </div>
 
@@ -1216,11 +1211,11 @@ export default function DurationScreen({
                   <h5 className="text-white font-semibold text-base">{editingTitle || 'Activity Title'}</h5>
                   
                   {/* Philosophy Section Preview */}
-                  {editingDescription && (
+                  {currentActivity?.philosophy && (
                     <div className="mb-4">
                       <h6 className="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-2">Philosophy</h6>
                       <div className="text-sm text-gray-200 leading-relaxed italic bg-slate-700/30 p-3 rounded border-l-4 border-blue-400">
-                        {editingDescription}
+                        {currentActivity.philosophy}
                       </div>
                     </div>
                   )}

@@ -716,18 +716,18 @@ const GamelikeTimelineMobile = ({
 
       {/* Mobile instructions */}
       <div className="mt-2 space-y-1">
-        {/* Dynamic Help Area */}
-        <div className="text-center text-xs min-h-[20px]">
+        {/* Dynamic Help Area - Fixed 2-line height */}
+        <div className="text-center text-xs h-8 flex items-center justify-center">
           {moveMode?.isActive ? (
-            <span className="text-blue-400 font-semibold">
+            <span className="text-blue-400 font-semibold leading-tight">
               ↔️ Moving {moveMode.activity?.title || moveMode.activity?.name} - Tap timeline to place it
             </span>
           ) : selectedActivity ? (
-            <span className="text-green-400 font-semibold">
+            <span className="text-green-400 font-semibold leading-tight">
               ✨ Tap timeline to place {selectedActivity.title}
             </span>
           ) : (
-            <span className="text-slate-400">
+            <span className="text-slate-400 leading-tight">
               💡 Press blue arrows to scroll timeline. Press Inventory item to add to timeline. Press item on timeline to edit.
             </span>
           )}

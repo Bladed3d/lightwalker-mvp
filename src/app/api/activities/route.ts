@@ -73,6 +73,8 @@ export async function GET(request: Request) {
       id: activity.id,
       title: activity.title,
       description: activity.description,
+      philosophy: activity.philosophy,
+      instructions: activity.instructions,
       icon: activity.icon,
       category: activity.category,
       points: activity.points,

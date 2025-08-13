@@ -130,6 +130,7 @@ export default function TarkovInventoryGridMobile({
   const [selectedFilter, setSelectedFilter] = useState('all-categories');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchBar, setShowSearchBar] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
   // Mobile-optimized grid columns (2-4 columns max)
@@ -365,11 +366,30 @@ export default function TarkovInventoryGridMobile({
               )}
             </div>
           </div>
+          
+          {/* Search Toggle Button */}
+          <button
+            onClick={() => {
+              setShowSearchBar(!showSearchBar);
+              if (!showSearchBar && searchQuery) {
+                setSearchQuery(''); // Clear search when hiding
+              }
+            }}
+            className={`p-2 rounded-lg transition-colors ${
+              showSearchBar || searchQuery 
+                ? 'bg-slate-700 text-green-400' 
+                : 'text-slate-400 hover:text-slate-300 hover:bg-slate-700'
+            }`}
+            title="Search activities"
+          >
+            <Search className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Mobile Search and Filter */}
         <div className="flex flex-col space-y-2 mb-3">
-          {/* Search Input */}
+          {/* Search Input - Conditional */}
+          {showSearchBar && (
           <div className="relative">
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-slate-400" />
             <input
@@ -388,8 +408,9 @@ export default function TarkovInventoryGridMobile({
               </button>
             )}
           </div>
+          )}
 
-          {/* Filter Dropdown */}
+          {/* Filter Dropdown - Always Visible */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
@@ -461,19 +482,26 @@ export default function TarkovInventoryGridMobile({
                   WebkitUserSelect: 'none',
                   MozUserSelect: 'none',
                   msUserSelect: 'none',
+                  WebkitTouchCallout: 'none', // Prevents iOS context menu
+                  WebkitTapHighlightColor: 'transparent', // Removes tap highlight
+                  touchAction: 'manipulation' // Better touch response
                 }}
                 onTouchStart={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   handleActivityTap(activity);
                 }}
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   handleActivityTap(activity);
                 }}
-                onLongPress={() => {
-                  if (activity.id !== 'create-new-activity' && onActivityEdit) {
-                    onActivityEdit(activity);
-                  }
+                onContextMenu={(e) => {
+                  e.preventDefault(); // Prevent browser context menu completely
                 }}
               >
                 {/* Selection indicator */}
@@ -522,8 +550,14 @@ export default function TarkovInventoryGridMobile({
                   <img 
                     src={activity.icon} 
                     alt={activity.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover pointer-events-none"
                     draggable={false}
+                    onContextMenu={(e) => e.preventDefault()}
+                    style={{
+                      WebkitTouchCallout: 'none',
+                      WebkitUserSelect: 'none',
+                      userSelect: 'none'
+                    }}
                   />
                 ) : (
                   <div className="text-xl md:text-2xl select-none opacity-30">

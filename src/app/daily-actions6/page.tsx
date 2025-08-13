@@ -35,7 +35,6 @@ import InstructionsWindow from '@/components/daily-actions6/InstructionsWindow';
 import RepeatActivityModal from '@/components/daily-actions6/RepeatActivityModal';
 import ActivityAlertModal from '@/components/daily-actions6/ActivityAlertModal';
 import NotificationSettingsModal from '@/components/daily-actions6/NotificationSettingsModal';
-import { DebugPanel } from '@/components/debug/DebugPanel';
 
 // Utilities
 import { getSessionId, getUserId } from '@/lib/session-utils';
@@ -141,6 +140,14 @@ export default function DailyActions2Page() {
   
   // Mobile view state (can be manually toggled or auto-detected)
   const [isMobileView, setIsMobileView] = useState(false);
+  
+  // Fix for desktop drag-and-drop initialization - force re-mount after initial render
+  const [desktopInitialized, setDesktopInitialized] = useState(false);
+  useEffect(() => {
+    // Small delay to ensure desktop inventory initializes properly
+    const timer = setTimeout(() => setDesktopInitialized(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Auto-set mobile view based on device detection
   useEffect(() => {
@@ -1330,6 +1337,7 @@ export default function DailyActions2Page() {
                 />
               ) : (
                 <TarkovInventoryGrid 
+                  key={`desktop-${desktopInitialized}`}
                   theme={theme}
                   onDragEnd={handleDragEnd}
                   activityPreferences={activityPreferences}
@@ -1949,8 +1957,6 @@ export default function DailyActions2Page() {
         onClose={() => setShowNotificationSettings(false)}
       />
 
-      {/* Debug Panel - Development Only */}
-      <DebugPanel />
 
       </div>
     </DragDropContext>
