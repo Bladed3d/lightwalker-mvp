@@ -88,6 +88,7 @@ interface GamelikeTimelineMobileProps {
   onActivityRemove?: (activity: any) => void;
   onActivitySetRepeat?: (activity: any, position: { x: number; y: number }) => void;
   onActivitySetAlert?: (activity: any, position: { x: number; y: number }) => void;
+  onActivityMove?: (activity: any, newTimeSlot: string) => void;
   timelineActivities?: any[];
   hideCurrentActivity?: boolean;
   onTimeChange?: (currentTime: Date, selectedTime: Date | null) => void;
@@ -102,6 +103,7 @@ const GamelikeTimelineMobile = ({
   onActivityRemove, 
   onActivitySetRepeat, 
   onActivitySetAlert, 
+  onActivityMove,
   timelineActivities = [], 
   hideCurrentActivity = false, 
   onTimeChange, 
@@ -129,6 +131,13 @@ const GamelikeTimelineMobile = ({
     y: number;
     activity: any;
   } | null>(null);
+  
+  // Move mode state for repositioning activities
+  const [moveMode, setMoveMode] = useState<{
+    isActive: boolean;
+    activity: any;
+  } | null>(null);
+  
   const timelineRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -293,7 +302,16 @@ const GamelikeTimelineMobile = ({
     
     const timeSlot = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
     
-    // Only set visual selection if we have a selected activity to place
+    // Handle move mode - repositioning existing activity
+    if (moveMode?.isActive && moveMode.activity && onActivityMove) {
+      setSelectedTimeSlot(timeSlot);
+      onActivityMove(moveMode.activity, timeSlot);
+      setSelectedTimeSlot(null);
+      setMoveMode(null); // Exit move mode
+      return;
+    }
+    
+    // Handle normal placement - placing new activity from inventory
     if (selectedActivity && onActivitySelect) {
       setSelectedTimeSlot(timeSlot);
       onActivitySelect(selectedActivity, timeSlot);
@@ -313,7 +331,7 @@ const GamelikeTimelineMobile = ({
   const displayTime = selectedTime || currentTime;
 
   return (
-    <div className={`${theme?.timelineBackground || 'bg-slate-800'} rounded-xl p-4 border ${theme?.timelineBorder || 'border-slate-700'}`}>
+    <div className={`${theme?.timelineBackground || 'bg-slate-800'} rounded-xl p-4 border ${theme?.timelineBorder || 'border-slate-700'} relative`}>
       {/* Mobile Header */}
       <div className="mb-2">
         <div className="flex items-center justify-between">
@@ -642,10 +660,11 @@ const GamelikeTimelineMobile = ({
             <button
               className="w-full px-3 py-2 text-left text-sm text-blue-400 hover:bg-slate-700 transition-colors flex items-center gap-2"
               onClick={() => {
-                // Enable move mode - set the activity as selected for repositioning
-                if (onActivitySelect) {
-                  onActivitySelect(contextMenu.activity, contextMenu.activity.scheduledTime || contextMenu.activity.time);
-                }
+                // Enable move mode - mark this activity for repositioning
+                setMoveMode({ 
+                  isActive: true, 
+                  activity: contextMenu.activity 
+                });
                 setContextMenu(null);
               }}
             >
@@ -697,16 +716,35 @@ const GamelikeTimelineMobile = ({
 
       {/* Mobile instructions */}
       <div className="mt-2 space-y-1">
-        {selectedActivity && (
-          <div className="text-center text-xs text-green-400 font-semibold">
-            ✨ Tap timeline to place {selectedActivity.title}
-          </div>
-        )}
-        <div className="text-center text-xs text-slate-400">
-          📱 Drag timeline or use buttons above to navigate • Long press activities for options
+        {/* Dynamic Help Area */}
+        <div className="text-center text-xs min-h-[20px]">
+          {moveMode?.isActive ? (
+            <span className="text-blue-400 font-semibold">
+              ↔️ Moving {moveMode.activity?.title || moveMode.activity?.name} - Tap timeline to place it
+            </span>
+          ) : selectedActivity ? (
+            <span className="text-green-400 font-semibold">
+              ✨ Tap timeline to place {selectedActivity.title}
+            </span>
+          ) : (
+            <span className="text-slate-400">
+              💡 Press blue arrows to scroll timeline. Press Inventory item to add to timeline. Press item on timeline to edit.
+            </span>
+          )}
         </div>
         </div>
       </div>
+
+      {/* Move Mode Cancel Button - Bottom Right */}
+      {moveMode?.isActive && (
+        <button
+          onClick={() => setMoveMode(null)}
+          className="absolute bottom-2 right-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm transition-colors shadow-lg"
+          title="Cancel move mode"
+        >
+          ✕
+        </button>
+      )}
     </div>
   );
 };

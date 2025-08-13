@@ -1105,6 +1105,37 @@ export default function DailyActions2Page() {
                 onActivitiesChange={handleActivitiesChange}
                 selectedActivity={selectedMobileActivity}
                 onActivitySelect={handleMobileActivityPlace}
+                onActivityMove={async (activity, newTimeSlot) => {
+                  try {
+                    // Update existing timeline activity in database
+                    const response = await fetch('/api/timeline-activities', {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        id: activity.id,
+                        scheduledTime: newTimeSlot
+                      })
+                    });
+
+                    if (!response.ok) {
+                      throw new Error('Failed to update timeline activity');
+                    }
+
+                    const result = await response.json();
+                    const updatedActivity = result.timelineActivity;
+                    
+                    // Update local state
+                    setTimelineActivities(prev => prev.map(ta => 
+                      ta.id === activity.id ? updatedActivity : ta
+                    ));
+                    setAllTimelineActivities(prev => prev.map(ta => 
+                      ta.id === activity.id ? updatedActivity : ta
+                    ));
+                  } catch (error) {
+                    console.error('❌ Error moving timeline activity:', error);
+                    alert('Failed to move timeline activity. Please try again.');
+                  }
+                }}
                 onActivityRemove={async (activity) => {
                   try {
                     // Delete from database
