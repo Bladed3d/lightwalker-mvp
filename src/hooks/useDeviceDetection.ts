@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
-import { createBreadcrumb } from '@/lib/breadcrumb-system';
+import { useState, useEffect } from 'react';
 
 interface DeviceInfo {
   isMobile: boolean;
@@ -8,9 +7,6 @@ interface DeviceInfo {
 }
 
 export function useDeviceDetection(): DeviceInfo {
-  // LED breadcrumb trail for device detection
-  const breadcrumb = useMemo(() => createBreadcrumb('useDeviceDetection'), []);
-
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>({
     isMobile: false,
     isTouch: false,
@@ -19,8 +15,6 @@ export function useDeviceDetection(): DeviceInfo {
 
   useEffect(() => {
     const checkDeviceType = () => {
-      breadcrumb.light(104, { action: 'deviceDetectionTriggered' });
-      
       try {
         // Check screen width
         const screenWidth = window.innerWidth;
@@ -32,39 +26,26 @@ export function useDeviceDetection(): DeviceInfo {
         // Combine checks for mobile detection
         const isMobile = isMobileWidth || isTouch;
         
-        breadcrumb.light(105, { 
-          action: 'deviceDetectionComplete',
-          screenWidth,
-          isMobileWidth,
-          isTouch,
-          finalIsMobile: isMobile,
-          userAgent: navigator.userAgent,
-          maxTouchPoints: navigator.maxTouchPoints
-        });
-        
         setDeviceInfo({
           isMobile,
           isTouch,
           screenWidth
         });
       } catch (error) {
-        breadcrumb.fail(104, error as Error);
+        console.error('Device detection error:', error);
       }
     };
 
     // Initial check
-    breadcrumb.light(106, { action: 'initialDeviceCheck' });
     checkDeviceType();
 
     // Listen for resize events
     const handleResize = () => {
-      breadcrumb.light(107, { action: 'windowResizeDetected', newWidth: window.innerWidth });
       checkDeviceType();
     };
     
     // Listen for orientation changes
     const handleOrientationChange = () => {
-      breadcrumb.light(108, { action: 'orientationChangeDetected', orientation: window.orientation });
       checkDeviceType();
     };
 
@@ -72,11 +53,10 @@ export function useDeviceDetection(): DeviceInfo {
     window.addEventListener('orientationchange', handleOrientationChange);
 
     return () => {
-      breadcrumb.light(109, { action: 'deviceDetectionCleanup' });
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleOrientationChange);
     };
-  }, [breadcrumb]);
+  }, []);
 
   return deviceInfo;
 }
