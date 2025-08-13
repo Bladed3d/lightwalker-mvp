@@ -60,3 +60,11 @@ sessions/
 
 # Reference images for theme generation (local only)
 reference-images/
+
+# Exclude daily-actions5 test folder and files
+lightwalker5/
+daily_actions5_*.html
+test_daily_actions5*.html
+DAILY-ACTIONS5-*.md
+DAILY_ACTIONS5_*.md
+scripts/validate-daily-actions5.js
